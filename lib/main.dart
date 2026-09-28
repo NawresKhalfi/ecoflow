@@ -13,9 +13,7 @@ class EcoflowApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Ecoflow',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF00C27A),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00C27A)),
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
@@ -24,11 +22,7 @@ class EcoflowApp extends StatelessWidget {
   }
 }
 
-enum _DashboardTab {
-  home,
-  createAd,
-  dashboard,
-}
+enum _DashboardTab { home, createAd, dashboard }
 
 class EcoflowDashboardPage extends StatefulWidget {
   const EcoflowDashboardPage({super.key});
@@ -88,10 +82,7 @@ class _EcoflowDashboardPageState extends State<EcoflowDashboardPage> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 40,
-                vertical: 40,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: const Alignment(-0.8, -0.3),
@@ -157,10 +148,10 @@ class _TopNavigationBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final brand = Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 40,
@@ -168,17 +159,10 @@ class _TopNavigationBar extends StatelessWidget {
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF00C27A),
-                      Color(0xFF00BFA5),
-                    ],
+                    colors: [Color(0xFF00C27A), Color(0xFF00BFA5)],
                   ),
                 ),
-                child: const Icon(
-                  Icons.loop,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: const Icon(Icons.loop, color: Colors.white, size: 22),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -190,31 +174,54 @@ class _TopNavigationBar extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          Row(
+          );
+          final navigation = [
+            _NavItem(
+              label: 'Accueil',
+              isSelected: selectedTab == _DashboardTab.home,
+              onTap: onHomeTap,
+            ),
+            _NavItem(
+              label: 'Créer une annonce',
+              icon: Icons.add,
+              isSelected: selectedTab == _DashboardTab.createAd,
+              onTap: onCreateAdTap,
+            ),
+            _NavItem(
+              label: 'Tableau de bord',
+              icon: Icons.location_on_outlined,
+              isSelected: selectedTab == _DashboardTab.dashboard,
+              onTap: onDashboardTap,
+            ),
+          ];
+
+          if (constraints.maxWidth < 720) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                brand,
+                const SizedBox(height: 14),
+                Wrap(spacing: 8, runSpacing: 8, children: navigation),
+              ],
+            );
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _NavItem(
-                label: 'Accueil',
-                isSelected: selectedTab == _DashboardTab.home,
-                onTap: onHomeTap,
-              ),
-              const SizedBox(width: 24),
-              _NavItem(
-                label: 'Créer une annonce',
-                icon: Icons.add,
-                isSelected: selectedTab == _DashboardTab.createAd,
-                onTap: onCreateAdTap,
-              ),
-              const SizedBox(width: 24),
-              _NavItem(
-                label: 'Tableau de bord',
-                icon: Icons.location_on_outlined,
-                isSelected: selectedTab == _DashboardTab.dashboard,
-                onTap: onDashboardTap,
+              brand,
+              Row(
+                children: [
+                  navigation[0],
+                  const SizedBox(width: 24),
+                  navigation[1],
+                  const SizedBox(width: 24),
+                  navigation[2],
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -235,8 +242,9 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor =
-        isSelected ? const Color(0xFF00A86B) : const Color(0xFF374151);
+    final textColor = isSelected
+        ? const Color(0xFF00A86B)
+        : const Color(0xFF374151);
 
     return InkWell(
       borderRadius: BorderRadius.circular(24),
@@ -250,11 +258,7 @@ class _NavItem extends StatelessWidget {
         child: Row(
           children: [
             if (icon != null) ...[
-              Icon(
-                icon,
-                color: textColor,
-                size: 20,
-              ),
+              Icon(icon, color: textColor, size: 20),
               const SizedBox(width: 6),
             ],
             Text(
@@ -275,9 +279,7 @@ class _NavItem extends StatelessWidget {
 class _HeroSection extends StatelessWidget {
   final VoidCallback onCreateAdTap;
 
-  const _HeroSection({
-    required this.onCreateAdTap,
-  });
+  const _HeroSection({required this.onCreateAdTap});
 
   @override
   Widget build(BuildContext context) {
@@ -294,11 +296,7 @@ class _HeroSection extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: const [
-              Icon(
-                Icons.eco_outlined,
-                size: 18,
-                color: Color(0xFF00A86B),
-              ),
+              Icon(Icons.eco_outlined, size: 18, color: Color(0xFF00A86B)),
               SizedBox(width: 8),
               Text(
                 'Plateforme intelligente de recyclage',
@@ -337,19 +335,17 @@ class _HeroSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 40),
-        Row(
-          mainAxisSize: MainAxisSize.min,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 20,
+          runSpacing: 12,
           children: [
             _PrimaryActionButton(
               label: 'Créer une annonce',
               icon: Icons.arrow_right_alt,
               onPressed: onCreateAdTap,
             ),
-            const SizedBox(width: 20),
-            _SecondaryActionButton(
-              label: 'En savoir plus',
-              onPressed: () {},
-            ),
+            _SecondaryActionButton(label: 'En savoir plus', onPressed: () {}),
           ],
         ),
       ],
@@ -420,47 +416,44 @@ class _FeaturesSection extends StatelessWidget {
           builder: (context, constraints) {
             final isSmall = constraints.maxWidth < 700;
 
-            final cards = <Widget>[
-              Expanded(
-                child: _FeatureCard(
-                  icon: Icons.photo_camera_outlined,
-                  iconGradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF007CF0),
-                      Color(0xFF00DFD8),
-                    ],
-                  ),
-                  title: 'Annonce Intelligente',
-                  description:
-                      'Prenez en photo vos matériaux. L\'IA estime automatiquement '
-                      'le volume, le poids et la valeur marchande approximative.',
-                ),
+            final intelligentAdCard = _FeatureCard(
+              icon: Icons.photo_camera_outlined,
+              iconGradient: const LinearGradient(
+                colors: [Color(0xFF007CF0), Color(0xFF00DFD8)],
               ),
-              const SizedBox(width: 32, height: 32),
-              Expanded(
-                child: _FeatureCard(
-                  icon: Icons.group_outlined,
-                  iconGradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF00C27A),
-                      Color(0xFF00BFA5),
-                    ],
-                  ),
-                  title: 'Système de Matching',
-                  description:
-                      'L\'IA notifie automatiquement les collecteurs inscrits à '
-                      'proximité, en fonction du type de matériau.',
-                ),
+              title: 'Annonce Intelligente',
+              description:
+                  'Prenez en photo vos matériaux. L\'IA estime automatiquement '
+                  'le volume, le poids et la valeur marchande approximative.',
+            );
+            final matchingCard = _FeatureCard(
+              icon: Icons.group_outlined,
+              iconGradient: const LinearGradient(
+                colors: [Color(0xFF00C27A), Color(0xFF00BFA5)],
               ),
-            ];
+              title: 'Système de Matching',
+              description:
+                  'L\'IA notifie automatiquement les collecteurs inscrits à '
+                  'proximité, en fonction du type de matériau.',
+            );
 
             if (isSmall) {
-              return Column(children: cards);
+              return Column(
+                children: [
+                  intelligentAdCard,
+                  const SizedBox(height: 32),
+                  matchingCard,
+                ],
+              );
             }
 
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: cards,
+              children: [
+                Expanded(child: intelligentAdCard),
+                const SizedBox(width: 32),
+                Expanded(child: matchingCard),
+              ],
             );
           },
         ),
@@ -507,11 +500,7 @@ class _FeatureCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               gradient: iconGradient,
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 30,
-            ),
+            child: Icon(icon, color: Colors.white, size: 30),
           ),
           const SizedBox(width: 24),
           Expanded(
@@ -547,10 +536,7 @@ class _FeatureCard extends StatelessWidget {
 class _CreateAdSection extends StatelessWidget {
   const _CreateAdSection();
 
-  InputDecoration _fieldDecoration({
-    String? hintText,
-    Widget? prefixIcon,
-  }) {
+  InputDecoration _fieldDecoration({String? hintText, Widget? prefixIcon}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.white,
@@ -559,22 +545,15 @@ class _CreateAdSection extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1D5DB),
-        ),
+        borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1D5DB),
-        ),
+        borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: Color(0xFF00C27A),
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: Color(0xFF00C27A), width: 2),
       ),
     );
   }
@@ -595,11 +574,7 @@ class _CreateAdSection extends StatelessWidget {
         const SizedBox(height: 8),
         const Text(
           'Prenez en photo vos matériaux et notre IA les analysera automatiquement',
-          style: TextStyle(
-            fontSize: 16,
-            height: 1.5,
-            color: Color(0xFF4B5563),
-          ),
+          style: TextStyle(fontSize: 16, height: 1.5, color: Color(0xFF4B5563)),
         ),
         const SizedBox(height: 32),
         Container(
@@ -685,22 +660,13 @@ class _CreateAdSection extends StatelessWidget {
                   ),
                   icon: const Icon(Icons.keyboard_arrow_down_rounded),
                   items: const [
-                    DropdownMenuItem(
-                      value: 'Carton',
-                      child: Text('Carton'),
-                    ),
+                    DropdownMenuItem(value: 'Carton', child: Text('Carton')),
                     DropdownMenuItem(
                       value: 'Plastique',
                       child: Text('Plastique'),
                     ),
-                    DropdownMenuItem(
-                      value: 'Métal',
-                      child: Text('Métal'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Verre',
-                      child: Text('Verre'),
-                    ),
+                    DropdownMenuItem(value: 'Métal', child: Text('Métal')),
+                    DropdownMenuItem(value: 'Verre', child: Text('Verre')),
                   ],
                   onChanged: (_) {},
                 ),
@@ -749,10 +715,7 @@ class _CreateAdSection extends StatelessWidget {
           child: DecoratedBox(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color(0xFF00C27A),
-                  Color(0xFF00BFA5),
-                ],
+                colors: [Color(0xFF00C27A), Color(0xFF00BFA5)],
               ),
               borderRadius: BorderRadius.all(Radius.circular(18)),
             ),
@@ -767,10 +730,7 @@ class _CreateAdSection extends StatelessWidget {
               ),
               child: const Text(
                 'Publier l\'annonce',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -796,10 +756,7 @@ class _PrimaryActionButton extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF00C27A),
-            Color(0xFF00BFA5),
-          ],
+          colors: [Color(0xFF00C27A), Color(0xFF00BFA5)],
         ),
         borderRadius: BorderRadius.circular(14),
       ),
@@ -809,8 +766,7 @@ class _PrimaryActionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           onTap: onPressed,
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -823,10 +779,7 @@ class _PrimaryActionButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Icon(
-                  icon,
-                  color: Colors.white,
-                ),
+                Icon(icon, color: Colors.white),
               ],
             ),
           ),
@@ -840,34 +793,22 @@ class _SecondaryActionButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const _SecondaryActionButton({
-    required this.label,
-    required this.onPressed,
-  });
+  const _SecondaryActionButton({required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(
-          color: Color(0xFF7FE3B5),
-          width: 2,
-        ),
+        side: const BorderSide(color: Color(0xFF7FE3B5), width: 2),
         foregroundColor: const Color(0xFF047857),
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       onPressed: onPressed,
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
     );
   }
 }
-
