@@ -1,0 +1,303 @@
+{
+  "@@locale": "fr",
+  "appName": "EcoFlow",
+  "commonContinue": "Continuer",
+  "commonCancel": "Annuler",
+  "commonSave": "Enregistrer",
+  "commonBack": "Retour",
+  "commonRetry": "Réessayer",
+  "commonOr": "ou",
+  "commonLoading": "Chargement…",
+  "welcomeBadge": "♻️ EcoFlow · la plateforme circulaire",
+  "welcomeTitleA": "Recycle. Collecte.",
+  "welcomeTitleB": "Valorise.",
+  "welcomeSubtitle": "La plateforme qui relie citoyens, collecteurs et recycleurs, propulsée par l’IA.",
+  "welcomeChooseSpace": "Choisis ton espace pour commencer",
+  "welcomeHaveAccount": "J’ai déjà un compte",
+  "welcomeLanguage": "Langue",
+  "roleCitizen": "Citoyen",
+  "roleCollector": "Collecteur",
+  "roleRecycler": "Recycleur",
+  "roleAdmin": "Administrateur",
+  "roleCitizenDesc": "Scanne, demande une collecte, gagne des EcoPoints",
+  "roleCollectorDesc": "Missions, trajets optimisés, revenus",
+  "roleRecyclerDesc": "Stocks, prévisions IA, marketplace B2B",
+  "roleAdminNotice": "Les comptes administrateur sont créés uniquement par l’équipe EcoFlow.",
+  "signInTitle": "Bon retour 👋",
+  "signInSubtitle": "Connecte-toi pour retrouver ton espace.",
+  "emailLabel": "E-mail",
+  "passwordLabel": "Mot de passe",
+  "forgotPassword": "Mot de passe oublié ?",
+  "signInButton": "Se connecter",
+  "continueWithGoogle": "Continuer avec Google",
+  "continueWithPhone": "Continuer avec mon téléphone",
+  "noAccount": "Pas encore de compte ?",
+  "createAccount": "Créer un compte",
+  "signUpTitle": "Crée ton compte",
+  "signUpSubtitle": "Quelques secondes suffisent pour rejoindre la boucle.",
+  "fullNameLabel": "Nom complet",
+  "confirmPasswordLabel": "Confirmer le mot de passe",
+  "passwordHint": "8 caractères minimum, avec lettres et chiffres",
+  "chooseRole": "Ton rôle",
+  "consentLabel": "J’accepte la politique de confidentialité et le stockage sécurisé de mes données sur Firebase.",
+  "consentRead": "Lire la politique de confidentialité",
+  "consentRequired": "Ton accord est nécessaire pour créer un compte.",
+  "signUpButton": "Créer mon compte",
+  "signUpWithPhone": "S’inscrire avec mon numéro",
+  "haveAccount": "Déjà inscrit ?",
+  "phoneTitle": "Ton numéro de téléphone",
+  "phoneSubtitle": "On t’envoie un code de vérification par SMS.",
+  "phoneLabel": "Numéro de téléphone",
+  "phoneHint": "22 123 456",
+  "sendCode": "Recevoir le code",
+  "otpTitle": "Code de vérification",
+  "otpLabel": "Code à 6 chiffres",
+  "verifyCode": "Vérifier",
+  "otpExpired": "Code expiré — demande un nouveau code.",
+  "resendCode": "Renvoyer le code",
+  "changeNumber": "Modifier le numéro",
+  "completeTitle": "Finalise ton profil",
+  "completeSubtitle": "Dis-nous comment t’appeler et choisis ton espace.",
+  "completeButton": "Accéder à mon espace",
+  "verifyEmailTitle": "Vérifie ta boîte mail 📬",
+  "verifyEmailCheck": "J’ai confirmé mon e-mail",
+  "verifyEmailResend": "Renvoyer le lien",
+  "verifyEmailSent": "Lien renvoyé ✉️",
+  "verifyEmailNotYet": "E-mail pas encore confirmé. Clique sur le lien reçu puis réessaie.",
+  "signOut": "Se déconnecter",
+  "forgotTitle": "Mot de passe oublié",
+  "forgotSubtitle": "Saisis ton e-mail : on t’envoie un lien de réinitialisation.",
+  "forgotButton": "Envoyer le lien",
+  "forgotSentTitle": "Lien envoyé ✅",
+  "forgotSentBody": "Consulte ta boîte mail. Le lien est à usage unique et expire rapidement ; ton ancien mot de passe ne fonctionnera plus après la réinitialisation.",
+  "backToSignIn": "Retour à la connexion",
+  "privacyTitle": "Confidentialité",
+  "privacyIntro": "EcoFlow respecte la loi organique tunisienne n° 2004-63 sur la protection des données personnelles.",
+  "privacyData": "Données collectées : nom, e-mail ou téléphone, rôle, adresses de collecte, et pour les professionnels leurs justificatifs.",
+  "privacyUse": "Elles servent uniquement au fonctionnement du service et sont stockées de façon sécurisée sur Google Firebase.",
+  "privacyRights": "Tu peux consulter, modifier ou supprimer tes données à tout moment depuis ton profil.",
+  "errRequired": "Champ obligatoire",
+  "errInvalidEmail": "Adresse e-mail invalide",
+  "errPasswordTooShort": "8 caractères minimum",
+  "errPasswordWeak": "Ajoute au moins une lettre et un chiffre",
+  "errPasswordMismatch": "Les mots de passe ne correspondent pas",
+  "errInvalidPhone": "Numéro invalide (ex. 22 123 456 ou +216 22 123 456)",
+  "errInvalidOtp": "Le code contient 6 chiffres",
+  "errTooLong": "Texte trop long",
+  "errInvalidTaxId": "Format attendu : 1234567A/A/M/000",
+  "errInvalidNumber": "Saisis un nombre positif",
+  "failInvalidEmail": "Adresse e-mail invalide.",
+  "failWeakPassword": "Mot de passe trop faible.",
+  "failEmailInUse": "Un compte existe déjà avec cet identifiant.",
+  "failWrongCredentials": "E-mail ou mot de passe incorrect.",
+  "failUserDisabled": "Ce compte a été suspendu.",
+  "failTooManyRequests": "Trop de tentatives, réessaie dans quelques minutes.",
+  "failInvalidPhone": "Numéro de téléphone invalide.",
+  "failInvalidCode": "Code incorrect.",
+  "failCodeExpired": "Code expiré — demande un nouveau code.",
+  "failNetwork": "Connexion impossible. Vérifie ton réseau.",
+  "failCancelled": "Connexion annulée.",
+  "failProviderUnavailable": "Ce mode de connexion n’est pas encore activé.",
+  "failRequiresRecentLogin": "Par sécurité, reconnecte-toi puis recommence.",
+  "failUnknown": "Une erreur est survenue. Réessaie.",
+  "navHome": "Accueil",
+  "navProfile": "Profil",
+  "navAddresses": "Adresses",
+  "navDocuments": "Dossier",
+  "navCompany": "Entreprise",
+  "homeCitizenSubtitle": "Prêt à donner une seconde vie à tes déchets ?",
+  "homeCollectorSubtitle": "Tes missions de collecte t’attendent bientôt ici.",
+  "homeRecyclerSubtitle": "Pilote tes approvisionnements en matières recyclées.",
+  "homeAdminSubtitle": "Vue globale de la plateforme EcoFlow.",
+  "homeComingTitle": "Ton espace se prépare 🌱",
+  "homeComingBody": "Scan IA, collectes, wallet et marketplace arrivent dans les prochaines versions.",
+  "statKg": "kg recyclés",
+  "statCollections": "collectes",
+  "statPoints": "EcoPoints",
+  "verifTitle": "Vérification du compte",
+  "verifNotSubmittedCollector": "Envoie ton dossier (CIN, permis, carte grise, véhicule) pour commencer à collecter.",
+  "verifNotSubmittedRecycler": "Complète le profil de ton entreprise pour être référencé comme recycleur fiable.",
+  "verifPending": "Dossier en cours d’examen par l’équipe EcoFlow.",
+  "verifApproved": "Compte vérifié : tu es prêt !",
+  "verifRejected": "Dossier refusé : corrige-le puis renvoie-le.",
+  "verifActionCollector": "Compléter mon dossier",
+  "verifActionRecycler": "Compléter mon entreprise",
+  "statusNotSubmitted": "À envoyer",
+  "statusPending": "En attente",
+  "statusApproved": "Validé",
+  "statusRejected": "Refusé",
+  "profileTitle": "Mon profil",
+  "profileSubtitle": "Tes informations, préférences et données.",
+  "editName": "Modifier le nom",
+  "nameSaved": "Nom mis à jour ✅",
+  "sectionAccount": "Mon compte",
+  "sectionPreferences": "Préférences",
+  "sectionDanger": "Données & confidentialité",
+  "languageMenu": "Langue",
+  "notificationsMenu": "Notifications",
+  "addressesMenu": "Mes adresses",
+  "documentsMenu": "Mon dossier collecteur",
+  "companyMenu": "Mon entreprise",
+  "privacyMenu": "Politique de confidentialité",
+  "deleteAccountMenu": "Supprimer mon compte",
+  "addressesTitle": "Mes adresses",
+  "addressesSubtitle": "Elles pré-rempliront tes demandes de collecte.",
+  "addressesEmpty": "Aucune adresse pour l’instant. Ajoute ton domicile pour gagner du temps.",
+  "addAddress": "Ajouter une adresse",
+  "editAddress": "Modifier l’adresse",
+  "addressLabel": "Nom (ex. Maison, Bureau)",
+  "addressStreet": "Adresse (rue, n°, étage)",
+  "addressCity": "Ville",
+  "addressUseGps": "Utiliser ma position GPS",
+  "addressGpsUnavailable": "Position indisponible : autorise la localisation ou active le GPS.",
+  "addressNoGps": "Pas de position GPS",
+  "addressDefault": "Par défaut",
+  "addressMakeDefault": "Définir par défaut",
+  "addressIsDefault": "Adresse par défaut",
+  "addressDelete": "Supprimer",
+  "addressDeleteConfirm": "Supprimer cette adresse ?",
+  "addressSaved": "Adresse enregistrée ✅",
+  "documentsTitle": "Mon dossier collecteur",
+  "documentsSubtitle": "4 pièces pour être vérifié et autorisé à collecter.",
+  "docNationalId": "Carte d’identité (CIN)",
+  "docDrivingLicense": "Permis de conduire",
+  "docVehicleRegistration": "Carte grise",
+  "docVehiclePhoto": "Photo du véhicule",
+  "docUpload": "Ajouter",
+  "docReplace": "Remplacer",
+  "docTakePhoto": "Prendre une photo",
+  "docFromGallery": "Choisir dans la galerie",
+  "docUploaded": "Document ajouté ✅",
+  "docTooLarge": "Fichier trop volumineux : réessaie avec une photo plus légère.",
+  "docSubmit": "Envoyer pour vérification",
+  "docSubmitted": "Dossier envoyé ✅ Tu seras notifié de la décision.",
+  "docIncomplete": "Ajoute les 4 pièces pour envoyer ton dossier.",
+  "companyTitle": "Mon entreprise",
+  "companySubtitle": "Ton profil sera vérifié par l’équipe EcoFlow avant référencement.",
+  "companyLegalName": "Raison sociale",
+  "companyTaxId": "Matricule fiscal",
+  "companyTaxIdHint": "1234567A/A/M/000",
+  "companyMaterials": "Matières traitées",
+  "companyCapacity": "Capacité (tonnes / mois)",
+  "companyCity": "Ville",
+  "companyPhone": "Téléphone de contact",
+  "companySubmit": "Soumettre pour validation",
+  "companySubmitted": "Profil soumis ✅ En attente de validation.",
+  "companyNoMaterial": "Choisis au moins une matière.",
+  "companyLocked": "Profil en cours de validation : modification possible après la décision.",
+  "matPet": "PET",
+  "matHdpe": "HDPE",
+  "matPp": "PP",
+  "matCardboard": "Carton",
+  "matAluminium": "Aluminium",
+  "matGlass": "Verre",
+  "matOther": "Autres",
+  "languageTitle": "Langue",
+  "languageSubtitle": "Change la langue de l’application à tout moment.",
+  "notifTitle": "Notifications",
+  "notifSubtitle": "Ne reçois que les alertes utiles.",
+  "notifCollection": "Statut de mes collectes",
+  "notifCollectionDesc": "Assignée, en route, arrivée, terminée",
+  "notifPoints": "EcoPoints & récompenses",
+  "notifPointsDesc": "Points crédités, coupons, niveaux",
+  "notifMarketplace": "Marketplace",
+  "notifMarketplaceDesc": "Nouvelles annonces et réponses",
+  "deleteTitle": "Supprimer mon compte",
+  "deleteSubtitle": "Tu gardes le contrôle de tes données.",
+  "deleteStep1": "Étape 1/2 · Ce qui va se passer",
+  "deleteWhat1": "Tes données personnelles (nom, e-mail, téléphone, adresses, documents) sont anonymisées sous 30 jours maximum.",
+  "deleteWhat2": "L’historique financier est conservé de façon anonyme, comme l’exige la loi.",
+  "deleteWhat3": "Cette action est définitive.",
+  "deleteStep2": "Étape 2/2 · Confirme ton identité",
+  "deleteReauthOther": "Nous allons vérifier ton identité avec ton mode de connexion.",
+  "deleteConfirm": "Supprimer définitivement",
+  "deleteDone": "Compte supprimé. À bientôt 🌱",
+  "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
+  "@attemptsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failLockedOut": "Trop d’échecs : connexion bloquée jusqu’à {time}.",
+  "@failLockedOut": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "otpSubtitle": "Saisis le code envoyé au {phone}.",
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "otpExpiresIn": "Code valable encore {time}",
+  "@otpExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "resendIn": "Renvoyer dans {seconds} s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "verifyEmailBody": "Nous avons envoyé un lien de confirmation à {email}. Ton compte sera activé dès sa vérification.",
+  "@verifyEmailBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "homeHello": "Bonjour {name} 👋",
+  "@homeHello": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "verifReason": "Motif : {reason}",
+  "@verifReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "docProgress": "{count}/4 pièces",
+  "@docProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteTypeWord": "Tape {word} pour confirmer",
+  "@deleteTypeWord": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "memberSince": "Membre depuis {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
+}

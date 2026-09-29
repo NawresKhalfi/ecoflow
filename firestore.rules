@@ -1,0 +1,95 @@
+rules_version = '2';
+
+// Règles EcoFlow – Epic 1 (authentification & profils).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().role == 'admin';
+    }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+
+    // Transition de statut autorisée à l'utilisateur : (re)soumettre son dossier.
+    function submitsForReview() {
+      return request.resource.data.verificationStatus == 'pending'
+        && resource.data.verificationStatus in ['notSubmitted', 'rejected'];
+    }
+
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+
+      // Un administrateur ne peut jamais être auto-attribué (US-003) et le
+      // consentement est obligatoire.
+      allow create: if isSelf(uid)
+        && request.resource.data.role in ['citizen', 'collector', 'recycler']
+        && request.resource.data.verificationStatus
+             == (request.resource.data.role == 'citizen' ? 'notRequired' : 'notSubmitted')
+        && request.resource.data.consent.version is string
+        && request.resource.data.status == 'active';
+
+      allow update: if isAdmin()
+        || (isSelf(uid)
+            && !changed().hasAny(['role', 'createdAt', 'consent', 'rejectionReason', 'reviewedBy', 'reviewedAt'])
+            && (!changed().hasAny(['verificationStatus']) || submitsForReview())
+            && (!changed().hasAny(['status']) || request.resource.data.status == 'deleted'));
+
+      allow delete: if isAdmin();
+
+      match /addresses/{addressId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if isSelf(uid)
+          && request.resource.data.label is string
+          && request.resource.data.label.size() <= 120
+          && request.resource.data.street is string
+          && request.resource.data.city is string
+          && request.resource.data.isDefault is bool;
+        allow delete: if isSelf(uid);
+      }
+
+      match /documents/{type} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if isAdmin()
+          || (isSelf(uid)
+              && type in ['nationalId', 'drivingLicense', 'vehicleRegistration', 'vehiclePhoto']
+              && request.resource.data.status in ['notSubmitted', 'pending']
+              && !request.resource.data.keys().hasAny(['rejectionReason']));
+        allow delete: if isSelf(uid) || isAdmin();
+      }
+
+      match /documentFiles/{type} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if isSelf(uid)
+          && type in ['nationalId', 'drivingLicense', 'vehicleRegistration', 'vehiclePhoto']
+          && request.resource.data.data is string
+          && request.resource.data.data.size() < 1000000;
+        allow delete: if isSelf(uid) || isAdmin();
+      }
+    }
+
+    match /companies/{uid} {
+      // Les recycleurs validés sont visibles des utilisateurs connectés.
+      allow read: if isSelf(uid) || isAdmin()
+        || (signedIn() && resource.data.status == 'approved');
+      allow create, update: if isAdmin()
+        || (isSelf(uid)
+            && request.resource.data.status == 'pending'
+            && request.resource.data.ownerUid == uid
+            && request.resource.data.rejectionReason == null
+            && (resource == null || resource.data.status in ['notSubmitted', 'rejected']
+                || changed().hasOnly(['contactPhone'])));
+      allow delete: if isAdmin();
+    }
+
+    match /deletionRequests/{uid} {
+      allow create: if isSelf(uid);
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
