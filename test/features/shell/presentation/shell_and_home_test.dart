@@ -32,7 +32,7 @@ SessionState session(
 
 void main() {
   test('each role gets its own navigation', () {
-    expect(destinationsFor(UserRole.citizen), contains(NavDestination.addresses));
+    expect(destinationsFor(UserRole.citizen), contains(NavDestination.collections));
     expect(destinationsFor(UserRole.collector), contains(NavDestination.documents));
     expect(destinationsFor(UserRole.recycler), contains(NavDestination.company));
     expect(destinationsFor(UserRole.admin), [
@@ -47,7 +47,7 @@ void main() {
     expect(destinationsFor(UserRole.citizen), contains(NavDestination.scan));
     expect(destinationsFor(UserRole.collector), isNot(contains(NavDestination.scan)));
     final items = destinationsFor(UserRole.citizen);
-    expect(activeDestination(items, '/app/addresses/new'), NavDestination.addresses);
+    expect(activeDestination(items, '/app/collections/abc'), NavDestination.collections);
     expect(activeDestination(items, '/app'), NavDestination.home);
   });
 
@@ -60,7 +60,7 @@ void main() {
       overrides: [sessionProvider.overrideWithValue(session(UserRole.citizen))],
     );
     expect(find.text('Bonjour Karim 👋'), findsOneWidget);
-    expect(find.text('Adresses'), findsOneWidget);
+    expect(find.text('Collectes'), findsOneWidget);
     expect(find.text('Dossier'), findsNothing);
     expect(find.textContaining('Flow'), findsNothing, reason: 'logo only in the side bar');
     expect(find.text('kg recyclés'), findsOneWidget);
@@ -74,7 +74,7 @@ void main() {
       overrides: [sessionProvider.overrideWithValue(session(UserRole.collector))],
     );
     expect(find.text('Dossier'), findsOneWidget);
-    expect(find.text('Adresses'), findsNothing);
+    expect(find.text('Collectes'), findsNothing);
     expect(find.byType(RoleShell), findsOneWidget);
     expect(find.textContaining('Eco'), findsWidgets);
   });

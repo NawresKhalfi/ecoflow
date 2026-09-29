@@ -4,6 +4,7 @@ import '../../auth/domain/user_role.dart';
 enum NavDestination {
   home,
   scan,
+  collections,
   estimates,
   weighing,
   addresses,
@@ -20,6 +21,7 @@ extension NavDestinationRoute on NavDestination {
     NavDestination.home => Routes.home,
     NavDestination.scan => Routes.scan,
     NavDestination.estimates => Routes.estimates,
+    NavDestination.collections => Routes.collections,
     NavDestination.weighing => Routes.weighing,
     NavDestination.pricing => Routes.pricing,
     NavDestination.catalog => Routes.catalog,
@@ -34,6 +36,7 @@ extension NavDestinationRoute on NavDestination {
     NavDestination.home => '🏠',
     NavDestination.scan => '📸',
     NavDestination.estimates => '🧾',
+    NavDestination.collections => '🚚',
     NavDestination.weighing => '⚖️',
     NavDestination.pricing => '💰',
     NavDestination.catalog => '🗂️',
@@ -51,8 +54,8 @@ List<NavDestination> destinationsFor(UserRole role) => switch (role) {
   UserRole.citizen => const [
     NavDestination.home,
     NavDestination.scan,
+    NavDestination.collections,
     NavDestination.estimates,
-    NavDestination.addresses,
     NavDestination.profile,
   ],
   UserRole.collector => const [

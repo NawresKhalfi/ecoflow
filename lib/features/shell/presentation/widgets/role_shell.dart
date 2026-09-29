@@ -69,6 +69,7 @@ String navLabel(AppLocalizations l, NavDestination d) => switch (d) {
   NavDestination.home => l.navHome,
   NavDestination.scan => l.navScan,
   NavDestination.estimates => l.navEstimates,
+  NavDestination.collections => l.navCollections,
   NavDestination.weighing => l.navWeighing,
   NavDestination.pricing => l.navPricing,
   NavDestination.catalog => l.navCatalog,

@@ -138,6 +138,19 @@ class EstimateDetailScreen extends ConsumerWidget {
               ],
             ),
           ),
+        if (record != null && record.requestId != null)
+          EcoButton(
+            label: l.navCollections,
+            leading: '🚚',
+            style: EcoButtonStyle.ghost,
+            onPressed: () => context.go(Routes.collectionDetail(record.requestId!)),
+          )
+        else if (record != null && !record.isWeighed)
+          EcoButton(
+            label: l.collectRequestCta,
+            leading: '🚚',
+            onPressed: () => context.go(Routes.collectionNew(record.code)),
+          ),
       ],
     );
   }

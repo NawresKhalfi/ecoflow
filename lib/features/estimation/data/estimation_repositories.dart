@@ -151,14 +151,32 @@ class FirestoreEstimateRepository implements EstimateRepository {
     Map<String, double> actualKg,
     WeighingResult result,
     String collectorUid,
-  ) => _col.doc(code).update({
-    'status': EstimateStatus.weighed.name,
-    'actualKg': actualKg,
-    'actualTotalKg': result.actualKg,
-    'finalDt': result.finalDt,
-    'collectorUid': collectorUid,
-    'weighedAt': FieldValue.serverTimestamp(),
-  });
+  ) async {
+    final requestId = (await _col.doc(code).get()).data()?['requestId'] as String?;
+    final batch = _db.batch()
+      ..update(_col.doc(code), {
+        'status': EstimateStatus.weighed.name,
+        'actualKg': actualKg,
+        'actualTotalKg': result.actualKg,
+        'finalDt': result.finalDt,
+        'collectorUid': collectorUid,
+        'weighedAt': FieldValue.serverTimestamp(),
+      });
+    // Validation croisée (US-039) : la pesée vaut remise côté collecteur,
+    // le citoyen confirme ensuite.
+    if (requestId != null) {
+      batch.update(_db.collection('collections').doc(requestId), {
+        'status': 'handedOver',
+        'collectorUid': collectorUid,
+        'statusHistory': FieldValue.arrayUnion([
+          {'status': 'handedOver', 'at': Timestamp.now()},
+        ]),
+        'handedOverAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+  }
 
   @override
   Future<List<EstimateRecord>> weighed({int limit = 500}) async {

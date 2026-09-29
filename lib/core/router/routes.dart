@@ -27,6 +27,9 @@ abstract final class Routes {
   static String estimateDetail(String code) => '/app/estimates/$code';
   static const weighing = '/app/weighing';
   static const pricing = '/app/pricing';
+  static const collections = '/app/collections';
+  static String collectionNew(String estimateCode) => '/app/collections/new/$estimateCode';
+  static String collectionDetail(String id) => '/app/collections/$id';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

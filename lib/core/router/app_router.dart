@@ -20,6 +20,9 @@ import '../../features/profile/presentation/screens/documents_screen.dart';
 import '../../features/profile/presentation/screens/language_screen.dart';
 import '../../features/profile/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/collection/presentation/screens/collection_detail_screen.dart';
+import '../../features/collection/presentation/screens/collections_screen.dart';
+import '../../features/collection/presentation/screens/request_form_screen.dart';
 import '../../features/estimation/presentation/screens/estimates_screen.dart';
 import '../../features/estimation/presentation/screens/pricing_screen.dart';
 import '../../features/estimation/presentation/screens/weighing_screen.dart';
@@ -92,6 +95,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ],
               ),
               _tab('weighing', (_) => const WeighingScreen()),
+              _tab(
+                'collections',
+                (_) => const CollectionsScreen(),
+                routes: [
+                  _tab(
+                    'new/:code',
+                    (s) => RequestFormScreen(estimateCode: s.pathParameters['code']!),
+                  ),
+                  _tab(':id', (s) => CollectionDetailScreen(id: s.pathParameters['id']!)),
+                ],
+              ),
               _tab('pricing', (_) => const PricingScreen()),
               _tab(
                 'addresses',

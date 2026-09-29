@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
+import '../../../collection/presentation/widgets/presence_card.dart';
 import '../../../auth/domain/user_role.dart';
 import '../../../auth/domain/verification_status.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
@@ -46,6 +47,8 @@ class HomeScreen extends ConsumerWidget {
             status: profile.verificationStatus,
             rejectionReason: profile.rejectionReason,
           ),
+        if (role == UserRole.collector && profile.verificationStatus == VerificationStatus.approved)
+          const PresenceCard(),
         if (role == UserRole.collector && profile.verificationStatus == VerificationStatus.approved)
           EcoCard(
             gradient: EcoGradients.coral,

@@ -69,7 +69,7 @@ void main() {
     await auth.signInWithEmail('amine@eco.tn', 'recycle26');
     await settle(t);
     expect(find.text('Bonjour Amine 👋'), findsOneWidget);
-    expect(find.text('Adresses'), findsOneWidget);
+    expect(find.text('Collectes'), findsOneWidget);
   });
 
   testWidgets('language switch is applied instantly with RTL for Arabic', (t) async {

@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Règles EcoFlow – Epics 1 (profils), 2 (vision IA) et 3 (estimation & pesée).
+// Règles EcoFlow – Epics 1 (profils), 2 (vision IA), 3 (estimation & pesée), 4 (collectes).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -161,12 +161,104 @@ service cloud.firestore {
         && request.resource.data.status == 'estimated'
         && request.resource.data.lines is list;
       // Pesée : une seule fois, par un collecteur vérifié, sans toucher à l'estimation.
-      allow update: if isAdmin() || (isApprovedCollector()
+      // Le citoyen relie son estimation à sa demande de collecte (epic 4).
+      allow update: if (signedIn() && resource.data.citizenUid == request.auth.uid
+          && resource.data.status == 'estimated'
+          && changed().hasOnly(['requestId'])) || isAdmin() || (isApprovedCollector()
         && resource.data.status == 'estimated'
         && request.resource.data.status == 'weighed'
         && request.resource.data.collectorUid == request.auth.uid
         && changed().hasOnly(['status', 'actualKg', 'actualTotalKg', 'finalDt', 'collectorUid', 'weighedAt']));
       allow delete: if isAdmin();
+    }
+
+    // --- Epic 4 : demandes de collecte -------------------------------------
+    function ownsCollection() { return signedIn() && resource.data.citizenUid == request.auth.uid; }
+
+    match /collections/{id} {
+      allow get: if ownsCollection() || isApprovedCollector() || isAdmin();
+      allow list: if ownsCollection() || isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.citizenUid == request.auth.uid
+        && request.resource.data.status == 'searching'
+        && request.resource.data.instructions.size() <= 300
+        && get(/databases/$(database)/documents/estimates/$(request.resource.data.estimateCode)).data.citizenUid == request.auth.uid;
+      // Citoyen : lieu, créneau, instructions, recherche, annulation,
+      // confirmation de remise (après la pesée), note.
+      allow update: if isAdmin()
+        || (ownsCollection()
+            && !changed().hasAny(['citizenUid', 'estimateCode', 'collectorUid', 'createdAt'])
+            && request.resource.data.instructions.size() <= 300
+            && request.resource.data.status in ['searching', 'noCollector', 'proposed', 'cancelled', 'completed', resource.data.status]
+            && (request.resource.data.status != 'completed' || resource.data.status == 'handedOver'))
+        // Collecteur vérifié : remise validée par sa propre pesée (même batch).
+        || (isApprovedCollector()
+            && request.resource.data.status == 'handedOver'
+            && request.resource.data.collectorUid == request.auth.uid
+            && resource.data.status in ['searching', 'noCollector', 'proposed', 'accepted', 'onTheWay', 'arrived']
+            && getAfter(/databases/$(database)/documents/estimates/$(resource.data.estimateCode)).data.status == 'weighed'
+            && getAfter(/databases/$(database)/documents/estimates/$(resource.data.estimateCode)).data.collectorUid == request.auth.uid
+            && changed().hasOnly(['status', 'collectorUid', 'statusHistory', 'handedOverAt', 'updatedAt']));
+      allow delete: if isAdmin();
+
+      match /attachments/{name} {
+        allow read: if signedIn() && (resource.data.uid == request.auth.uid || isApprovedCollector() || isAdmin());
+        allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+          && request.resource.data.data.size() < 1000000;
+      }
+    }
+
+    // Compteurs de créneaux : +/- 1 uniquement.
+    match /slotCounters/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.count == 1;
+      allow update: if signedIn()
+        && (request.resource.data.count == resource.data.count + 1
+            || request.resource.data.count == resource.data.count - 1
+            || (resource.data.count == 0 && request.resource.data.count == 0));
+    }
+
+    // Disponibilité : visible seulement quand le collecteur est en ligne.
+    match /collectorPresence/{uid} {
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.online == true;
+      allow write: if isSelf(uid) && userDoc().role == 'collector';
+    }
+
+    // Note moyenne : mise à jour par une nouvelle note uniquement.
+    match /collectorStats/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn()
+        && request.resource.data.ratingCount == (resource == null ? 0 : resource.data.ratingCount) + 1;
+    }
+
+    // Une note par collecte, par le citoyen, une fois la collecte terminée.
+    match /ratings/{collectionId} {
+      allow read: if signedIn() && (resource == null || resource.data.citizenUid == request.auth.uid
+        || resource.data.collectorUid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.citizenUid == request.auth.uid
+        && request.resource.data.stars >= 1 && request.resource.data.stars <= 5
+        && request.resource.data.comment.size() <= 500
+        && get(/databases/$(database)/documents/collections/$(collectionId)).data.citizenUid == request.auth.uid
+        && get(/databases/$(database)/documents/collections/$(collectionId)).data.status == 'completed';
+      allow update, delete: if false;
+    }
+
+    // Signalements : ticket pour l'administration (traitement : epic 12).
+    match /tickets/{id} {
+      allow read: if signedIn() && (resource.data.reporterUid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.status == 'open'
+        && get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.citizenUid == request.auth.uid;
+      allow update: if isAdmin();
+
+      match /photos/{i} {
+        allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+        allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+          && request.resource.data.data.size() < 1000000;
+      }
     }
   }
 }

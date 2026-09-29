@@ -11,6 +11,7 @@ const _roleOnly = {
   Routes.catalog: UserRole.admin,
   Routes.model: UserRole.admin,
   Routes.estimates: UserRole.citizen,
+  Routes.collections: UserRole.citizen,
   Routes.weighing: UserRole.collector,
   Routes.pricing: UserRole.admin,
 };

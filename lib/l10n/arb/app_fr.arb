@@ -367,6 +367,92 @@
   "calibMae": "Erreur moy. (MAE)",
   "calibRatio": "Réel / estimé",
   "calibApplied": "Coefficients recalibrés appliqués ✅",
+  "navCollections": "Collectes",
+  "collectRequestCta": "Demander une collecte",
+  "reqTitle": "Demander une collecte",
+  "reqSubtitle": "Choisis où et quand : on trouve un collecteur proche.",
+  "reqLocation": "📍 Emplacement",
+  "reqUseGps": "Ma position GPS",
+  "reqSavedAddress": "Adresse enregistrée",
+  "reqMap": "Sur la carte",
+  "reqMapHint": "Déplace la carte pour placer l’épingle.",
+  "reqAddressLabel": "Adresse (rue, n°, étage)",
+  "reqZoneOut": "Hors zone desservie pour l’instant.",
+  "reqSlot": "🕒 Plage horaire",
+  "reqSlotFull": "Complet",
+  "reqInstructions": "📝 Instructions pour le collecteur",
+  "reqInstructionsHint": "Étage, code d’accès, point de repère…",
+  "reqAddPhoto": "Ajouter une photo",
+  "reqRemovePhoto": "Retirer la photo",
+  "reqRecurrence": "🔁 Récurrence",
+  "recNone": "Une seule fois",
+  "recWeekly": "Chaque semaine",
+  "recMonthly": "Chaque mois",
+  "reqConfirm": "Confirmer la demande",
+  "reqNoSavedAddress": "Aucune adresse enregistrée avec position GPS.",
+  "reqErrOutOfZone": "Cet emplacement n’est pas encore desservi.",
+  "reqErrNoLocation": "Choisis un emplacement (position indisponible).",
+  "reqErrNoSlot": "Choisis un créneau.",
+  "reqErrSlotFull": "Ce créneau est complet, choisis-en un autre.",
+  "reqErrTooLong": "300 caractères maximum.",
+  "reqErrEstimate": "Cette estimation a déjà une collecte ou a été pesée.",
+  "reqErrFailed": "Envoi impossible, réessaie.",
+  "reqErrTooLate": "Modification impossible moins d’1 h avant le créneau.",
+  "stSearching": "Recherche d’un collecteur…",
+  "stNoCollector": "Aucun collecteur disponible",
+  "stProposed": "Collecteur proposé",
+  "stAccepted": "Collecteur confirmé",
+  "stOnTheWay": "En route",
+  "stArrived": "Arrivé",
+  "stHandedOver": "Remise à confirmer",
+  "stCompleted": "Terminée",
+  "stCancelled": "Annulée",
+  "tlRequested": "Demandée",
+  "tlAssigned": "Assignée",
+  "tlHandedOver": "Remise",
+  "collectionsTitle": "Mes collectes",
+  "collectionsSubtitle": "Suis tes demandes et leur statut.",
+  "collectionsEmpty": "Aucune collecte. Scanne tes déchets puis demande une collecte depuis l’estimation.",
+  "filterAll": "Toutes",
+  "filterOpen": "En cours",
+  "filterDone": "Terminées",
+  "filterCancelled": "Annulées",
+  "filterLast30": "30 derniers jours",
+  "filterAnyDate": "Toutes dates",
+  "detHandoverTitle": "Code de remise",
+  "detHandoverHelp": "Montre ce QR ou ce code au collecteur : il le saisit à la pesée.",
+  "detConfirmHandover": "Confirmer la remise",
+  "detConfirmHandoverBody": "Le collecteur a pesé tes déchets : confirme que la remise a bien eu lieu.",
+  "detModifySlot": "Changer de créneau",
+  "detModifyInstructions": "Modifier les instructions",
+  "detCancel": "Annuler la demande",
+  "detCancelConfirm": "Annuler cette collecte ?",
+  "detCancelPenalty": "Un collecteur a déjà accepté : l’annulation sera comptabilisée.",
+  "detCancelNoPenalty": "Aucune pénalité : aucun collecteur n’a encore accepté.",
+  "detStopSeries": "Arrêter la récurrence",
+  "detAlternativesTitle": "Aucun collecteur disponible pour l’instant",
+  "detAlternativesSlots": "Créneaux libres proposés",
+  "detAlternativesDrop": "Points de dépôt (recycleurs partenaires)",
+  "detQueue": "Rester en file d’attente",
+  "detRetry": "Relancer la recherche",
+  "detRateTitle": "Note ton collecteur",
+  "detRateComment": "Commentaire (facultatif)",
+  "detRateSend": "Envoyer la note",
+  "detRated": "Merci pour ta note ⭐",
+  "detReport": "Signaler un problème",
+  "detModifiedNotice": "Modification enregistrée : le collecteur la verra dans sa mission.",
+  "reasonAbsent": "Collecteur absent",
+  "reasonWeight": "Poids contesté",
+  "reasonBehaviour": "Comportement",
+  "reasonOther": "Autre",
+  "reportDescription": "Décris le problème",
+  "reportSend": "Envoyer le signalement",
+  "reportSent": "Signalement envoyé ✅ L’équipe EcoFlow va l’examiner.",
+  "presenceTitle": "Disponible pour des collectes",
+  "presenceBody": "Ta position, arrondie à ~1 km, permet de te proposer des collectes proches.",
+  "presenceOn": "En ligne",
+  "presenceOff": "Hors ligne",
+  "presenceNeedsLocation": "Active la localisation pour passer en ligne.",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -597,6 +683,60 @@
     "placeholders": {
       "value": {
         "type": "String"
+      }
+    }
+  },
+  "reqZoneOk": "Zone desservie : {zone}",
+  "@reqZoneOk": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "detMatched": "Collecteur trouvé à moins de {km} km",
+  "@detMatched": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "detSearchedUpTo": "Recherche jusqu’à {km} km",
+  "@detSearchedUpTo": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "detRecurring": "Récurrente : {label}",
+  "@detRecurring": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reportAddPhoto": "Ajouter une photo ({count}/3)",
+  "@reportAddPhoto": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotLabel": "{day} · {start}h–{end}h",
+  "@slotLabel": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "start": {
+        "type": "int"
+      },
+      "end": {
+        "type": "int"
       }
     }
   }

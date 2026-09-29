@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/router/routes.dart';
 
 import '../../../../core/localization/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -269,6 +272,13 @@ class _CodeCard extends StatelessWidget {
           Text(
             l.estCodeHelp,
             style: AppTheme.weighted(14, 500, color: Colors.white.withValues(alpha: .92)),
+          ),
+          const SizedBox(height: 12),
+          EcoButton(
+            label: l.collectRequestCta,
+            leading: '🚚',
+            style: EcoButtonStyle.ghost,
+            onPressed: () => context.go(Routes.collectionNew(code)),
           ),
         ],
       ),

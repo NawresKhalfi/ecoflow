@@ -13,6 +13,7 @@ class EstimateRecord {
     required this.confidence,
     required this.priceScaleId,
     this.scanId,
+    this.requestId,
     this.container,
     this.status = EstimateStatus.estimated,
     this.actualKg = const {},
@@ -24,6 +25,9 @@ class EstimateRecord {
   final String code;
   final String citizenUid;
   final String? scanId;
+
+  /// Demande de collecte liée (epic 4).
+  final String? requestId;
   final List<EstimateLine> lines;
   final double confidence;
   final String priceScaleId;
