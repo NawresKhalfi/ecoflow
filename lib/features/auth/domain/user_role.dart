@@ -9,11 +9,9 @@ enum UserRole {
   bool get isSelfSelectable => this != UserRole.admin;
 
   /// Les professionnels doivent être vérifiés avant d'exercer (US-006/007).
-  bool get requiresVerification =>
-      this == UserRole.collector || this == UserRole.recycler;
+  bool get requiresVerification => this == UserRole.collector || this == UserRole.recycler;
 
-  static List<UserRole> get selectable =>
-      values.where((r) => r.isSelfSelectable).toList();
+  static List<UserRole> get selectable => values.where((r) => r.isSelfSelectable).toList();
 
   static UserRole? fromName(String? name) {
     for (final r in values) {

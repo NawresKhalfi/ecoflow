@@ -8,11 +8,11 @@ import '../../domain/user_role.dart';
 import 'auth_messages.dart';
 
 Gradient roleGradient(UserRole r) => switch (r) {
-      UserRole.citizen => EcoGradients.green,
-      UserRole.collector => EcoGradients.coral,
-      UserRole.recycler => EcoGradients.sky,
-      UserRole.admin => EcoGradients.violet,
-    };
+  UserRole.citizen => EcoGradients.green,
+  UserRole.collector => EcoGradients.coral,
+  UserRole.recycler => EcoGradients.sky,
+  UserRole.admin => EcoGradients.violet,
+};
 
 /// Sélecteur de rôle (US-003) : seuls les rôles auto-attribuables sont
 /// proposés, l'administrateur n'apparaît jamais.
@@ -25,15 +25,18 @@ class RolePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(l.chooseRole, style: Theme.of(context).textTheme.titleSmall),
-      const SizedBox(height: 10),
-      for (final role in UserRole.selectable) ...[
-        _RoleOption(role: role, selected: role == value, onTap: () => onChanged(role)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l.chooseRole, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 10),
+        for (final role in UserRole.selectable) ...[
+          _RoleOption(role: role, selected: role == value, onTap: () => onChanged(role)),
+          const SizedBox(height: 10),
+        ],
+        Text(l.roleAdminNotice, style: Theme.of(context).textTheme.bodySmall),
       ],
-      Text(l.roleAdminNotice, style: Theme.of(context).textTheme.bodySmall),
-    ]);
+    );
   }
 }
 
@@ -64,24 +67,36 @@ class _RoleOption extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: selected ? Colors.transparent : eco.line, width: 2),
           ),
-          child: Row(children: [
-            Text(roleEmoji(role), style: const TextStyle(fontSize: 28)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(roleLabel(l, role),
-                    style: AppTheme.weighted(16, 800, color: selected ? Colors.white : eco.ink)),
-                Text(roleDescription(l, role),
-                    style: AppTheme.weighted(13, 500,
-                        color: selected ? Colors.white.withValues(alpha: .9) : eco.muted)),
-              ]),
-            ),
-            AnimatedScale(
-              scale: selected ? 1 : 0,
-              duration: const Duration(milliseconds: 220),
-              child: const Icon(Icons.check_circle, color: Colors.white),
-            ),
-          ]),
+          child: Row(
+            children: [
+              Text(roleEmoji(role), style: const TextStyle(fontSize: 28)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      roleLabel(l, role),
+                      style: AppTheme.weighted(16, 800, color: selected ? Colors.white : eco.ink),
+                    ),
+                    Text(
+                      roleDescription(l, role),
+                      style: AppTheme.weighted(
+                        13,
+                        500,
+                        color: selected ? Colors.white.withValues(alpha: .9) : eco.muted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              AnimatedScale(
+                scale: selected ? 1 : 0,
+                duration: const Duration(milliseconds: 220),
+                child: const Icon(Icons.check_circle, color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );

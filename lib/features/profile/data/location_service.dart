@@ -14,12 +14,12 @@ class GeolocatorLocationService implements LocationService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       return null;
     }
     final p = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
     return (latitude: p.latitude, longitude: p.longitude);
   }
 }

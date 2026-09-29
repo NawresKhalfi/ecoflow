@@ -8,16 +8,23 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const emailUser = AuthUser(uid: 'u', email: 'a@b.tn', providerIds: ['password']);
-  const verified = AuthUser(uid: 'u', email: 'a@b.tn', emailVerified: true, providerIds: ['password']);
+  const verified = AuthUser(
+    uid: 'u',
+    email: 'a@b.tn',
+    emailVerified: true,
+    providerIds: ['password'],
+  );
   const phoneUser = AuthUser(uid: 'u', phoneNumber: '+21622123456', providerIds: ['phone']);
   const profile = AppUser(uid: 'u', displayName: 'Amine Ben Ali', role: UserRole.citizen);
 
-  SessionState s(AuthUser? u, {bool profileLoaded = true, AppUser? p}) => computeSession(
-      authLoaded: true, authUser: u, profileLoaded: profileLoaded, profile: p);
+  SessionState s(AuthUser? u, {bool profileLoaded = true, AppUser? p}) =>
+      computeSession(authLoaded: true, authUser: u, profileLoaded: profileLoaded, profile: p);
 
   test('status transitions', () {
-    expect(computeSession(authLoaded: false, authUser: null, profileLoaded: false, profile: null).status,
-        SessionStatus.loading);
+    expect(
+      computeSession(authLoaded: false, authUser: null, profileLoaded: false, profile: null).status,
+      SessionStatus.loading,
+    );
     expect(s(null).status, SessionStatus.signedOut);
     expect(s(emailUser).status, SessionStatus.needsEmailVerification);
     expect(s(verified, profileLoaded: false).status, SessionStatus.loading);
@@ -52,5 +59,9 @@ void main() {
     expect(mapFirebaseAuthCode('session-expired'), AuthFailureCode.codeExpired);
     expect(mapFirebaseAuthCode('operation-not-allowed'), AuthFailureCode.providerUnavailable);
     expect(mapFirebaseAuthCode('whatever'), AuthFailureCode.unknown);
+    expect(
+      mapFirebaseAuthCode('internal-error', '{"error":{"message":"CONFIGURATION_NOT_FOUND"}}'),
+      AuthFailureCode.providerUnavailable,
+    );
   });
 }

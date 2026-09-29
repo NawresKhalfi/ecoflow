@@ -17,6 +17,7 @@ class LanguageScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final current = ref.watch(languageControllerProvider);
+    ref.watch(settingsControllerProvider); // garde le controller actif pendant l'écran
     return AuthScaffold(
       title: l.languageTitle,
       subtitle: l.languageSubtitle,

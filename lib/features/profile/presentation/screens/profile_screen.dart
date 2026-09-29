@@ -29,6 +29,7 @@ class ProfileScreen extends ConsumerWidget {
     final profile = ref.watch(sessionProvider).profile;
     if (profile == null) return const SizedBox.shrink();
     final language = ref.watch(languageControllerProvider);
+    ref.watch(settingsControllerProvider); // garde le controller actif pendant l'écran
     final since = profile.createdAt == null
         ? null
         : DateFormat.yMMMM(language.code).format(profile.createdAt!);
@@ -41,87 +42,120 @@ class ProfileScreen extends ConsumerWidget {
       ),
       children: [
         EcoCard(
-          child: Row(children: [
-            EcoAvatar(text: profile.initials, gradient: roleGradient(profile.role), size: 64),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(profile.displayName, style: Theme.of(context).textTheme.titleLarge),
-                Text(profile.email ?? profile.phoneNumber ?? '',
-                    style: Theme.of(context).textTheme.bodySmall),
-                const SizedBox(height: 8),
-                Wrap(spacing: 8, runSpacing: 6, children: [
-                  EcoChip(label: '${roleEmoji(profile.role)} ${roleLabel(l, profile.role)}'),
-                  if (profile.role.requiresVerification) StatusChip(profile.verificationStatus),
-                  if (since != null) EcoChip(label: l.memberSince(since), tone: ChipTone.sky),
-                ]),
-              ]),
-            ),
-            IconButton(
-              tooltip: l.editName,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () => _editName(context, ref, profile.displayName),
-            ),
-          ]),
+          child: Row(
+            children: [
+              EcoAvatar(text: profile.initials, gradient: roleGradient(profile.role), size: 64),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(profile.displayName, style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      profile.email ?? profile.phoneNumber ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        EcoChip(label: '${roleEmoji(profile.role)} ${roleLabel(l, profile.role)}'),
+                        if (profile.role.requiresVerification)
+                          StatusChip(profile.verificationStatus),
+                        if (since != null) EcoChip(label: l.memberSince(since), tone: ChipTone.sky),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: l.editName,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => _editName(context, ref, profile.displayName),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 0),
         SectionTitle(l.sectionAccount),
         EcoCard(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-          child: Column(children: [
-            if (profile.role == UserRole.citizen)
-              MenuTile(emoji: '📍', label: l.addressesMenu, onTap: () => context.go(Routes.addresses)),
-            if (profile.role == UserRole.collector)
-              MenuTile(emoji: '🪪', label: l.documentsMenu, onTap: () => context.go(Routes.documents)),
-            if (profile.role == UserRole.recycler)
-              MenuTile(emoji: '🏭', label: l.companyMenu, onTap: () => context.go(Routes.company)),
-            MenuTile(
-              emoji: '🚪',
-              label: l.signOut,
-              showDivider: false,
-              onTap: () => ref.read(settingsControllerProvider.notifier).signOut(),
-            ),
-          ]),
+          child: Column(
+            children: [
+              if (profile.role == UserRole.citizen)
+                MenuTile(
+                  emoji: '📍',
+                  label: l.addressesMenu,
+                  onTap: () => context.go(Routes.addresses),
+                ),
+              if (profile.role == UserRole.collector)
+                MenuTile(
+                  emoji: '🪪',
+                  label: l.documentsMenu,
+                  onTap: () => context.go(Routes.documents),
+                ),
+              if (profile.role == UserRole.recycler)
+                MenuTile(
+                  emoji: '🏭',
+                  label: l.companyMenu,
+                  onTap: () => context.go(Routes.company),
+                ),
+              MenuTile(
+                emoji: '🚪',
+                label: l.signOut,
+                showDivider: false,
+                onTap: () => ref.read(settingsControllerProvider.notifier).signOut(),
+              ),
+            ],
+          ),
         ),
         SectionTitle(l.sectionPreferences),
         EcoCard(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-          child: Column(children: [
-            MenuTile(
-              emoji: '🌐',
-              label: l.languageMenu,
-              gradient: EcoGradients.sky,
-              trailing: EcoChip(label: '${language.flag} ${language.nativeName}', tone: ChipTone.sky),
-              onTap: () => context.push(Routes.language),
-            ),
-            MenuTile(
-              emoji: '🔔',
-              label: l.notificationsMenu,
-              gradient: EcoGradients.sun,
-              showDivider: false,
-              onTap: () => context.go(Routes.notifications),
-            ),
-          ]),
+          child: Column(
+            children: [
+              MenuTile(
+                emoji: '🌐',
+                label: l.languageMenu,
+                gradient: EcoGradients.sky,
+                trailing: EcoChip(
+                  label: '${language.flag} ${language.nativeName}',
+                  tone: ChipTone.sky,
+                ),
+                onTap: () => context.push(Routes.language),
+              ),
+              MenuTile(
+                emoji: '🔔',
+                label: l.notificationsMenu,
+                gradient: EcoGradients.sun,
+                showDivider: false,
+                onTap: () => context.go(Routes.notifications),
+              ),
+            ],
+          ),
         ),
         SectionTitle(l.sectionDanger),
         EcoCard(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-          child: Column(children: [
-            MenuTile(
-              emoji: '🛡️',
-              label: l.privacyMenu,
-              gradient: EcoGradients.violet,
-              onTap: () => context.push(Routes.privacy),
-            ),
-            MenuTile(
-              emoji: '🗑️',
-              label: l.deleteAccountMenu,
-              gradient: EcoGradients.coral,
-              danger: true,
-              showDivider: false,
-              onTap: () => context.go(Routes.deleteAccount),
-            ),
-          ]),
+          child: Column(
+            children: [
+              MenuTile(
+                emoji: '🛡️',
+                label: l.privacyMenu,
+                gradient: EcoGradients.violet,
+                onTap: () => context.push(Routes.privacy),
+              ),
+              MenuTile(
+                emoji: '🗑️',
+                label: l.deleteAccountMenu,
+                gradient: EcoGradients.coral,
+                danger: true,
+                showDivider: false,
+                onTap: () => context.go(Routes.deleteAccount),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -155,8 +189,9 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
     if (saved == true) {
-      final ok =
-          await ref.read(settingsControllerProvider.notifier).updateDisplayName(controller.text);
+      final ok = await ref
+          .read(settingsControllerProvider.notifier)
+          .updateDisplayName(controller.text);
       if (ok && context.mounted) showEcoToast(context, l.nameSaved);
     }
     controller.dispose();

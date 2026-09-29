@@ -35,11 +35,11 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   AuthUser _emailUser(String email) => AuthUser(
-        uid: 'uid-$email',
-        email: email,
-        emailVerified: verifiedEmails.contains(email),
-        providerIds: const ['password'],
-      );
+    uid: 'uid-$email',
+    email: email,
+    emailVerified: verifiedEmails.contains(email),
+    providerIds: const ['password'],
+  );
 
   @override
   Stream<AuthUser?> authStateChanges() async* {
@@ -81,7 +81,14 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> signInWithGoogle() async {
     _maybeFail();
-    emit(const AuthUser(uid: 'uid-google', email: 'g@x.tn', emailVerified: true, providerIds: ['google.com']));
+    emit(
+      const AuthUser(
+        uid: 'uid-google',
+        email: 'g@x.tn',
+        emailVerified: true,
+        providerIds: ['google.com'],
+      ),
+    );
   }
 
   @override

@@ -16,14 +16,14 @@ import '../../domain/company_profile.dart';
 import '../widgets/verification_widgets.dart';
 
 String materialLabel(AppLocalizations l, RecyclableMaterial m) => switch (m) {
-      RecyclableMaterial.pet => l.matPet,
-      RecyclableMaterial.hdpe => l.matHdpe,
-      RecyclableMaterial.pp => l.matPp,
-      RecyclableMaterial.cardboard => l.matCardboard,
-      RecyclableMaterial.aluminium => l.matAluminium,
-      RecyclableMaterial.glass => l.matGlass,
-      RecyclableMaterial.other => l.matOther,
-    };
+  RecyclableMaterial.pet => l.matPet,
+  RecyclableMaterial.hdpe => l.matHdpe,
+  RecyclableMaterial.pp => l.matPp,
+  RecyclableMaterial.cardboard => l.matCardboard,
+  RecyclableMaterial.aluminium => l.matAluminium,
+  RecyclableMaterial.glass => l.matGlass,
+  RecyclableMaterial.other => l.matOther,
+};
 
 /// Profil entreprise du recycleur soumis à validation (US-007).
 class CompanyScreen extends ConsumerStatefulWidget {
@@ -65,14 +65,18 @@ class _CompanyScreenState extends ConsumerState<CompanyScreen> {
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
-    final ok = await ref.read(companyControllerProvider.notifier).submit(CompanyProfile(
-          legalName: _name.text,
-          taxId: _taxId.text,
-          materials: {..._materials},
-          monthlyCapacityTons: double.parse(_capacity.text.trim().replaceAll(',', '.')),
-          city: _city.text,
-          contactPhone: normalizePhone(_phone.text) ?? _phone.text.trim(),
-        ));
+    final ok = await ref
+        .read(companyControllerProvider.notifier)
+        .submit(
+          CompanyProfile(
+            legalName: _name.text,
+            taxId: _taxId.text,
+            materials: {..._materials},
+            monthlyCapacityTons: double.parse(_capacity.text.trim().replaceAll(',', '.')),
+            city: _city.text,
+            contactPhone: normalizePhone(_phone.text) ?? _phone.text.trim(),
+          ),
+        );
     if (ok && mounted) showEcoToast(context, context.l10n.companySubmitted);
   }
 
@@ -96,65 +100,99 @@ class _CompanyScreenState extends ConsumerState<CompanyScreen> {
       ),
       children: [
         if (profile != null)
-          VerificationCard(role: profile.role, status: status, rejectionReason: profile.rejectionReason),
+          VerificationCard(
+            role: profile.role,
+            status: status,
+            rejectionReason: profile.rejectionReason,
+          ),
         if (!editable) EcoCard(child: Text(l.companyLocked)),
         EcoCard(
           child: Form(
             key: _form,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              EcoTextField(label: l.companyLegalName, emoji: '🏢', controller: _name, validator: req, enabled: editable),
-              const SizedBox(height: 12),
-              EcoTextField(
-                label: l.companyTaxId,
-                hint: l.companyTaxIdHint,
-                emoji: '🧾',
-                controller: _taxId,
-                enabled: editable,
-                validator: fieldValidator(context, validateTaxId),
-              ),
-              const SizedBox(height: 16),
-              Text(l.companyMaterials, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 8),
-              Wrap(spacing: 8, runSpacing: 8, children: [
-                for (final m in RecyclableMaterial.values)
-                  EcoChip(
-                    label: materialLabel(l, m),
-                    selected: _materials.contains(m),
-                    onTap: editable
-                        ? () => setState(() => _materials.contains(m) ? _materials.remove(m) : _materials.add(m))
-                        : null,
-                  ),
-              ]),
-              const SizedBox(height: 16),
-              EcoTextField(
-                label: l.companyCapacity,
-                emoji: '⚖️',
-                controller: _capacity,
-                enabled: editable,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: fieldValidator(context, validatePositiveNumber),
-              ),
-              const SizedBox(height: 12),
-              EcoTextField(label: l.companyCity, emoji: '📍', controller: _city, validator: req, enabled: editable),
-              const SizedBox(height: 12),
-              EcoTextField(
-                label: l.companyPhone,
-                emoji: '📞',
-                controller: _phone,
-                enabled: editable,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                validator: fieldValidator(context, validatePhone),
-              ),
-              if (error != null) ...[
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                EcoTextField(
+                  label: l.companyLegalName,
+                  emoji: '🏢',
+                  controller: _name,
+                  validator: req,
+                  enabled: editable,
+                ),
                 const SizedBox(height: 12),
-                ErrorBanner(error is NoMaterialSelected ? l.companyNoMaterial : failureText(context, error)),
-              ],
-              if (editable) ...[
+                EcoTextField(
+                  label: l.companyTaxId,
+                  hint: l.companyTaxIdHint,
+                  emoji: '🧾',
+                  controller: _taxId,
+                  enabled: editable,
+                  validator: fieldValidator(context, validateTaxId),
+                ),
                 const SizedBox(height: 16),
-                EcoButton(label: l.companySubmit, leading: '📨', loading: state.isLoading, onPressed: _submit),
+                Text(l.companyMaterials, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final m in RecyclableMaterial.values)
+                      EcoChip(
+                        label: materialLabel(l, m),
+                        selected: _materials.contains(m),
+                        onTap: editable
+                            ? () => setState(
+                                () => _materials.contains(m)
+                                    ? _materials.remove(m)
+                                    : _materials.add(m),
+                              )
+                            : null,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                EcoTextField(
+                  label: l.companyCapacity,
+                  emoji: '⚖️',
+                  controller: _capacity,
+                  enabled: editable,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: fieldValidator(context, validatePositiveNumber),
+                ),
+                const SizedBox(height: 12),
+                EcoTextField(
+                  label: l.companyCity,
+                  emoji: '📍',
+                  controller: _city,
+                  validator: req,
+                  enabled: editable,
+                ),
+                const SizedBox(height: 12),
+                EcoTextField(
+                  label: l.companyPhone,
+                  emoji: '📞',
+                  controller: _phone,
+                  enabled: editable,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.done,
+                  validator: fieldValidator(context, validatePhone),
+                ),
+                if (error != null) ...[
+                  const SizedBox(height: 12),
+                  ErrorBanner(
+                    error is NoMaterialSelected ? l.companyNoMaterial : failureText(context, error),
+                  ),
+                ],
+                if (editable) ...[
+                  const SizedBox(height: 16),
+                  EcoButton(
+                    label: l.companySubmit,
+                    leading: '📨',
+                    loading: state.isLoading,
+                    onPressed: _submit,
+                  ),
+                ],
               ],
-            ]),
+            ),
           ),
         ),
       ],

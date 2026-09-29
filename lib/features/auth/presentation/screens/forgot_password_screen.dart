@@ -72,8 +72,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 loading: state.isLoading,
                 onPressed: () async {
                   if (!_form.currentState!.validate()) return;
-                  final ok =
-                      await ref.read(passwordResetControllerProvider.notifier).sendReset(_email.text);
+                  final ok = await ref
+                      .read(passwordResetControllerProvider.notifier)
+                      .sendReset(_email.text);
                   if (ok && mounted) setState(() => _sent = true);
                 },
               ),

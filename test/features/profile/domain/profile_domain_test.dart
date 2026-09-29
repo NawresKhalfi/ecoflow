@@ -22,8 +22,12 @@ void main() {
   });
 
   test('dossier is complete only with the 4 documents', () {
-    CollectorDocument d(CollectorDocumentType t) =>
-        CollectorDocument(type: t, fileName: 'f', sizeBytes: 1, status: VerificationStatus.notSubmitted);
+    CollectorDocument d(CollectorDocumentType t) => CollectorDocument(
+      type: t,
+      fileName: 'f',
+      sizeBytes: 1,
+      status: VerificationStatus.notSubmitted,
+    );
     expect(isDossierComplete(CollectorDocumentType.values.take(3).map(d)), isFalse);
     expect(isDossierComplete(CollectorDocumentType.values.map(d)), isTrue);
   });

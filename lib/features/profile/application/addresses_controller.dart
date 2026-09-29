@@ -21,5 +21,4 @@ class AddressesController extends ActionController {
 }
 
 final addressesControllerProvider =
-    NotifierProvider.autoDispose<AddressesController, AsyncValue<void>>(
-        AddressesController.new);
+    NotifierProvider.autoDispose<AddressesController, AsyncValue<void>>(AddressesController.new);

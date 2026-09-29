@@ -11,4 +11,5 @@ class PasswordResetController extends ActionController {
 
 final passwordResetControllerProvider =
     NotifierProvider.autoDispose<PasswordResetController, AsyncValue<void>>(
-        PasswordResetController.new);
+      PasswordResetController.new,
+    );

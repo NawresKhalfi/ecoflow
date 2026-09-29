@@ -26,25 +26,25 @@ class CompanyProfile {
   final String? rejectionReason;
 
   Map<String, dynamic> toMap() => {
-        'legalName': legalName.trim(),
-        'taxId': taxId.toUpperCase().replaceAll(' ', ''),
-        'materials': materials.map((m) => m.name).toList()..sort(),
-        'monthlyCapacityTons': monthlyCapacityTons,
-        'city': city.trim(),
-        'contactPhone': contactPhone,
-      };
+    'legalName': legalName.trim(),
+    'taxId': taxId.toUpperCase().replaceAll(' ', ''),
+    'materials': materials.map((m) => m.name).toList()..sort(),
+    'monthlyCapacityTons': monthlyCapacityTons,
+    'city': city.trim(),
+    'contactPhone': contactPhone,
+  };
 
   static CompanyProfile fromMap(Map<String, dynamic> m) => CompanyProfile(
-        legalName: m['legalName'] as String? ?? '',
-        taxId: m['taxId'] as String? ?? '',
-        materials: {
-          for (final n in (m['materials'] as List? ?? const []))
-            ...RecyclableMaterial.values.where((v) => v.name == n),
-        },
-        monthlyCapacityTons: (m['monthlyCapacityTons'] as num?)?.toDouble() ?? 0,
-        city: m['city'] as String? ?? '',
-        contactPhone: m['contactPhone'] as String? ?? '',
-        status: VerificationStatus.fromName(m['status'] as String?),
-        rejectionReason: m['rejectionReason'] as String?,
-      );
+    legalName: m['legalName'] as String? ?? '',
+    taxId: m['taxId'] as String? ?? '',
+    materials: {
+      for (final n in (m['materials'] as List? ?? const []))
+        ...RecyclableMaterial.values.where((v) => v.name == n),
+    },
+    monthlyCapacityTons: (m['monthlyCapacityTons'] as num?)?.toDouble() ?? 0,
+    city: m['city'] as String? ?? '',
+    contactPhone: m['contactPhone'] as String? ?? '',
+    status: VerificationStatus.fromName(m['status'] as String?),
+    rejectionReason: m['rejectionReason'] as String?,
+  );
 }

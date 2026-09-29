@@ -11,8 +11,13 @@ abstract final class AppTheme {
   static ThemeData dark() => _build(EcoPalette.dark, Brightness.dark);
 
   /// Style avec graisse appliquée aussi à l'axe `wght` de la police variable.
-  static TextStyle weighted(double size, int weight,
-      {Color? color, double? height, double letterSpacing = 0}) {
+  static TextStyle weighted(
+    double size,
+    int weight, {
+    Color? color,
+    double? height,
+    double letterSpacing = 0,
+  }) {
     return TextStyle(
       fontFamily: fontFamily,
       fontSize: size,
@@ -72,9 +77,7 @@ abstract final class AppTheme {
         focusedBorder: fieldBorder.copyWith(
           borderSide: const BorderSide(color: EcoColors.primaryBright, width: 2),
         ),
-        errorBorder: fieldBorder.copyWith(
-          borderSide: BorderSide(color: scheme.error, width: 2),
-        ),
+        errorBorder: fieldBorder.copyWith(borderSide: BorderSide(color: scheme.error, width: 2)),
         focusedErrorBorder: fieldBorder.copyWith(
           borderSide: BorderSide(color: scheme.error, width: 2),
         ),
@@ -105,11 +108,13 @@ abstract final class AppTheme {
         backgroundColor: p.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }

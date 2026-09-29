@@ -31,7 +31,10 @@ void main() {
     test('first address becomes the default, only one default at a time', () async {
       final repo = FirestoreAddressRepository(db);
       await repo.save('u', home);
-      await repo.save('u', home.copyWith(label: 'Bureau', isDefault: true, latitude: 35.8, longitude: 10.6));
+      await repo.save(
+        'u',
+        home.copyWith(label: 'Bureau', isDefault: true, latitude: 35.8, longitude: 10.6),
+      );
       var list = await repo.watch('u').first;
       expect(list, hasLength(2));
       expect(list.first.label, 'Bureau');
@@ -72,7 +75,12 @@ void main() {
     test('rejects files over the size limit', () {
       final repo = FirestoreDocumentsRepository(db);
       expect(
-        () => repo.upload('u', CollectorDocumentType.vehiclePhoto, 'big.jpg', Uint8List(maxDocumentBytes + 1)),
+        () => repo.upload(
+          'u',
+          CollectorDocumentType.vehiclePhoto,
+          'big.jpg',
+          Uint8List(maxDocumentBytes + 1),
+        ),
         throwsArgumentError,
       );
     });
@@ -100,10 +108,12 @@ void main() {
   });
 
   test('account deletion anonymizes personal data and schedules purge', () async {
-    await FirestoreAddressRepository(db)
-        .save('u', const SavedAddress(id: '', label: 'M', street: 'R', city: 'S'));
-    await FirestoreDocumentsRepository(db)
-        .upload('u', CollectorDocumentType.nationalId, 'id.jpg', Uint8List(3));
+    await FirestoreAddressRepository(
+      db,
+    ).save('u', const SavedAddress(id: '', label: 'M', street: 'R', city: 'S'));
+    await FirestoreDocumentsRepository(
+      db,
+    ).upload('u', CollectorDocumentType.nationalId, 'id.jpg', Uint8List(3));
     final now = DateTime(2026, 9, 29);
     await FirestoreAccountDeletionRepository(db).anonymize('u', now);
 

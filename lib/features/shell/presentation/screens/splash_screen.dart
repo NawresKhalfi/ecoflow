@@ -13,16 +13,19 @@ class SplashScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(gradient: EcoGradients.green),
         alignment: Alignment.center,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('♻️', style: TextStyle(fontSize: 64)),
-          const SizedBox(height: 12),
-          Text('EcoFlow', style: AppTheme.weighted(34, 800, color: Colors.white)),
-          const SizedBox(height: 22),
-          const SizedBox.square(
-            dimension: 26,
-            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-          ),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('♻️', style: TextStyle(fontSize: 64)),
+            const SizedBox(height: 12),
+            Text('EcoFlow', style: AppTheme.weighted(34, 800, color: Colors.white)),
+            const SizedBox(height: 22),
+            const SizedBox.square(
+              dimension: 26,
+              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+            ),
+          ],
+        ),
       ),
     );
   }

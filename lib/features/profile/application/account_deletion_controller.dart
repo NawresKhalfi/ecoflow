@@ -11,24 +11,24 @@ class AccountDeletionController extends ActionController {
   static const confirmationWord = 'SUPPRIMER';
 
   /// Étape 1 : l'utilisateur doit saisir le mot de confirmation.
-  bool isConfirmationValid(String typed) =>
-      typed.trim().toUpperCase() == confirmationWord;
+  bool isConfirmationValid(String typed) => typed.trim().toUpperCase() == confirmationWord;
 
   /// Étape 2. [password] est requis pour les comptes e-mail.
   Future<bool> deleteAccount({String? password}) => run(() async {
-        final auth = ref.read(authRepositoryProvider);
-        final user = auth.currentUser;
-        if (user == null) return;
-        // Avant toute anonymisation, pour ne pas laisser un compte à moitié supprimé.
-        await auth.ensureRecentLogin(password: password);
-        await ref
-            .read(accountDeletionRepositoryProvider)
-            .anonymize(user.uid, ref.read(clockProvider)());
-        await auth.deleteCurrentUser();
-        await auth.signOut();
-      });
+    final auth = ref.read(authRepositoryProvider);
+    final user = auth.currentUser;
+    if (user == null) return;
+    // Avant toute anonymisation, pour ne pas laisser un compte à moitié supprimé.
+    await auth.ensureRecentLogin(password: password);
+    await ref
+        .read(accountDeletionRepositoryProvider)
+        .anonymize(user.uid, ref.read(clockProvider)());
+    await auth.deleteCurrentUser();
+    await auth.signOut();
+  });
 }
 
 final accountDeletionControllerProvider =
     NotifierProvider.autoDispose<AccountDeletionController, AsyncValue<void>>(
-        AccountDeletionController.new);
+      AccountDeletionController.new,
+    );

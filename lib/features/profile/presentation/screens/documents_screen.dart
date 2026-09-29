@@ -15,18 +15,18 @@ import '../../domain/collector_document.dart';
 import '../widgets/verification_widgets.dart';
 
 String documentLabel(AppLocalizations l, CollectorDocumentType t) => switch (t) {
-      CollectorDocumentType.nationalId => l.docNationalId,
-      CollectorDocumentType.drivingLicense => l.docDrivingLicense,
-      CollectorDocumentType.vehicleRegistration => l.docVehicleRegistration,
-      CollectorDocumentType.vehiclePhoto => l.docVehiclePhoto,
-    };
+  CollectorDocumentType.nationalId => l.docNationalId,
+  CollectorDocumentType.drivingLicense => l.docDrivingLicense,
+  CollectorDocumentType.vehicleRegistration => l.docVehicleRegistration,
+  CollectorDocumentType.vehiclePhoto => l.docVehiclePhoto,
+};
 
 String documentEmoji(CollectorDocumentType t) => switch (t) {
-      CollectorDocumentType.nationalId => '🪪',
-      CollectorDocumentType.drivingLicense => '🚗',
-      CollectorDocumentType.vehicleRegistration => '📄',
-      CollectorDocumentType.vehiclePhoto => '🚚',
-    };
+  CollectorDocumentType.nationalId => '🪪',
+  CollectorDocumentType.drivingLicense => '🚗',
+  CollectorDocumentType.vehicleRegistration => '📄',
+  CollectorDocumentType.vehiclePhoto => '🚚',
+};
 
 /// Dossier de vérification du collecteur (US-006).
 class DocumentsScreen extends ConsumerWidget {
@@ -52,32 +52,45 @@ class DocumentsScreen extends ConsumerWidget {
       children: [
         if (profile != null)
           VerificationCard(
-              role: profile.role, status: status, rejectionReason: profile.rejectionReason),
+            role: profile.role,
+            status: status,
+            rejectionReason: profile.rejectionReason,
+          ),
         EcoCard(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Row(children: [
-              Expanded(child: Text(l.docProgress(docs.length), style: Theme.of(context).textTheme.titleMedium)),
-              StatusChip(status),
-            ]),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(9),
-              child: LinearProgressIndicator(
-                value: docs.length / CollectorDocumentType.values.length,
-                minHeight: 12,
-                backgroundColor: context.eco.line,
-                color: EcoColors.coral,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l.docProgress(docs.length),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  StatusChip(status),
+                ],
               ),
-            ),
-            const SizedBox(height: 6),
-            for (final (i, type) in CollectorDocumentType.values.indexed)
-              _DocumentRow(
-                type: type,
-                doc: docs.where((d) => d.type == type).firstOrNull,
-                editable: editable && !state.isLoading,
-                last: i == CollectorDocumentType.values.length - 1,
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: LinearProgressIndicator(
+                  value: docs.length / CollectorDocumentType.values.length,
+                  minHeight: 12,
+                  backgroundColor: context.eco.line,
+                  color: EcoColors.coral,
+                ),
               ),
-          ]),
+              const SizedBox(height: 6),
+              for (final (i, type) in CollectorDocumentType.values.indexed)
+                _DocumentRow(
+                  type: type,
+                  doc: docs.where((d) => d.type == type).firstOrNull,
+                  editable: editable && !state.isLoading,
+                  last: i == CollectorDocumentType.values.length - 1,
+                ),
+            ],
+          ),
         ),
         if (error != null)
           ErrorBanner(error is DocumentTooLarge ? l.docTooLarge : failureText(context, error)),
@@ -99,7 +112,12 @@ class DocumentsScreen extends ConsumerWidget {
 }
 
 class _DocumentRow extends ConsumerWidget {
-  const _DocumentRow({required this.type, required this.doc, required this.editable, required this.last});
+  const _DocumentRow({
+    required this.type,
+    required this.doc,
+    required this.editable,
+    required this.last,
+  });
 
   final CollectorDocumentType type;
   final CollectorDocument? doc;
@@ -114,19 +132,24 @@ class _DocumentRow extends ConsumerWidget {
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            EcoButton(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              EcoButton(
                 label: l.docTakePhoto,
                 leading: '📷',
                 style: EcoButtonStyle.green,
-                onPressed: () => Navigator.pop(ctx, PickSource.camera)),
-            const SizedBox(height: 10),
-            EcoButton(
+                onPressed: () => Navigator.pop(ctx, PickSource.camera),
+              ),
+              const SizedBox(height: 10),
+              EcoButton(
                 label: l.docFromGallery,
                 leading: '🖼️',
                 style: EcoButtonStyle.ghost,
-                onPressed: () => Navigator.pop(ctx, PickSource.gallery)),
-          ]),
+                onPressed: () => Navigator.pop(ctx, PickSource.gallery),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -142,7 +165,10 @@ class _DocumentRow extends ConsumerWidget {
     final l = context.l10n;
     final d = doc;
     return EcoListTile(
-      leading: EcoAvatar(text: documentEmoji(type), gradient: d != null ? EcoGradients.green : null),
+      leading: EcoAvatar(
+        text: documentEmoji(type),
+        gradient: d != null ? EcoGradients.green : null,
+      ),
       title: documentLabel(l, type),
       subtitle: d == null
           ? null

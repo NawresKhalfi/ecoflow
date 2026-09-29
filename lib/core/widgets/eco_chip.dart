@@ -40,19 +40,29 @@ class EcoChip extends StatelessWidget {
         boxShadow: selected
             ? [
                 BoxShadow(
-                    color: EcoColors.primary.withValues(alpha: .5),
-                    blurRadius: 16,
-                    spreadRadius: -6,
-                    offset: const Offset(0, 8)),
+                  color: EcoColors.primary.withValues(alpha: .5),
+                  blurRadius: 16,
+                  spreadRadius: -6,
+                  offset: const Offset(0, 8),
+                ),
               ]
             : null,
       ),
-      child: Text(label, style: AppTheme.weighted(13, 600, color: selected ? Colors.white : fg)),
+      child: Text(
+        label,
+        overflow: TextOverflow.ellipsis,
+        style: AppTheme.weighted(13, 600, color: selected ? Colors.white : fg),
+      ),
     );
     if (onTap == null) return chip;
     return Semantics(
       selected: selected,
-      child: Pressable(lift: 0, onTap: onTap, semanticLabel: label, child: ExcludeSemantics(child: chip)),
+      child: Pressable(
+        lift: 0,
+        onTap: onTap,
+        semanticLabel: label,
+        child: ExcludeSemantics(child: chip),
+      ),
     );
   }
 }

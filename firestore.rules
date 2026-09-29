@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Règles EcoFlow – Epic 1 (authentification & profils).
+// Règles EcoFlow – Epics 1 (profils), 2 (vision IA) et 3 (estimation & pesée).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -90,6 +90,83 @@ service cloud.firestore {
     match /deletionRequests/{uid} {
       allow create: if isSelf(uid);
       allow read, update, delete: if isAdmin();
+    }
+
+    // --- Epic 2 : scans (privés) ---------------------------------------
+    function ownsScan() { return signedIn() && resource.data.uid == request.auth.uid; }
+
+    match /scans/{scanId} {
+      allow read: if ownsScan() || isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.photoCount is int
+        && request.resource.data.photoCount <= 5;
+      // L'utilisateur corrige son résultat, sans toucher à la proposition de l'IA.
+      allow update: if ownsScan()
+        && !changed().hasAny(['uid', 'createdAt', 'expiresAt', 'originalDetections', 'modelVersionId']);
+      allow delete: if ownsScan() || isAdmin();
+
+      match /photos/{index} {
+        allow read: if ownsScan() || isAdmin();
+        allow create: if signedIn()
+          && request.resource.data.uid == request.auth.uid
+          && index in ['0', '1', '2', '3', '4']
+          && request.resource.data.data is string
+          && request.resource.data.data.size() < 1000000;
+        allow delete: if ownsScan() || isAdmin();
+      }
+    }
+
+    // Catalogue, versions du modèle et configuration : lecture pour tous
+    // les utilisateurs connectés, écriture réservée aux administrateurs.
+    match /wasteCategories/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /modelVersions/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /config/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- Epic 3 : barèmes, estimations et pesées --------------------------
+    function isApprovedCollector() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().role == 'collector'
+        && userDoc().verificationStatus == 'approved';
+    }
+
+    // Historique immuable : on publie un nouveau barème, on n'en modifie aucun.
+    match /priceScales/{id} {
+      allow read: if signedIn();
+      allow create: if isAdmin() && request.resource.data.prices is map;
+      allow update, delete: if false;
+    }
+
+    match /estimates/{code} {
+      // Lecture unitaire par code : propriétaire, collecteur vérifié, admin.
+      // `resource == null` : vérification d'unicité du code à la création.
+      allow get: if signedIn() && (resource == null
+        || resource.data.citizenUid == request.auth.uid
+        || isApprovedCollector()
+        || isAdmin());
+      // Pas de liste pour les collecteurs : uniquement ses propres estimations.
+      allow list: if signedIn() && (resource.data.citizenUid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.citizenUid == request.auth.uid
+        && request.resource.data.status == 'estimated'
+        && request.resource.data.lines is list;
+      // Pesée : une seule fois, par un collecteur vérifié, sans toucher à l'estimation.
+      allow update: if isAdmin() || (isApprovedCollector()
+        && resource.data.status == 'estimated'
+        && request.resource.data.status == 'weighed'
+        && request.resource.data.collectorUid == request.auth.uid
+        && changed().hasOnly(['status', 'actualKg', 'actualTotalKg', 'finalDt', 'collectorUid', 'weighedAt']));
+      allow delete: if isAdmin();
     }
   }
 }

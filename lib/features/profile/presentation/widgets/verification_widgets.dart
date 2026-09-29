@@ -61,27 +61,34 @@ class VerificationCard extends StatelessWidget {
     return EcoCard(
       gradient: gradient,
       decorated: true,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(child: Text('🛡️ ${l.verifTitle}', style: AppTheme.weighted(18, 800, color: fg))),
-          StatusChip(status),
-        ]),
-        const SizedBox(height: 8),
-        Text(message, style: AppTheme.weighted(15, 500, color: fg)),
-        if (status == VerificationStatus.rejected && (rejectionReason ?? '').isNotEmpty) ...[
-          const SizedBox(height: 6),
-          Text(l.verifReason(rejectionReason!), style: AppTheme.weighted(15, 700, color: fg)),
-        ],
-        if (status.canSubmit) ...[
-          const SizedBox(height: 14),
-          EcoButton(
-            label: collector ? l.verifActionCollector : l.verifActionRecycler,
-            style: EcoButtonStyle.ghost,
-            expand: false,
-            onPressed: () => context.go(collector ? Routes.documents : Routes.company),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text('🛡️ ${l.verifTitle}', style: AppTheme.weighted(18, 800, color: fg)),
+              ),
+              StatusChip(status),
+            ],
           ),
+          const SizedBox(height: 8),
+          Text(message, style: AppTheme.weighted(15, 500, color: fg)),
+          if (status == VerificationStatus.rejected && (rejectionReason ?? '').isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(l.verifReason(rejectionReason!), style: AppTheme.weighted(15, 700, color: fg)),
+          ],
+          if (status.canSubmit) ...[
+            const SizedBox(height: 14),
+            EcoButton(
+              label: collector ? l.verifActionCollector : l.verifActionRecycler,
+              style: EcoButtonStyle.ghost,
+              expand: false,
+              onPressed: () => context.go(collector ? Routes.documents : Routes.company),
+            ),
+          ],
         ],
-      ]),
+      ),
     );
   }
 }

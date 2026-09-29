@@ -18,8 +18,7 @@ class LanguageController extends Notifier<AppLanguage> {
   @override
   AppLanguage build() {
     final saved = ref.read(localPreferencesProvider).getString(_key);
-    return AppLanguage.fromCode(saved) ??
-        resolveLanguage(ref.read(deviceLocalesProvider));
+    return AppLanguage.fromCode(saved) ?? resolveLanguage(ref.read(deviceLocalesProvider));
   }
 
   Future<void> select(AppLanguage language) async {
@@ -28,5 +27,6 @@ class LanguageController extends Notifier<AppLanguage> {
   }
 }
 
-final languageControllerProvider =
-    NotifierProvider<LanguageController, AppLanguage>(LanguageController.new);
+final languageControllerProvider = NotifierProvider<LanguageController, AppLanguage>(
+  LanguageController.new,
+);

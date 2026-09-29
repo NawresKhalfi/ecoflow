@@ -25,6 +25,14 @@ class FirestoreAccountDeletionRepository implements AccountDeletionRepository {
         batch.delete(d.reference);
       }
     }
+    // Photos de scan (epic 2) : données personnelles, supprimées.
+    final scans = await _db.collection('scans').where('uid', isEqualTo: uid).get();
+    for (final scan in scans.docs) {
+      final photos = await scan.reference.collection('photos').get();
+      for (final p in photos.docs) {
+        batch.delete(p.reference);
+      }
+    }
     final company = await _db.collection('companies').doc(uid).get();
     if (company.exists) batch.update(company.reference, {'contactPhone': null});
     batch.update(user, {

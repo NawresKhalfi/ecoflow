@@ -23,30 +23,36 @@ class FirestoreDocumentsRepository implements DocumentsRepository {
   DocumentReference<Map<String, dynamic>> _user(String uid) => _db.collection('users').doc(uid);
 
   @override
-  Stream<List<CollectorDocument>> watch(String uid) =>
-      _user(uid).collection('documents').snapshots().map((s) => [
-            for (final d in s.docs)
-              if (CollectorDocument.typeFromName(d.id) case final type?)
-                CollectorDocument(
-                  type: type,
-                  fileName: d.data()['fileName'] as String? ?? '',
-                  sizeBytes: (d.data()['sizeBytes'] as num?)?.toInt() ?? 0,
-                  status: VerificationStatus.fromName(d.data()['status'] as String?),
-                  uploadedAt: (d.data()['uploadedAt'] as Timestamp?)?.toDate(),
-                  rejectionReason: d.data()['rejectionReason'] as String?,
-                ),
-          ]);
+  Stream<List<CollectorDocument>> watch(String uid) => _user(uid)
+      .collection('documents')
+      .snapshots()
+      .map(
+        (s) => [
+          for (final d in s.docs)
+            if (CollectorDocument.typeFromName(d.id) case final type?)
+              CollectorDocument(
+                type: type,
+                fileName: d.data()['fileName'] as String? ?? '',
+                sizeBytes: (d.data()['sizeBytes'] as num?)?.toInt() ?? 0,
+                status: VerificationStatus.fromName(d.data()['status'] as String?),
+                uploadedAt: (d.data()['uploadedAt'] as Timestamp?)?.toDate(),
+                rejectionReason: d.data()['rejectionReason'] as String?,
+              ),
+        ],
+      );
 
   @override
   Future<void> upload(
-      String uid, CollectorDocumentType type, String fileName, Uint8List bytes) async {
+    String uid,
+    CollectorDocumentType type,
+    String fileName,
+    Uint8List bytes,
+  ) async {
     if (bytes.length > maxDocumentBytes) {
       throw ArgumentError.value(bytes.length, 'bytes', 'Fichier trop volumineux');
     }
     final batch = _db.batch();
-    batch.set(_user(uid).collection('documentFiles').doc(type.name), {
-      'data': base64Encode(bytes),
-    });
+    batch.set(_user(uid).collection('documentFiles').doc(type.name), {'data': base64Encode(bytes)});
     batch.set(_user(uid).collection('documents').doc(type.name), {
       'fileName': fileName,
       'sizeBytes': bytes.length,

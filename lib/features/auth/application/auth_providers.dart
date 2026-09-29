@@ -12,22 +12,25 @@ import '../domain/otp_policy.dart';
 import '../domain/session_state.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
-    (ref) => FirebaseAuthRepository(ref.watch(firebaseAuthProvider)));
+  (ref) => FirebaseAuthRepository(ref.watch(firebaseAuthProvider)),
+);
 
 final userProfileRepositoryProvider = Provider<UserProfileRepository>(
-    (ref) => FirestoreUserProfileRepository(ref.watch(firestoreProvider)));
+  (ref) => FirestoreUserProfileRepository(ref.watch(firestoreProvider)),
+);
 
 final loginAttemptsStoreProvider = Provider<LoginAttemptsStore>(
-    (ref) => LoginAttemptsStore(ref.watch(localPreferencesProvider)));
+  (ref) => LoginAttemptsStore(ref.watch(localPreferencesProvider)),
+);
 
 final lockoutPolicyProvider = Provider((ref) => const LoginLockoutPolicy());
 final otpPolicyProvider = Provider((ref) => const OtpPolicy());
 
 final authStateProvider = StreamProvider<AuthUser?>(
-    (ref) => ref.watch(authRepositoryProvider).authStateChanges());
+  (ref) => ref.watch(authRepositoryProvider).authStateChanges(),
+);
 
-final currentUidProvider =
-    Provider<String?>((ref) => ref.watch(authStateProvider).value?.uid);
+final currentUidProvider = Provider<String?>((ref) => ref.watch(authStateProvider).value?.uid);
 
 final currentProfileProvider = StreamProvider<AppUser?>((ref) {
   final uid = ref.watch(currentUidProvider);

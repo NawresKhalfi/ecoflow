@@ -16,11 +16,15 @@ class ErrorBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(18)),
-        child: Row(children: [
-          const ExcludeSemantics(child: Text('⚠️', style: TextStyle(fontSize: 18))),
-          const SizedBox(width: 10),
-          Expanded(child: Text(message, style: AppTheme.weighted(14, 600, color: fg))),
-        ]),
+        child: Row(
+          children: [
+            const ExcludeSemantics(child: Text('⚠️', style: TextStyle(fontSize: 18))),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(message, style: AppTheme.weighted(14, 600, color: fg)),
+            ),
+          ],
+        ),
       ),
     );
   }

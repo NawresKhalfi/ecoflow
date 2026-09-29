@@ -20,6 +20,7 @@ class AppUser {
     this.consentVersion,
     this.consentAcceptedAt,
     this.createdAt,
+    this.aiTrainingConsent = false,
   });
 
   final String uid;
@@ -35,6 +36,9 @@ class AppUser {
   final DateTime? consentAcceptedAt;
   final DateTime? createdAt;
 
+  /// Accepte que ses photos corrigées servent à améliorer l'IA (US-020).
+  final bool aiTrainingConsent;
+
   String get firstName => displayName.trim().split(RegExp(r'\s+')).first;
 
   String get initials {
@@ -47,19 +51,19 @@ class AppUser {
     VerificationStatus? verificationStatus,
     NotificationPreferences? notificationPreferences,
     String? languageCode,
-  }) =>
-      AppUser(
-        uid: uid,
-        displayName: displayName ?? this.displayName,
-        role: role,
-        email: email,
-        phoneNumber: phoneNumber,
-        verificationStatus: verificationStatus ?? this.verificationStatus,
-        rejectionReason: rejectionReason,
-        notificationPreferences: notificationPreferences ?? this.notificationPreferences,
-        languageCode: languageCode ?? this.languageCode,
-        consentVersion: consentVersion,
-        consentAcceptedAt: consentAcceptedAt,
-        createdAt: createdAt,
-      );
+    bool? aiTrainingConsent,
+  }) => AppUser(
+    uid: uid,
+    displayName: displayName ?? this.displayName,
+    role: role,
+    email: email,
+    phoneNumber: phoneNumber,
+    verificationStatus: verificationStatus ?? this.verificationStatus,
+    rejectionReason: rejectionReason,
+    notificationPreferences: notificationPreferences ?? this.notificationPreferences,
+    languageCode: languageCode ?? this.languageCode,
+    consentVersion: consentVersion,
+    consentAcceptedAt: consentAcceptedAt,
+    createdAt: createdAt,
+  );
 }

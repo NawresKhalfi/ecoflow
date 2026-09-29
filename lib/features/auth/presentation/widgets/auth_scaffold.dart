@@ -41,8 +41,9 @@ class AuthScaffold extends StatelessWidget {
                 ? IconButton.filledTonal(
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     style: IconButton.styleFrom(
-                        backgroundColor: Colors.white.withValues(alpha: .22),
-                        foregroundColor: Colors.white),
+                      backgroundColor: Colors.white.withValues(alpha: .22),
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: () => Navigator.of(context).maybePop(),
                     icon: const BackButtonIcon(),
                   )

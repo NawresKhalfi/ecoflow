@@ -7,6 +7,7 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  archive: ^4.3.0
   cloud_firestore: ^6.10.0
   firebase_auth: ^6.7.0
   firebase_core: ^4.15.0
@@ -18,9 +19,13 @@ dependencies:
   geolocator: ^14.1.1
   go_router: ^17.5.0
   google_sign_in: ^7.2.0
+  image: ^4.10.1
   image_picker: ^1.2.3
   intl: ^0.20.2
+  path_provider: ^2.1.6
+  share_plus: ^13.3.0
   shared_preferences: ^2.5.5
+  ultralytics_yolo: ^0.6.15
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +38,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/models/waste_yolov8m.mlpackage.zip
+    - assets/models/waste_yolov8m.tflite
   fonts:
     - family: Bricolage
       fonts:

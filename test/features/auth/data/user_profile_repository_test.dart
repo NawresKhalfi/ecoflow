@@ -20,8 +20,14 @@ void main() {
   });
 
   test('creates a profile with consent and initial verification status', () async {
-    await repo.create(const AppUser(
-        uid: 'u1', displayName: ' Karim ', role: UserRole.collector, consentVersion: '2026-09'));
+    await repo.create(
+      const AppUser(
+        uid: 'u1',
+        displayName: ' Karim ',
+        role: UserRole.collector,
+        consentVersion: '2026-09',
+      ),
+    );
     final raw = (await db.doc('users/u1').get()).data()!;
     expect(raw['displayName'], 'Karim');
     expect(raw['role'], 'collector');
@@ -36,8 +42,10 @@ void main() {
   });
 
   test('refuses to create an admin profile', () {
-    expect(() => repo.create(const AppUser(uid: 'x', displayName: 'X', role: UserRole.admin)),
-        throwsArgumentError);
+    expect(
+      () => repo.create(const AppUser(uid: 'x', displayName: 'X', role: UserRole.admin)),
+      throwsArgumentError,
+    );
   });
 
   test('deleted profiles are treated as absent', () async {
@@ -48,7 +56,9 @@ void main() {
   test('updates notification preferences and language', () async {
     await repo.create(const AppUser(uid: 'u3', displayName: 'S', role: UserRole.citizen));
     await repo.updateNotificationPreferences(
-        'u3', NotificationPreferences.defaults.toggle(NotificationCategory.marketplace, false));
+      'u3',
+      NotificationPreferences.defaults.toggle(NotificationCategory.marketplace, false),
+    );
     await repo.updateLanguage('u3', 'ar');
     final u = await repo.watch('u3').first;
     expect(u!.notificationPreferences.isEnabled(NotificationCategory.marketplace), isFalse);

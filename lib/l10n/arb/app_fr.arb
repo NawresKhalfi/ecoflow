@@ -110,7 +110,7 @@
   "homeRecyclerSubtitle": "Pilote tes approvisionnements en matières recyclées.",
   "homeAdminSubtitle": "Vue globale de la plateforme EcoFlow.",
   "homeComingTitle": "Ton espace se prépare 🌱",
-  "homeComingBody": "Scan IA, collectes, wallet et marketplace arrivent dans les prochaines versions.",
+  "homeComingBody": "Demandes de collecte, suivi, wallet et marketplace arrivent dans les prochaines versions.",
   "statKg": "kg recyclés",
   "statCollections": "collectes",
   "statPoints": "EcoPoints",
@@ -212,6 +212,161 @@
   "deleteReauthOther": "Nous allons vérifier ton identité avec ton mode de connexion.",
   "deleteConfirm": "Supprimer définitivement",
   "deleteDone": "Compte supprimé. À bientôt 🌱",
+  "navScan": "Scanner",
+  "navCatalog": "Catalogue",
+  "navModel": "IA",
+  "homeScanCta": "Scanner mes déchets",
+  "homeScanCtaBody": "Une photo suffit : l’IA reconnaît tes déchets.",
+  "scanTitle": "Scanner tes déchets",
+  "scanSubtitle": "L’IA reconnaît et compte tes déchets en quelques secondes, directement sur ton téléphone.",
+  "scanEmptyHint": "Photographie ton sac ou tes déchets bien éclairés, en entier dans le cadre.",
+  "scanTakePhoto": "Prendre la photo",
+  "scanImport": "Importer de la galerie",
+  "scanAnalyze": "Analyser",
+  "scanAnalyzing": "Analyse YOLO en cours…",
+  "scanAnalyzingBody": "Détection et classification des objets",
+  "scanResultTitle": "Résultat de l’analyse",
+  "scanNoObject": "Aucun objet reconnu au-dessus du seuil. Baisse le seuil, ajoute un objet à la main ou reprends la photo.",
+  "scanRecyclabilityTitle": "Recyclabilité estimée",
+  "recycHigh": "Élevée",
+  "recycMedium": "Moyenne",
+  "recycLow": "Faible",
+  "recycExplainHigh": "Matières très bien valorisées par les recycleurs.",
+  "recycExplainMedium": "Une partie nécessite une filière spécifique.",
+  "recycExplainLow": "Peu ou pas valorisable : à trier à part.",
+  "scanConfidenceTitle": "Indice de confiance",
+  "scanThreshold": "Seuil de confiance",
+  "scanThresholdHelp": "Seuls les objets au-dessus du seuil sont comptés.",
+  "scanCorrectTitle": "Corriger le résultat",
+  "scanCorrectHelp": "Change une catégorie, supprime une erreur ou ajoute un objet oublié.",
+  "scanAddObject": "Ajouter un objet",
+  "scanChooseCategory": "Choisir la catégorie",
+  "scanManual": "Ajout manuel",
+  "scanSaveCorrections": "Valider les corrections",
+  "scanCorrectionsSaved": "Corrections enregistrées ✅ Merci, elles aideront l’IA.",
+  "scanTrainingConsent": "Partager mes photos corrigées (anonymisées) pour améliorer l’IA",
+  "scanNewScan": "Nouveau scan",
+  "scanSaved": "Scan enregistré",
+  "scanRetake": "Reprendre la photo",
+  "scanRemovePhoto": "Retirer la photo",
+  "issueTitle": "Photo à améliorer",
+  "issueBlurry": "Photo floue : tiens le téléphone immobile et fais la mise au point.",
+  "issueDark": "Photo trop sombre : rapproche-toi d’une fenêtre ou allume la lumière.",
+  "issueFraming": "Cadrage à revoir : rapproche-toi et place les déchets au centre.",
+  "errTooManyPhotos": "5 photos maximum par scan.",
+  "errUnsupportedFormat": "Format non pris en charge : utilise des photos JPG ou PNG.",
+  "errUnreadablePhoto": "Photo illisible, choisis-en une autre.",
+  "errModelUnavailable": "Le modèle d’IA n’a pas pu être chargé. Réessaie.",
+  "errSaveFailed": "Enregistrement impossible pour l’instant ; il sera réessayé.",
+  "catalogTitle": "Catalogue des déchets",
+  "catalogSubtitle": "Classes reconnues par l’IA et leur lien avec le barème des matières.",
+  "catalogDefaultBanner": "Catalogue par défaut (non publié). Publie-le pour pouvoir le modifier.",
+  "catalogPublish": "Publier le catalogue par défaut",
+  "catalogAdd": "Nouvelle classe",
+  "catalogEdit": "Modifier la classe",
+  "catalogId": "Identifiant (ex. hdpe_bottle)",
+  "catalogNameFr": "Nom (français)",
+  "catalogNameEn": "Nom (anglais)",
+  "catalogNameAr": "Nom (arabe)",
+  "catalogEmoji": "Emoji",
+  "catalogRecyclability": "Recyclabilité",
+  "catalogMaterial": "Matière du barème",
+  "catalogModelLabels": "Classes du modèle associées",
+  "catalogActive": "Active",
+  "catalogSaved": "Classe enregistrée ✅",
+  "catalogDelete": "Supprimer la classe",
+  "catalogNoMaterial": "Aucune",
+  "modelTitle": "Modèle de vision IA",
+  "modelSubtitle": "Versions, métriques, seuil et jeu de données de réentraînement.",
+  "modelActive": "Version active",
+  "modelPrecision": "Précision",
+  "modelRecall": "Rappel",
+  "modelMap": "mAP@50",
+  "modelNotMeasured": "non mesuré",
+  "modelVersions": "Historique des versions",
+  "modelActivate": "Activer",
+  "modelRollback": "Revenir à la version précédente",
+  "modelAddVersion": "Déclarer une nouvelle version",
+  "modelName": "Nom de la version",
+  "modelIos": "Modèle iOS (URL .mlpackage.zip)",
+  "modelAndroid": "Modèle Android (URL .tflite)",
+  "modelVersionSaved": "Version enregistrée ✅",
+  "modelThresholdSaved": "Seuil enregistré ✅",
+  "modelSaveThreshold": "Enregistrer le seuil",
+  "modelExportTitle": "Jeu de données de réentraînement",
+  "modelExportBody": "Photos anonymisées corrigées par les utilisateurs ayant donné leur accord, au format YOLO.",
+  "modelExport": "Exporter (ZIP YOLO)",
+  "modelNothingToExport": "Aucune correction partagée à exporter pour l’instant.",
+  "modelPurge": "Purger les photos expirées",
+  "modelPurgeBody": "Les photos de scan sont conservées 90 jours puis supprimées.",
+  "errInvalidUrl": "URL https ou chemin d’asset attendu",
+  "errInvalidRatio": "Valeur entre 0 et 1",
+  "navEstimates": "Estimations",
+  "navWeighing": "Pesée",
+  "navPricing": "Barème",
+  "estTitle": "Estimation du poids et de la valeur",
+  "estBadge": "Estimation",
+  "estTotal": "Total estimé",
+  "estFinalAfterWeighing": "Prix définitif confirmé par le collecteur après pesée.",
+  "estMethodManual": "Poids saisi",
+  "estMethodContainer": "Contenant",
+  "estMethodCount": "Nombre d’objets",
+  "estContainer": "Contenant",
+  "estContainerNone": "Aucun",
+  "contBag30": "Sac 30 L",
+  "contBag50": "Sac 50 L",
+  "contBag100": "Sac 100 L",
+  "contBox": "Carton",
+  "contCrate": "Caisse",
+  "estManualHint": "Poids connu (kg)",
+  "estLowConfidence": "Estimation peu fiable : la photo ne suffit pas. Précise le contenant, saisis un poids ou confirme l’estimation.",
+  "estConfirm": "Je confirme l’estimation",
+  "estSave": "Enregistrer l’estimation",
+  "estCodeTitle": "Code de pesée",
+  "estCodeHelp": "À donner au collecteur : il saisira le poids réel pour confirmer le prix.",
+  "estimatesTitle": "Mes estimations",
+  "estimatesSubtitle": "Retrouve tes estimations et le montant final après pesée.",
+  "estimatesEmpty": "Aucune estimation pour l’instant. Scanne tes déchets pour commencer.",
+  "estStatusPending": "En attente de pesée",
+  "estStatusWeighed": "Pesée validée",
+  "estCompareTitle": "Estimation vs pesée réelle",
+  "estEstimated": "Estimé",
+  "estReal": "Réel",
+  "estFinalAmount": "Montant final",
+  "weighTitle": "Pesée d’une collecte",
+  "weighSubtitle": "Saisis le code du citoyen puis le poids réel de chaque matière.",
+  "weighLocked": "Ton compte doit être vérifié pour valider des pesées.",
+  "weighCodeLabel": "Code de pesée (ex. 7KX2-9QPA)",
+  "weighLookup": "Rechercher",
+  "weighRealLabel": "Poids réel (kg)",
+  "weighSubmit": "Valider la pesée",
+  "weighDone": "Pesée validée ✅ Le montant final apparaît dans les estimations du citoyen.",
+  "estReliability": "Fiabilité de l’estimation",
+  "homeWeighCta": "Peser une collecte",
+  "homeWeighCtaBody": "Saisis le code du citoyen et le poids réel.",
+  "weighAnother": "Nouvelle pesée",
+  "weighErrInvalidCode": "Code invalide : 8 caractères, ex. 7KX2-9QPA.",
+  "weighErrNotFound": "Aucune estimation pour ce code.",
+  "weighErrAlready": "Cette collecte a déjà été pesée.",
+  "weighErrIncomplete": "Le poids réel est obligatoire pour chaque matière (0 si absente).",
+  "weighErrFailed": "Enregistrement impossible, réessaie.",
+  "pricingTitle": "Barème & estimation",
+  "pricingSubtitle": "Prix d’achat par matière avec date d’effet, et précision des estimations.",
+  "pricingActive": "Barème en vigueur",
+  "pricingDefault": "Barème indicatif par défaut (non publié)",
+  "pricingHistory": "Historique des barèmes",
+  "pricingNew": "Nouveau barème",
+  "pricingEffective": "Date d’effet",
+  "pricingNote": "Note (facultative)",
+  "pricingPublished": "Barème publié ✅",
+  "pricingUpcoming": "À venir",
+  "calibTitle": "Précision des estimations",
+  "calibBody": "Compare les estimations aux pesées réelles et recalibre les coefficients de poids.",
+  "calibAnalyze": "Analyser les pesées",
+  "calibNoData": "Aucune pesée validée pour l’instant.",
+  "calibMae": "Erreur moy. (MAE)",
+  "calibRatio": "Réel / estimé",
+  "calibApplied": "Coefficients recalibrés appliqués ✅",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -296,6 +451,151 @@
   "@memberSince": {
     "placeholders": {
       "date": {
+        "type": "String"
+      }
+    }
+  },
+  "scanCount": "{emoji} {name} × {count}",
+  "@scanCount": {
+    "placeholders": {
+      "emoji": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanTotal": "{count, plural, =0{Aucun objet} =1{1 objet} other{{count} objets}}",
+  "@scanTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanPhotoCount": "{count}/5 photos",
+  "@scanPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanMeta": "Analysé en {seconds} s sur l’appareil · {model}",
+  "@scanMeta": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      },
+      "model": {
+        "type": "String"
+      }
+    }
+  },
+  "recycMostly": "Surtout : {categories}.",
+  "@recycMostly": {
+    "placeholders": {
+      "categories": {
+        "type": "String"
+      }
+    }
+  },
+  "percent": "{value} %",
+  "@percent": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "modelPurged": "{count} photos supprimées ✅",
+  "@modelPurged": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "modelExported": "{count} images exportées ✅",
+  "@modelExported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "kg": "{value} kg",
+  "@kg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "dt": "{value} DT",
+  "@dt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "approxKg": "≈ {value} kg",
+  "@approxKg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "approxDt": "≈ {value} DT",
+  "@approxDt": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "estScaleOf": "Barème du {date}",
+  "@estScaleOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "estWeighedNotice": "Pesée validée : montant final {amount}",
+  "@estWeighedNotice": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "calibSamples": "{count, plural, =1{1 pesée} other{{count} pesées}}",
+  "@calibSamples": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibApply": "Appliquer les coefficients (v{version})",
+  "@calibApply": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "pricePerKg": "{value} DT/kg",
+  "@pricePerKg": {
+    "placeholders": {
+      "value": {
         "type": "String"
       }
     }

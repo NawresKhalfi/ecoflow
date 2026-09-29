@@ -5,16 +5,20 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'core/firebase/emulators.dart';
 import 'core/storage/local_preferences.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await connectFirebaseEmulators();
   await initializeDateFormatting();
   final prefs = await SharedPreferences.getInstance();
-  runApp(ProviderScope(
-    overrides: [localPreferencesProvider.overrideWithValue(LocalPreferences(prefs))],
-    child: const EcoFlowApp(),
-  ));
+  runApp(
+    ProviderScope(
+      overrides: [localPreferencesProvider.overrideWithValue(LocalPreferences(prefs))],
+      child: const EcoFlowApp(),
+    ),
+  );
 }

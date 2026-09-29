@@ -18,9 +18,7 @@ class NotificationPreferences {
   NotificationPreferences toggle(NotificationCategory c, bool value) =>
       NotificationPreferences({...enabled, c: value});
 
-  Map<String, bool> toMap() => {
-        for (final c in NotificationCategory.values) c.name: isEnabled(c),
-      };
+  Map<String, bool> toMap() => {for (final c in NotificationCategory.values) c.name: isEnabled(c)};
 
   static NotificationPreferences fromMap(Map<String, dynamic>? m) {
     if (m == null) return defaults;

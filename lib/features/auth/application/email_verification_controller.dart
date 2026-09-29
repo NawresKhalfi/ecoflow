@@ -10,14 +10,15 @@ class EmailVerificationController extends ActionController {
   Future<bool> resend() => run(() => ref.read(authRepositoryProvider).sendEmailVerification());
 
   Future<bool> check() => run(() async {
-        lastCheckVerified = await ref.read(authRepositoryProvider).reloadEmailVerified();
-        // Relit l'utilisateur pour que la session voie emailVerified = true.
-        if (lastCheckVerified) ref.invalidate(authStateProvider);
-      });
+    lastCheckVerified = await ref.read(authRepositoryProvider).reloadEmailVerified();
+    // Relit l'utilisateur pour que la session voie emailVerified = true.
+    if (lastCheckVerified) ref.invalidate(authStateProvider);
+  });
 
   Future<void> signOut() => ref.read(authRepositoryProvider).signOut();
 }
 
 final emailVerificationControllerProvider =
     NotifierProvider.autoDispose<EmailVerificationController, AsyncValue<void>>(
-        EmailVerificationController.new);
+      EmailVerificationController.new,
+    );

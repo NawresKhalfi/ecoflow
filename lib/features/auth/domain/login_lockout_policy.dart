@@ -10,10 +10,7 @@ class LoginAttempts {
 
 /// Verrouillage après 5 échecs consécutifs (US-002), pendant 15 minutes.
 class LoginLockoutPolicy {
-  const LoginLockoutPolicy({
-    this.maxFailures = 5,
-    this.lockDuration = const Duration(minutes: 15),
-  });
+  const LoginLockoutPolicy({this.maxFailures = 5, this.lockDuration = const Duration(minutes: 15)});
 
   final int maxFailures;
   final Duration lockDuration;

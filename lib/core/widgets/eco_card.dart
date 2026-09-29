@@ -38,15 +38,17 @@ class EcoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         boxShadow: eco.softShadow,
       ),
-      child: Stack(children: [
-        if (decorated)
-          PositionedDirectional(
-            end: -24,
-            bottom: -24,
-            child: _Blob(size: 96, color: Colors.white.withValues(alpha: .18)),
-          ),
-        Padding(padding: padding, child: child),
-      ]),
+      child: Stack(
+        children: [
+          if (decorated)
+            PositionedDirectional(
+              end: -24,
+              bottom: -24,
+              child: _Blob(size: 96, color: Colors.white.withValues(alpha: .18)),
+            ),
+          Padding(padding: padding, child: child),
+        ],
+      ),
     );
     return Pressable(onTap: onTap, semanticLabel: semanticLabel, child: card);
   }
@@ -59,12 +61,12 @@ class _Blob extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-      );
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    ),
+  );
 }
 
 /// Cercle décoratif réutilisable (headers, tuiles).

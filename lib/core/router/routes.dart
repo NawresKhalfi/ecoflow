@@ -20,6 +20,13 @@ abstract final class Routes {
   static const company = '/app/company';
   static const notifications = '/app/notifications';
   static const deleteAccount = '/app/delete-account';
+  static const scan = '/app/scan';
+  static const catalog = '/app/catalog';
+  static const model = '/app/model';
+  static const estimates = '/app/estimates';
+  static String estimateDetail(String code) => '/app/estimates/$code';
+  static const weighing = '/app/weighing';
+  static const pricing = '/app/pricing';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

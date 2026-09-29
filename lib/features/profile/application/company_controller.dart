@@ -12,10 +12,11 @@ class NoMaterialSelected implements Exception {
 /// Profil entreprise du recycleur, soumis à validation admin (US-007).
 class CompanyController extends ActionController {
   Future<bool> submit(CompanyProfile profile) => run(() async {
-        if (profile.materials.isEmpty) throw const NoMaterialSelected();
-        await ref.read(companyRepositoryProvider).submit(requireUid(ref), profile);
-      });
+    if (profile.materials.isEmpty) throw const NoMaterialSelected();
+    await ref.read(companyRepositoryProvider).submit(requireUid(ref), profile);
+  });
 }
 
-final companyControllerProvider =
-    NotifierProvider.autoDispose<CompanyController, AsyncValue<void>>(CompanyController.new);
+final companyControllerProvider = NotifierProvider.autoDispose<CompanyController, AsyncValue<void>>(
+  CompanyController.new,
+);

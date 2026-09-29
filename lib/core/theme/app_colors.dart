@@ -104,18 +104,14 @@ class EcoPalette extends ThemeExtension<EcoPalette> {
 
   /// Ombre douce et profonde en deux couches (cf. `--sh` du prototype).
   List<BoxShadow> get softShadow => [
-        BoxShadow(
-          color: shadow.withValues(alpha: 0.05),
-          blurRadius: 4,
-          offset: const Offset(0, 2),
-        ),
-        BoxShadow(
-          color: shadow.withValues(alpha: 0.18),
-          blurRadius: 30,
-          spreadRadius: -10,
-          offset: const Offset(0, 14),
-        ),
-      ];
+    BoxShadow(color: shadow.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
+    BoxShadow(
+      color: shadow.withValues(alpha: 0.18),
+      blurRadius: 30,
+      spreadRadius: -10,
+      offset: const Offset(0, 14),
+    ),
+  ];
 
   @override
   EcoPalette copyWith() => this;

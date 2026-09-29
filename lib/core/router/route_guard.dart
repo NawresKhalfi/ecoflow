@@ -7,6 +7,12 @@ const _roleOnly = {
   Routes.addresses: UserRole.citizen,
   Routes.documents: UserRole.collector,
   Routes.company: UserRole.recycler,
+  Routes.scan: UserRole.citizen,
+  Routes.catalog: UserRole.admin,
+  Routes.model: UserRole.admin,
+  Routes.estimates: UserRole.citizen,
+  Routes.weighing: UserRole.collector,
+  Routes.pricing: UserRole.admin,
 };
 
 /// Redirection de navigation, fonction pure testée unitairement.

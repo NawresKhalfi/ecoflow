@@ -19,8 +19,9 @@ class FirestoreAddressRepository implements AddressRepository {
       _db.collection('users').doc(uid).collection('addresses');
 
   @override
-  Stream<List<SavedAddress>> watch(String uid) => _col(uid).snapshots().map((s) =>
-      normalizeAddresses([for (final d in s.docs) SavedAddress.fromMap(d.id, d.data())]));
+  Stream<List<SavedAddress>> watch(String uid) => _col(uid).snapshots().map(
+    (s) => normalizeAddresses([for (final d in s.docs) SavedAddress.fromMap(d.id, d.data())]),
+  );
 
   @override
   Future<void> save(String uid, SavedAddress a) async {

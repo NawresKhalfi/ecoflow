@@ -7,10 +7,10 @@ import 'package:ecoflow/features/auth/domain/user_role.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 SessionState ready(UserRole role) => SessionState(
-      SessionStatus.ready,
-      authUser: const AuthUser(uid: 'u'),
-      profile: AppUser(uid: 'u', displayName: 'A', role: role),
-    );
+  SessionStatus.ready,
+  authUser: const AuthUser(uid: 'u'),
+  profile: AppUser(uid: 'u', displayName: 'A', role: role),
+);
 
 void main() {
   test('loading always shows the splash', () {
@@ -53,5 +53,9 @@ void main() {
     expect(resolveRedirect(ready(UserRole.citizen), Routes.documents), Routes.home);
     expect(resolveRedirect(ready(UserRole.recycler), Routes.company), isNull);
     expect(resolveRedirect(ready(UserRole.collector), Routes.company), Routes.home);
+    expect(resolveRedirect(ready(UserRole.citizen), Routes.scan), isNull);
+    expect(resolveRedirect(ready(UserRole.recycler), Routes.scan), Routes.home);
+    expect(resolveRedirect(ready(UserRole.admin), Routes.model), isNull);
+    expect(resolveRedirect(ready(UserRole.citizen), Routes.catalog), Routes.home);
   });
 }

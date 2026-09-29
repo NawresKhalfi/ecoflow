@@ -35,19 +35,25 @@ class StatTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
           boxShadow: context.eco.softShadow,
         ),
-        child: Stack(clipBehavior: Clip.none, children: [
-          PositionedDirectional(
-            end: -36,
-            bottom: -36,
-            child: DecorCircle(size: 70, color: Colors.white.withValues(alpha: .18)),
-          ),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ExcludeSemantics(child: Text(emoji, style: const TextStyle(fontSize: 22))),
-            const SizedBox(height: 4),
-            Text(value, style: AppTheme.weighted(26, 800, color: foreground)),
-            Text(label, style: AppTheme.weighted(13, 500, color: foreground)),
-          ]),
-        ]),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            PositionedDirectional(
+              end: -36,
+              bottom: -36,
+              child: DecorCircle(size: 70, color: Colors.white.withValues(alpha: .18)),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(child: Text(emoji, style: const TextStyle(fontSize: 22))),
+                const SizedBox(height: 4),
+                Text(value, style: AppTheme.weighted(26, 800, color: foreground)),
+                Text(label, style: AppTheme.weighted(13, 500, color: foreground)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

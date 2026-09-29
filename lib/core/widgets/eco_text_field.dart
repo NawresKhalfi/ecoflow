@@ -96,19 +96,19 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) => EcoTextField(
-        label: widget.label,
-        controller: widget.controller,
-        validator: widget.validator,
-        helper: widget.helper,
-        emoji: '🔒',
-        obscure: _hidden,
-        textInputAction: widget.textInputAction,
-        onSubmitted: widget.onSubmitted,
-        autofillHints: [widget.newPassword ? AutofillHints.newPassword : AutofillHints.password],
-        suffix: IconButton(
-          tooltip: _hidden ? 'Afficher' : 'Masquer',
-          icon: Icon(_hidden ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-          onPressed: () => setState(() => _hidden = !_hidden),
-        ),
-      );
+    label: widget.label,
+    controller: widget.controller,
+    validator: widget.validator,
+    helper: widget.helper,
+    emoji: '🔒',
+    obscure: _hidden,
+    textInputAction: widget.textInputAction,
+    onSubmitted: widget.onSubmitted,
+    autofillHints: [widget.newPassword ? AutofillHints.newPassword : AutofillHints.password],
+    suffix: IconButton(
+      tooltip: _hidden ? 'Afficher' : 'Masquer',
+      icon: Icon(_hidden ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+      onPressed: () => setState(() => _hidden = !_hidden),
+    ),
+  );
 }

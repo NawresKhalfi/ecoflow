@@ -20,7 +20,13 @@ import '../../features/profile/presentation/screens/documents_screen.dart';
 import '../../features/profile/presentation/screens/language_screen.dart';
 import '../../features/profile/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/estimation/presentation/screens/estimates_screen.dart';
+import '../../features/estimation/presentation/screens/pricing_screen.dart';
+import '../../features/estimation/presentation/screens/weighing_screen.dart';
+import '../../features/scan/presentation/screens/scan_screen.dart';
 import '../../features/shell/presentation/screens/home_screen.dart';
+import '../../features/vision_admin/presentation/screens/catalog_screen.dart';
+import '../../features/vision_admin/presentation/screens/model_screen.dart';
 import '../../features/shell/presentation/screens/splash_screen.dart';
 import '../../features/shell/presentation/widgets/role_shell.dart';
 import 'route_guard.dart';
@@ -28,17 +34,20 @@ import 'routes.dart';
 
 /// Transition douce entre les onglets de l'espace connecté.
 Page<void> _fade(GoRouterState state, Widget child) => CustomTransitionPage(
-      key: state.pageKey,
-      child: child,
-      transitionDuration: const Duration(milliseconds: 280),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(
-        opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-        child: child,
-      ),
-    );
+  key: state.pageKey,
+  child: child,
+  transitionDuration: const Duration(milliseconds: 280),
+  transitionsBuilder: (context, animation, _, child) => FadeTransition(
+    opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+    child: child,
+  ),
+);
 
-GoRoute _tab(String path, Widget Function(GoRouterState) build, {List<RouteBase> routes = const []}) =>
-    GoRoute(path: path, pageBuilder: (_, s) => _fade(s, build(s)), routes: routes);
+GoRoute _tab(
+  String path,
+  Widget Function(GoRouterState) build, {
+  List<RouteBase> routes = const [],
+}) => GoRoute(path: path, pageBuilder: (_, s) => _fade(s, build(s)), routes: routes);
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
@@ -67,17 +76,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (_, state, child) => RoleShell(location: state.uri.path, child: child),
         routes: [
-          _tab(Routes.home, (_) => const HomeScreen(), routes: [
-            _tab('profile', (_) => const ProfileScreen()),
-            _tab('addresses', (_) => const AddressesScreen(), routes: [
-              _tab('new', (_) => const AddressFormScreen()),
-              _tab(':id', (s) => AddressFormScreen(addressId: s.pathParameters['id'])),
-            ]),
-            _tab('documents', (_) => const DocumentsScreen()),
-            _tab('company', (_) => const CompanyScreen()),
-            _tab('notifications', (_) => const NotificationsScreen()),
-            _tab('delete-account', (_) => const DeleteAccountScreen()),
-          ]),
+          _tab(
+            Routes.home,
+            (_) => const HomeScreen(),
+            routes: [
+              _tab('profile', (_) => const ProfileScreen()),
+              _tab('scan', (_) => const ScanScreen()),
+              _tab('catalog', (_) => const CatalogScreen()),
+              _tab('model', (_) => const ModelScreen()),
+              _tab(
+                'estimates',
+                (_) => const EstimatesScreen(),
+                routes: [
+                  _tab(':code', (s) => EstimateDetailScreen(code: s.pathParameters['code']!)),
+                ],
+              ),
+              _tab('weighing', (_) => const WeighingScreen()),
+              _tab('pricing', (_) => const PricingScreen()),
+              _tab(
+                'addresses',
+                (_) => const AddressesScreen(),
+                routes: [
+                  _tab('new', (_) => const AddressFormScreen()),
+                  _tab(':id', (s) => AddressFormScreen(addressId: s.pathParameters['id'])),
+                ],
+              ),
+              _tab('documents', (_) => const DocumentsScreen()),
+              _tab('company', (_) => const CompanyScreen()),
+              _tab('notifications', (_) => const NotificationsScreen()),
+              _tab('delete-account', (_) => const DeleteAccountScreen()),
+            ],
+          ),
         ],
       ),
     ],

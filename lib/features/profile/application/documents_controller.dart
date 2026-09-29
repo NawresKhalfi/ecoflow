@@ -12,20 +12,18 @@ class DocumentTooLarge implements Exception {
 
 /// Dossier de vérification du collecteur (US-006).
 class DocumentsController extends ActionController {
-  Future<bool> pickAndUpload(CollectorDocumentType type, PickSource source) =>
-      run(() async {
-        final file = await ref.read(documentPickerProvider).pick(source);
-        if (file == null) return;
-        if (file.bytes.length > maxDocumentBytes) throw const DocumentTooLarge();
-        await ref
-            .read(documentsRepositoryProvider)
-            .upload(requireUid(ref), type, file.name, file.bytes);
-      });
+  Future<bool> pickAndUpload(CollectorDocumentType type, PickSource source) => run(() async {
+    final file = await ref.read(documentPickerProvider).pick(source);
+    if (file == null) return;
+    if (file.bytes.length > maxDocumentBytes) throw const DocumentTooLarge();
+    await ref
+        .read(documentsRepositoryProvider)
+        .upload(requireUid(ref), type, file.name, file.bytes);
+  });
 
   Future<bool> submit() =>
       run(() => ref.read(documentsRepositoryProvider).submitForReview(requireUid(ref)));
 }
 
 final documentsControllerProvider =
-    NotifierProvider.autoDispose<DocumentsController, AsyncValue<void>>(
-        DocumentsController.new);
+    NotifierProvider.autoDispose<DocumentsController, AsyncValue<void>>(DocumentsController.new);

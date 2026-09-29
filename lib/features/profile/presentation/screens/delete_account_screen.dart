@@ -38,7 +38,12 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     final usesPassword = ref.watch(authStateProvider).value?.usesPassword ?? false;
     const word = AccountDeletionController.confirmationWord;
     return LayeredPage(
-      header: HeroHeader(title: l.deleteTitle, subtitle: l.deleteSubtitle, emoji: '🗑️', gradient: EcoGradients.coral),
+      header: HeroHeader(
+        title: l.deleteTitle,
+        subtitle: l.deleteSubtitle,
+        emoji: '🗑️',
+        gradient: EcoGradients.coral,
+      ),
       children: [
         EcoCard(
           child: AnimatedSwitcher(
@@ -50,8 +55,16 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                     children: [
                       Text(l.deleteStep1, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
-                      for (final (e, t) in [('🕶️', l.deleteWhat1), ('🧾', l.deleteWhat2), ('⚠️', l.deleteWhat3)])
-                        EcoListTile(leading: EcoAvatar(text: e, size: 40), title: t, showDivider: false),
+                      for (final (e, t) in [
+                        ('🕶️', l.deleteWhat1),
+                        ('🧾', l.deleteWhat2),
+                        ('⚠️', l.deleteWhat3),
+                      ])
+                        EcoListTile(
+                          leading: EcoAvatar(text: e, size: 40),
+                          title: t,
+                          showDivider: false,
+                        ),
                       const SizedBox(height: 8),
                       EcoTextField(
                         label: l.deleteTypeWord(word),
@@ -65,7 +78,9 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                         listenable: _word,
                         builder: (context, _) => EcoButton(
                           label: l.commonContinue,
-                          onPressed: ctrl.isConfirmationValid(_word.text) ? () => setState(() => _step = 2) : null,
+                          onPressed: ctrl.isConfirmationValid(_word.text)
+                              ? () => setState(() => _step = 2)
+                              : null,
                         ),
                       ),
                     ],
@@ -77,7 +92,11 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                       Text(l.deleteStep2, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 12),
                       if (usesPassword)
-                        PasswordField(label: l.passwordLabel, controller: _password, textInputAction: TextInputAction.done)
+                        PasswordField(
+                          label: l.passwordLabel,
+                          controller: _password,
+                          textInputAction: TextInputAction.done,
+                        )
                       else
                         Text(l.deleteReauthOther),
                       const SizedBox(height: 12),
@@ -91,7 +110,9 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
                         loading: state.isLoading,
                         onPressed: () async {
                           final messenger = ScaffoldMessenger.of(context);
-                          final ok = await ctrl.deleteAccount(password: usesPassword ? _password.text : null);
+                          final ok = await ctrl.deleteAccount(
+                            password: usesPassword ? _password.text : null,
+                          );
                           if (ok) messenger.showSnackBar(SnackBar(content: Text(l.deleteDone)));
                         },
                       ),

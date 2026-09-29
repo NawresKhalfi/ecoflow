@@ -12,6 +12,7 @@ abstract interface class UserProfileRepository {
   Future<void> updateDisplayName(String uid, String name);
   Future<void> updateLanguage(String uid, String code);
   Future<void> updateNotificationPreferences(String uid, NotificationPreferences prefs);
+  Future<void> updateAiTrainingConsent(String uid, bool value);
 }
 
 class FirestoreUserProfileRepository implements UserProfileRepository {
@@ -19,8 +20,7 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
 
   final FirebaseFirestore _db;
 
-  DocumentReference<Map<String, dynamic>> _doc(String uid) =>
-      _db.collection('users').doc(uid);
+  DocumentReference<Map<String, dynamic>> _doc(String uid) => _db.collection('users').doc(uid);
 
   static DateTime? _date(Object? v) => v is Timestamp ? v.toDate() : null;
 
@@ -37,11 +37,13 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
       verificationStatus: VerificationStatus.fromName(m['verificationStatus'] as String?),
       rejectionReason: m['rejectionReason'] as String?,
       notificationPreferences: NotificationPreferences.fromMap(
-          (m['notificationPreferences'] as Map?)?.cast<String, dynamic>()),
+        (m['notificationPreferences'] as Map?)?.cast<String, dynamic>(),
+      ),
       languageCode: m['languageCode'] as String?,
       consentVersion: (m['consent'] as Map?)?['version'] as String?,
       consentAcceptedAt: _date((m['consent'] as Map?)?['acceptedAt']),
       createdAt: _date(m['createdAt']),
+      aiTrainingConsent: m['aiTrainingConsent'] as bool? ?? false,
     );
   }
 
@@ -59,8 +61,7 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
       'role': u.role.name,
       'email': u.email,
       'phoneNumber': u.phoneNumber,
-      'verificationStatus':
-          VerificationStatus.initialFor(u.role.requiresVerification).name,
+      'verificationStatus': VerificationStatus.initialFor(u.role.requiresVerification).name,
       'notificationPreferences': NotificationPreferences.defaults.toMap(),
       'languageCode': u.languageCode,
       'consent': {'version': u.consentVersion, 'acceptedAt': FieldValue.serverTimestamp()},
@@ -74,10 +75,14 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
       _doc(uid).update({'displayName': name.trim()});
 
   @override
-  Future<void> updateLanguage(String uid, String code) =>
-      _doc(uid).update({'languageCode': code});
+  Future<void> updateLanguage(String uid, String code) => _doc(uid).update({'languageCode': code});
 
   @override
   Future<void> updateNotificationPreferences(String uid, NotificationPreferences p) =>
       _doc(uid).update({'notificationPreferences': p.toMap()});
+
+  @override
+  Future<void> updateAiTrainingConsent(String uid, bool value) => _doc(
+    uid,
+  ).update({'aiTrainingConsent': value, 'aiTrainingConsentAt': FieldValue.serverTimestamp()});
 }

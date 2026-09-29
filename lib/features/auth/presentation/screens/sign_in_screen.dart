@@ -51,43 +51,54 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       subtitle: l.signInSubtitle,
       emoji: '🔑',
       footer: [
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(l.noAccount),
-          EcoLink(label: l.createAccount, onPressed: () => context.push(Routes.signUp)),
-        ]),
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(l.noAccount),
+            EcoLink(label: l.createAccount, onPressed: () => context.push(Routes.signUp)),
+          ],
+        ),
       ],
       children: [
         Form(
           key: _form,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            EcoTextField(
-              label: l.emailLabel,
-              emoji: '✉️',
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              validator: fieldValidator(context, validateEmail),
-            ),
-            const SizedBox(height: 12),
-            PasswordField(
-              label: l.passwordLabel,
-              controller: _password,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _submit(),
-              validator: fieldValidator(context, (v) => validateRequired(v)),
-            ),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              EcoTextField(
+                label: l.emailLabel,
+                emoji: '✉️',
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                validator: fieldValidator(context, validateEmail),
+              ),
+              const SizedBox(height: 12),
+              PasswordField(
+                label: l.passwordLabel,
+                controller: _password,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _submit(),
+                validator: fieldValidator(context, (v) => validateRequired(v)),
+              ),
+            ],
+          ),
         ),
         Align(
           alignment: AlignmentDirectional.centerEnd,
           child: EcoLink(
-              label: l.forgotPassword, onPressed: () => context.push(Routes.forgotPassword)),
+            label: l.forgotPassword,
+            onPressed: () => context.push(Routes.forgotPassword),
+          ),
         ),
         if (error != null) ...[
-          ErrorBanner([
-            failureText(context, error),
-            if (remaining != null && remaining > 0) l.attemptsLeft(remaining),
-          ].join('\n')),
+          ErrorBanner(
+            [
+              failureText(context, error),
+              if (remaining != null && remaining > 0) l.attemptsLeft(remaining),
+            ].join('\n'),
+          ),
           const SizedBox(height: 12),
         ],
         EcoButton(
@@ -122,14 +133,16 @@ class _OrDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Row(children: [
-          const Expanded(child: Divider()),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(context.l10n.commonOr, style: Theme.of(context).textTheme.bodySmall),
-          ),
-          const Expanded(child: Divider()),
-        ]),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    child: Row(
+      children: [
+        const Expanded(child: Divider()),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(context.l10n.commonOr, style: Theme.of(context).textTheme.bodySmall),
+        ),
+        const Expanded(child: Divider()),
+      ],
+    ),
+  );
 }

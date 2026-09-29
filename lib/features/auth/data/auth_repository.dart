@@ -38,6 +38,7 @@ abstract interface class AuthRepository {
   Future<PhoneCodeResult> sendPhoneCode(String e164Phone);
   Future<void> confirmPhoneCode(String verificationId, String smsCode);
   Future<void> sendPasswordReset(String email);
+
   /// Ré-authentifie l'utilisateur avant une action sensible : mot de passe
   /// pour les comptes e-mail, Google à nouveau, ou connexion récente (téléphone).
   Future<void> ensureRecentLogin({String? password});
@@ -68,11 +69,15 @@ class FirebaseAuthRepository implements AuthRepository {
     try {
       return await action();
     } on FirebaseAuthException catch (e) {
-      throw AuthFailure(mapFirebaseAuthCode(e.code));
+      final code = mapFirebaseAuthCode(e.code, e.message);
+      if (code == AuthFailureCode.unknown) debugPrint('FirebaseAuth ${e.code}: ${e.message}');
+      throw AuthFailure(code);
     } on GoogleSignInException catch (e) {
-      throw AuthFailure(e.code == GoogleSignInExceptionCode.canceled
-          ? AuthFailureCode.cancelled
-          : AuthFailureCode.providerUnavailable);
+      throw AuthFailure(
+        e.code == GoogleSignInExceptionCode.canceled
+            ? AuthFailureCode.cancelled
+            : AuthFailureCode.providerUnavailable,
+      );
     }
   }
 
@@ -83,14 +88,16 @@ class FirebaseAuthRepository implements AuthRepository {
   AuthUser? get currentUser => _map(_auth.currentUser);
 
   @override
-  Future<void> signInWithEmail(String email, String password) => _guard(() =>
-      _auth.signInWithEmailAndPassword(email: email.trim(), password: password));
+  Future<void> signInWithEmail(String email, String password) =>
+      _guard(() => _auth.signInWithEmailAndPassword(email: email.trim(), password: password));
 
   @override
   Future<void> signUpWithEmail(String email, String password, String displayName) =>
       _guard(() async {
         final cred = await _auth.createUserWithEmailAndPassword(
-            email: email.trim(), password: password);
+          email: email.trim(),
+          password: password,
+        );
         await cred.user?.updateDisplayName(displayName.trim());
         await cred.user?.sendEmailVerification();
       });
@@ -101,19 +108,20 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<bool> reloadEmailVerified() => _guard(() async {
-        await _auth.currentUser?.reload();
-        return _auth.currentUser?.emailVerified ?? false;
-      });
+    await _auth.currentUser?.reload();
+    return _auth.currentUser?.emailVerified ?? false;
+  });
 
   @override
   Future<void> signInWithGoogle() => _guard(() async {
-        if (kIsWeb) {
-          await _auth.signInWithPopup(GoogleAuthProvider());
-          return;
-        }
-        await _auth.signInWithCredential(
-            GoogleAuthProvider.credential(idToken: await _googleIdToken()));
-      });
+    if (kIsWeb) {
+      await _auth.signInWithPopup(GoogleAuthProvider());
+      return;
+    }
+    await _auth.signInWithCredential(
+      GoogleAuthProvider.credential(idToken: await _googleIdToken()),
+    );
+  });
 
   Future<String?> _googleIdToken() async {
     final google = GoogleSignIn.instance;
@@ -127,48 +135,48 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<PhoneCodeResult> sendPhoneCode(String e164Phone) => _guard(() async {
-        if (kIsWeb) {
-          final confirmation = await _auth.signInWithPhoneNumber(e164Phone);
-          _webConfirmations[confirmation.verificationId] = confirmation;
-          return PhoneCodeSent(confirmation.verificationId);
+    if (kIsWeb) {
+      final confirmation = await _auth.signInWithPhoneNumber(e164Phone);
+      _webConfirmations[confirmation.verificationId] = confirmation;
+      return PhoneCodeSent(confirmation.verificationId);
+    }
+    final completer = Completer<PhoneCodeResult>();
+    await _auth.verifyPhoneNumber(
+      phoneNumber: e164Phone,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (credential) async {
+        if (completer.isCompleted) return;
+        try {
+          await _auth.signInWithCredential(credential);
+          completer.complete(const PhoneAutoVerified());
+        } on FirebaseAuthException catch (e) {
+          completer.completeError(AuthFailure(mapFirebaseAuthCode(e.code, e.message)));
         }
-        final completer = Completer<PhoneCodeResult>();
-        await _auth.verifyPhoneNumber(
-          phoneNumber: e164Phone,
-          timeout: const Duration(seconds: 60),
-          verificationCompleted: (credential) async {
-            if (completer.isCompleted) return;
-            try {
-              await _auth.signInWithCredential(credential);
-              completer.complete(const PhoneAutoVerified());
-            } on FirebaseAuthException catch (e) {
-              completer.completeError(AuthFailure(mapFirebaseAuthCode(e.code)));
-            }
-          },
-          verificationFailed: (e) {
-            if (!completer.isCompleted) {
-              completer.completeError(AuthFailure(mapFirebaseAuthCode(e.code)));
-            }
-          },
-          codeSent: (verificationId, _) {
-            if (!completer.isCompleted) completer.complete(PhoneCodeSent(verificationId));
-          },
-          codeAutoRetrievalTimeout: (_) {},
-        );
-        return completer.future;
-      });
+      },
+      verificationFailed: (e) {
+        if (!completer.isCompleted) {
+          completer.completeError(AuthFailure(mapFirebaseAuthCode(e.code, e.message)));
+        }
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) completer.complete(PhoneCodeSent(verificationId));
+      },
+      codeAutoRetrievalTimeout: (_) {},
+    );
+    return completer.future;
+  });
 
   @override
-  Future<void> confirmPhoneCode(String verificationId, String smsCode) =>
-      _guard(() async {
-        final web = _webConfirmations.remove(verificationId);
-        if (web != null) {
-          await web.confirm(smsCode);
-          return;
-        }
-        await _auth.signInWithCredential(PhoneAuthProvider.credential(
-            verificationId: verificationId, smsCode: smsCode));
-      });
+  Future<void> confirmPhoneCode(String verificationId, String smsCode) => _guard(() async {
+    final web = _webConfirmations.remove(verificationId);
+    if (web != null) {
+      await web.confirm(smsCode);
+      return;
+    }
+    await _auth.signInWithCredential(
+      PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode),
+    );
+  });
 
   @override
   Future<void> sendPasswordReset(String email) =>
@@ -176,22 +184,24 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> ensureRecentLogin({String? password}) => _guard(() async {
-        final user = _auth.currentUser;
-        if (user == null) throw const AuthFailure(AuthFailureCode.unknown);
-        final providers = user.providerData.map((p) => p.providerId).toSet();
-        if (providers.contains('password')) {
-          await user.reauthenticateWithCredential(
-              EmailAuthProvider.credential(email: user.email!, password: password ?? ''));
-        } else if (providers.contains('google.com') && !kIsWeb) {
-          await user.reauthenticateWithCredential(
-              GoogleAuthProvider.credential(idToken: await _googleIdToken()));
-        } else {
-          final last = user.metadata.lastSignInTime;
-          if (last == null || DateTime.now().difference(last) > const Duration(minutes: 5)) {
-            throw const AuthFailure(AuthFailureCode.requiresRecentLogin);
-          }
-        }
-      });
+    final user = _auth.currentUser;
+    if (user == null) throw const AuthFailure(AuthFailureCode.unknown);
+    final providers = user.providerData.map((p) => p.providerId).toSet();
+    if (providers.contains('password')) {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: user.email!, password: password ?? ''),
+      );
+    } else if (providers.contains('google.com') && !kIsWeb) {
+      await user.reauthenticateWithCredential(
+        GoogleAuthProvider.credential(idToken: await _googleIdToken()),
+      );
+    } else {
+      final last = user.metadata.lastSignInTime;
+      if (last == null || DateTime.now().difference(last) > const Duration(minutes: 5)) {
+        throw const AuthFailure(AuthFailureCode.requiresRecentLogin);
+      }
+    }
+  });
 
   @override
   Future<void> deleteCurrentUser() => _guard(() async => _auth.currentUser?.delete());

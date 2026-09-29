@@ -26,12 +26,12 @@ class MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => EcoListTile(
-        leading: EcoAvatar(text: emoji, gradient: gradient, size: 42),
-        title: label,
-        showDivider: showDivider,
-        onTap: onTap,
-        trailing: trailing ??
-            Icon(Icons.chevron_right,
-                color: danger ? const Color(0xFFC4482A) : context.eco.muted),
-      );
+    leading: EcoAvatar(text: emoji, gradient: gradient, size: 42),
+    title: label,
+    showDivider: showDivider,
+    onTap: onTap,
+    trailing:
+        trailing ??
+        Icon(Icons.chevron_right, color: danger ? const Color(0xFFC4482A) : context.eco.muted),
+  );
 }

@@ -20,8 +20,8 @@ class LoginAttemptsStore {
     );
   }
 
-  Future<void> write(String email, LoginAttempts a) => _prefs.setString(
-      _key(email), '${a.failures}|${a.lockedUntil?.millisecondsSinceEpoch ?? ''}');
+  Future<void> write(String email, LoginAttempts a) =>
+      _prefs.setString(_key(email), '${a.failures}|${a.lockedUntil?.millisecondsSinceEpoch ?? ''}');
 
   Future<void> clear(String email) => _prefs.remove(_key(email));
 }

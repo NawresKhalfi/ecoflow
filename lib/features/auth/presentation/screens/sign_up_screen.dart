@@ -47,7 +47,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
-    await ref.read(signUpControllerProvider.notifier).signUpWithEmail(
+    await ref
+        .read(signUpControllerProvider.notifier)
+        .signUpWithEmail(
           displayName: _name.text,
           email: _email.text,
           password: _password.text,
@@ -66,49 +68,58 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       emoji: '🌱',
       gradient: roleGradient(_role),
       footer: [
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(l.haveAccount),
-          EcoLink(label: l.signInButton, onPressed: () => context.push(Routes.signIn)),
-        ]),
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(l.haveAccount),
+            EcoLink(label: l.signInButton, onPressed: () => context.push(Routes.signIn)),
+          ],
+        ),
       ],
       children: [
         Form(
           key: _form,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            EcoTextField(
-              label: l.fullNameLabel,
-              emoji: '🙂',
-              controller: _name,
-              autofillHints: const [AutofillHints.name],
-              validator: fieldValidator(context, (v) => validateRequired(v, maxLength: 80)),
-            ),
-            const SizedBox(height: 12),
-            EcoTextField(
-              label: l.emailLabel,
-              emoji: '✉️',
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              validator: fieldValidator(context, validateEmail),
-            ),
-            const SizedBox(height: 12),
-            PasswordField(
-              label: l.passwordLabel,
-              controller: _password,
-              helper: l.passwordHint,
-              newPassword: true,
-              validator: fieldValidator(context, validatePassword),
-            ),
-            const SizedBox(height: 12),
-            PasswordField(
-              label: l.confirmPasswordLabel,
-              controller: _confirm,
-              newPassword: true,
-              textInputAction: TextInputAction.done,
-              validator:
-                  fieldValidator(context, (v) => validatePasswordConfirmation(_password.text, v)),
-            ),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              EcoTextField(
+                label: l.fullNameLabel,
+                emoji: '🙂',
+                controller: _name,
+                autofillHints: const [AutofillHints.name],
+                validator: fieldValidator(context, (v) => validateRequired(v, maxLength: 80)),
+              ),
+              const SizedBox(height: 12),
+              EcoTextField(
+                label: l.emailLabel,
+                emoji: '✉️',
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                validator: fieldValidator(context, validateEmail),
+              ),
+              const SizedBox(height: 12),
+              PasswordField(
+                label: l.passwordLabel,
+                controller: _password,
+                helper: l.passwordHint,
+                newPassword: true,
+                validator: fieldValidator(context, validatePassword),
+              ),
+              const SizedBox(height: 12),
+              PasswordField(
+                label: l.confirmPasswordLabel,
+                controller: _confirm,
+                newPassword: true,
+                textInputAction: TextInputAction.done,
+                validator: fieldValidator(
+                  context,
+                  (v) => validatePasswordConfirmation(_password.text, v),
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 18),
         RolePicker(value: _role, onChanged: (r) => setState(() => _role = r)),

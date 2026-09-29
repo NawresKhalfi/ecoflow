@@ -28,43 +28,41 @@ class SavedAddress {
     double? latitude,
     double? longitude,
     bool? isDefault,
-  }) =>
-      SavedAddress(
-        id: id ?? this.id,
-        label: label ?? this.label,
-        street: street ?? this.street,
-        city: city ?? this.city,
-        latitude: latitude ?? this.latitude,
-        longitude: longitude ?? this.longitude,
-        isDefault: isDefault ?? this.isDefault,
-      );
+  }) => SavedAddress(
+    id: id ?? this.id,
+    label: label ?? this.label,
+    street: street ?? this.street,
+    city: city ?? this.city,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    isDefault: isDefault ?? this.isDefault,
+  );
 
   Map<String, dynamic> toMap() => {
-        'label': label,
-        'street': street,
-        'city': city,
-        'latitude': latitude,
-        'longitude': longitude,
-        'isDefault': isDefault,
-      };
+    'label': label,
+    'street': street,
+    'city': city,
+    'latitude': latitude,
+    'longitude': longitude,
+    'isDefault': isDefault,
+  };
 
   static SavedAddress fromMap(String id, Map<String, dynamic> m) => SavedAddress(
-        id: id,
-        label: m['label'] as String? ?? '',
-        street: m['street'] as String? ?? '',
-        city: m['city'] as String? ?? '',
-        latitude: (m['latitude'] as num?)?.toDouble(),
-        longitude: (m['longitude'] as num?)?.toDouble(),
-        isDefault: m['isDefault'] as bool? ?? false,
-      );
+    id: id,
+    label: m['label'] as String? ?? '',
+    street: m['street'] as String? ?? '',
+    city: m['city'] as String? ?? '',
+    latitude: (m['latitude'] as num?)?.toDouble(),
+    longitude: (m['longitude'] as num?)?.toDouble(),
+    isDefault: m['isDefault'] as bool? ?? false,
+  );
 }
 
 /// Trie les adresses (défaut en premier) et garantit une seule adresse par
 /// défaut : la première de la liste si aucune n'est marquée.
 List<SavedAddress> normalizeAddresses(List<SavedAddress> list) {
   if (list.isEmpty) return list;
-  final defaultId =
-      list.firstWhere((a) => a.isDefault, orElse: () => list.first).id;
+  final defaultId = list.firstWhere((a) => a.isDefault, orElse: () => list.first).id;
   final result = [for (final a in list) a.copyWith(isDefault: a.id == defaultId)];
   result.sort((a, b) => a.isDefault == b.isDefault ? 0 : (a.isDefault ? -1 : 1));
   return result;

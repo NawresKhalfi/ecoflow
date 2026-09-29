@@ -40,18 +40,18 @@ class PhoneAuthController extends Notifier<PhoneAuthState> {
       if (!ref.mounted) return;
       state = switch (result) {
         PhoneCodeSent(:final verificationId) => PhoneAuthState(
-            phase: PhoneAuthPhase.enterCode,
-            session: OtpSession(
-                verificationId: verificationId, phoneNumber: phone, sentAt: _now()),
-          ),
+          phase: PhoneAuthPhase.enterCode,
+          session: OtpSession(verificationId: verificationId, phoneNumber: phone, sentAt: _now()),
+        ),
         PhoneAutoVerified() => const PhoneAuthState(phase: PhoneAuthPhase.verified),
       };
     } catch (e) {
       if (!ref.mounted) return;
       state = PhoneAuthState(
-          phase: state.session == null ? PhoneAuthPhase.enterPhone : PhoneAuthPhase.enterCode,
-          session: state.session,
-          error: e);
+        phase: state.session == null ? PhoneAuthPhase.enterPhone : PhoneAuthPhase.enterCode,
+        session: state.session,
+        error: e,
+      );
     }
   }
 

@@ -24,8 +24,9 @@ class CompleteProfileScreen extends ConsumerStatefulWidget {
 
 class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   final _form = GlobalKey<FormState>();
-  late final _name =
-      TextEditingController(text: ref.read(authRepositoryProvider).currentUser?.displayName);
+  late final _name = TextEditingController(
+    text: ref.read(authRepositoryProvider).currentUser?.displayName,
+  );
   UserRole _role = UserRole.citizen;
   bool _consent = false;
 
@@ -80,8 +81,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
               ? null
               : () {
                   if (!_form.currentState!.validate()) return;
-                  ref.read(signUpControllerProvider.notifier).completeProfile(
-                      displayName: _name.text, role: _role, consent: _consent);
+                  ref
+                      .read(signUpControllerProvider.notifier)
+                      .completeProfile(displayName: _name.text, role: _role, consent: _consent);
                 },
         ),
       ],

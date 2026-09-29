@@ -7,16 +7,12 @@ import '../../helpers/test_app.dart';
 
 void main() {
   test('defaults to the device language', () async {
-    final c = await testContainer(overrides: [
-      deviceLocalesProvider.overrideWithValue(const [Locale('en', 'US')]),
-    ]);
+    final c = await testContainer(deviceLocales: const [Locale('en', 'US')]);
     expect(c.read(languageControllerProvider), AppLanguage.en);
   });
 
   test('persists an explicit choice', () async {
-    final c = await testContainer(overrides: [
-      deviceLocalesProvider.overrideWithValue(const [Locale('en')]),
-    ]);
+    final c = await testContainer(deviceLocales: const [Locale('en')]);
     await c.read(languageControllerProvider.notifier).select(AppLanguage.ar);
     expect(c.read(languageControllerProvider), AppLanguage.ar);
     c.invalidate(languageControllerProvider);

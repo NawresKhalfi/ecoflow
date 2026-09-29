@@ -48,15 +48,15 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     super.dispose();
   }
 
-  String _mmss(Duration d) =>
-      '${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+  String _mmss(Duration d) => '${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final state = ref.watch(phoneAuthControllerProvider);
     final ctrl = ref.read(phoneAuthControllerProvider.notifier);
-    final codeStep = state.session != null &&
+    final codeStep =
+        state.session != null &&
         (state.phase == PhoneAuthPhase.enterCode || state.phase == PhoneAuthPhase.verifying);
     return AuthScaffold(
       title: codeStep ? l.otpTitle : l.phoneTitle,
@@ -127,9 +127,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
           alignment: AlignmentDirectional.centerStart,
           child: EcoChip(
             tone: expired ? ChipTone.coral : ChipTone.sun,
-            label: expired
-                ? l.otpExpired
-                : l.otpExpiresIn(_mmss(policy.remaining(session, now))),
+            label: expired ? l.otpExpired : l.otpExpiresIn(_mmss(policy.remaining(session, now))),
           ),
         ),
         const SizedBox(height: 14),
@@ -140,19 +138,22 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
           onPressed: expired ? null : () => ctrl.confirm(_code.text),
         ),
         const SizedBox(height: 6),
-        Wrap(alignment: WrapAlignment.spaceBetween, children: [
-          EcoLink(
-            label: canResend ? l.resendCode : l.resendIn(resendWait),
-            onPressed: canResend
-                ? () {
-                    _code.clear();
-                    HapticFeedback.selectionClick();
-                    ctrl.resend();
-                  }
-                : null,
-          ),
-          EcoLink(label: l.changeNumber, onPressed: ctrl.changeNumber),
-        ]),
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            EcoLink(
+              label: canResend ? l.resendCode : l.resendIn(resendWait),
+              onPressed: canResend
+                  ? () {
+                      _code.clear();
+                      HapticFeedback.selectionClick();
+                      ctrl.resend();
+                    }
+                  : null,
+            ),
+            EcoLink(label: l.changeNumber, onPressed: ctrl.changeNumber),
+          ],
+        ),
       ],
     );
   }

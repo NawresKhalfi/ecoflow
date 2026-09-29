@@ -17,12 +17,12 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsetsDirectional.only(start: 4, top: 6),
-        child: Semantics(
-          header: true,
-          child: Text(text, style: Theme.of(context).textTheme.titleLarge),
-        ),
-      );
+    padding: const EdgeInsetsDirectional.only(start: 4, top: 6),
+    child: Semantics(
+      header: true,
+      child: Text(text, style: Theme.of(context).textTheme.titleLarge),
+    ),
+  );
 }
 
 /// Pastille d'avatar arrondie (emoji ou initiales).
@@ -44,9 +44,14 @@ class EcoAvatar extends StatelessWidget {
         gradient: gradient,
         borderRadius: BorderRadius.circular(size * .35),
       ),
-      child: Text(text,
-          style: AppTheme.weighted(size * .45, 800,
-              color: gradient == null ? EcoColors.primary : Colors.white)),
+      child: Text(
+        text,
+        style: AppTheme.weighted(
+          size * .45,
+          800,
+          color: gradient == null ? EcoColors.primary : Colors.white,
+        ),
+      ),
     );
   }
 }
@@ -74,25 +79,37 @@ class EcoListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final eco = context.eco;
     final text = Theme.of(context).textTheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          border: showDivider ? Border(bottom: BorderSide(color: eco.line)) : null,
-        ),
-        child: Row(children: [
-          leading,
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: text.titleSmall),
-              if (subtitle != null) Text(subtitle!, style: text.bodySmall),
-            ]),
+    // Rôle « bouton » pour les lecteurs d'écran quand la ligne est cliquable.
+    return Semantics(
+      button: onTap != null,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              border: showDivider ? Border(bottom: BorderSide(color: eco.line)) : null,
+            ),
+            child: Row(
+              children: [
+                leading,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: text.titleSmall),
+                      if (subtitle != null) Text(subtitle!, style: text.bodySmall),
+                    ],
+                  ),
+                ),
+                if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+              ],
+            ),
           ),
-          if (trailing != null) ...[const SizedBox(width: 8), trailing!],
-        ]),
+        ),
       ),
     );
   }

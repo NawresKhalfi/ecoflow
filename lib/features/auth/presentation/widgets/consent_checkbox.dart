@@ -15,25 +15,31 @@ class ConsentCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      MergeSemantics(
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Checkbox(value: value, onChanged: (v) => onChanged(v ?? false)),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(!value),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text(l.consentLabel, style: Theme.of(context).textTheme.bodyMedium),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MergeSemantics(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Checkbox(value: value, onChanged: (v) => onChanged(v ?? false)),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => onChanged(!value),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(l.consentLabel, style: Theme.of(context).textTheme.bodyMedium),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ]),
-      ),
-      Padding(
-        padding: const EdgeInsetsDirectional.only(start: 36),
-        child: EcoLink(label: l.consentRead, onPressed: () => context.push(Routes.privacy)),
-      ),
-    ]);
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: 36),
+          child: EcoLink(label: l.consentRead, onPressed: () => context.push(Routes.privacy)),
+        ),
+      ],
+    );
   }
 }

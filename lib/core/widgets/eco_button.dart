@@ -50,9 +50,11 @@ class EcoButton extends StatelessWidget {
             const SizedBox(width: 8),
           ],
           Flexible(
-            child: Text(label,
-                textAlign: TextAlign.center,
-                style: AppTheme.weighted(16, 700, color: fg)),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: AppTheme.weighted(16, 700, color: fg),
+            ),
           ),
         ],
       ],
@@ -98,12 +100,12 @@ class EcoLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          foregroundColor: color ?? EcoColors.primary,
-          textStyle: AppTheme.weighted(15, 700),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        ),
-        child: Text(label),
-      );
+    onPressed: onPressed,
+    style: TextButton.styleFrom(
+      foregroundColor: color ?? EcoColors.primary,
+      textStyle: AppTheme.weighted(15, 700),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    ),
+    child: Text(label),
+  );
 }

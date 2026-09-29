@@ -73,15 +73,19 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
 
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
-    final ok = await ref.read(addressesControllerProvider.notifier).save(SavedAddress(
-          id: widget.addressId ?? '',
-          label: _label.text.trim(),
-          street: _street.text.trim(),
-          city: _city.text.trim(),
-          latitude: _lat,
-          longitude: _lng,
-          isDefault: _isDefault,
-        ));
+    final ok = await ref
+        .read(addressesControllerProvider.notifier)
+        .save(
+          SavedAddress(
+            id: widget.addressId ?? '',
+            label: _label.text.trim(),
+            street: _street.text.trim(),
+            city: _city.text.trim(),
+            latitude: _lat,
+            longitude: _lng,
+            isDefault: _isDefault,
+          ),
+        );
     if (ok && mounted) {
       showEcoToast(context, context.l10n.addressSaved);
       context.go(Routes.addresses);
@@ -104,7 +108,9 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
         leading: IconButton.filledTonal(
           tooltip: l.commonBack,
           style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
+            backgroundColor: Colors.white.withValues(alpha: .22),
+            foregroundColor: Colors.white,
+          ),
           onPressed: () => context.go(Routes.addresses),
           icon: const BackButtonIcon(),
         ),
@@ -113,60 +119,73 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
         EcoCard(
           child: Form(
             key: _form,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              EcoTextField(label: l.addressLabel, emoji: '🏷️', controller: _label, validator: required),
-              const SizedBox(height: 12),
-              EcoTextField(
-                label: l.addressStreet,
-                emoji: '🏠',
-                controller: _street,
-                autofillHints: const [AutofillHints.fullStreetAddress],
-                validator: required,
-              ),
-              const SizedBox(height: 12),
-              EcoTextField(
-                label: l.addressCity,
-                emoji: '🏙️',
-                controller: _city,
-                autofillHints: const [AutofillHints.addressCity],
-                validator: required,
-              ),
-              const SizedBox(height: 14),
-              Wrap(spacing: 10, runSpacing: 10, crossAxisAlignment: WrapCrossAlignment.center, children: [
-                EcoChip(
-                  tone: _lat != null ? ChipTone.sky : ChipTone.coral,
-                  label: _lat != null
-                      ? '🛰️ ${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
-                      : l.addressNoGps,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                EcoTextField(
+                  label: l.addressLabel,
+                  emoji: '🏷️',
+                  controller: _label,
+                  validator: required,
                 ),
-                EcoButton(
-                  label: l.addressUseGps,
-                  leading: '🛰️',
-                  style: EcoButtonStyle.ghost,
-                  expand: false,
-                  loading: _locating,
-                  onPressed: _locate,
-                ),
-              ]),
-              const SizedBox(height: 8),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l.addressIsDefault, style: Theme.of(context).textTheme.titleSmall),
-                value: _isDefault,
-                onChanged: (v) => setState(() => _isDefault = v),
-              ),
-              if (state.error != null) ...[
-                ErrorBanner(failureText(context, state.error!)),
                 const SizedBox(height: 12),
+                EcoTextField(
+                  label: l.addressStreet,
+                  emoji: '🏠',
+                  controller: _street,
+                  autofillHints: const [AutofillHints.fullStreetAddress],
+                  validator: required,
+                ),
+                const SizedBox(height: 12),
+                EcoTextField(
+                  label: l.addressCity,
+                  emoji: '🏙️',
+                  controller: _city,
+                  autofillHints: const [AutofillHints.addressCity],
+                  validator: required,
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    EcoChip(
+                      tone: _lat != null ? ChipTone.sky : ChipTone.coral,
+                      label: _lat != null
+                          ? '🛰️ ${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
+                          : l.addressNoGps,
+                    ),
+                    EcoButton(
+                      label: l.addressUseGps,
+                      leading: '🛰️',
+                      style: EcoButtonStyle.ghost,
+                      expand: false,
+                      loading: _locating,
+                      onPressed: _locate,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l.addressIsDefault, style: Theme.of(context).textTheme.titleSmall),
+                  value: _isDefault,
+                  onChanged: (v) => setState(() => _isDefault = v),
+                ),
+                if (state.error != null) ...[
+                  ErrorBanner(failureText(context, state.error!)),
+                  const SizedBox(height: 12),
+                ],
+                const SizedBox(height: 8),
+                EcoButton(
+                  label: l.commonSave,
+                  style: EcoButtonStyle.green,
+                  loading: state.isLoading,
+                  onPressed: _save,
+                ),
               ],
-              const SizedBox(height: 8),
-              EcoButton(
-                label: l.commonSave,
-                style: EcoButtonStyle.green,
-                loading: state.isLoading,
-                onPressed: _save,
-              ),
-            ]),
+            ),
           ),
         ),
       ],

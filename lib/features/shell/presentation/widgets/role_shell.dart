@@ -8,6 +8,9 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../auth/domain/user_role.dart';
+import '../../../estimation/application/estimation_providers.dart';
+import '../../../estimation/domain/estimate_record.dart';
+import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../domain/nav_destinations.dart';
 
 /// Coque de navigation de l'espace connecté : barre latérale sur grand
@@ -26,15 +29,18 @@ class RoleShell extends ConsumerWidget {
     final items = destinationsFor(role);
     final active = activeDestination(items, location);
     final wide = MediaQuery.sizeOf(context).width >= breakpoint;
+    if (role == UserRole.citizen) _notifyWeighed(context, ref);
     void go(NavDestination d) => context.go(d.route);
 
     if (wide) {
       return Scaffold(
         body: EcoBackground(
-          child: Row(children: [
-            _SideNav(items: items, active: active, onSelect: go),
-            Expanded(child: child),
-          ]),
+          child: Row(
+            children: [
+              _SideNav(items: items, active: active, onSelect: go),
+              Expanded(child: child),
+            ],
+          ),
         ),
       );
     }
@@ -46,13 +52,32 @@ class RoleShell extends ConsumerWidget {
   }
 }
 
+/// Notification du montant final quand une pesée est validée (US-029).
+void _notifyWeighed(BuildContext context, WidgetRef ref) {
+  ref.listen<AsyncValue<List<EstimateRecord>>>(myEstimatesProvider, (prev, next) {
+    final before = {for (final r in prev?.value ?? const <EstimateRecord>[]) r.code: r.isWeighed};
+    for (final r in next.value ?? const <EstimateRecord>[]) {
+      if (r.isWeighed && before[r.code] == false) {
+        final amount = context.l10n.dt(fmtDt(context, r.weighing!.finalDt));
+        showEcoToast(context, '✅ ${context.l10n.estWeighedNotice(amount)}');
+      }
+    }
+  });
+}
+
 String navLabel(AppLocalizations l, NavDestination d) => switch (d) {
-      NavDestination.home => l.navHome,
-      NavDestination.addresses => l.navAddresses,
-      NavDestination.documents => l.navDocuments,
-      NavDestination.company => l.navCompany,
-      NavDestination.profile => l.navProfile,
-    };
+  NavDestination.home => l.navHome,
+  NavDestination.scan => l.navScan,
+  NavDestination.estimates => l.navEstimates,
+  NavDestination.weighing => l.navWeighing,
+  NavDestination.pricing => l.navPricing,
+  NavDestination.catalog => l.navCatalog,
+  NavDestination.model => l.navModel,
+  NavDestination.addresses => l.navAddresses,
+  NavDestination.documents => l.navDocuments,
+  NavDestination.company => l.navCompany,
+  NavDestination.profile => l.navProfile,
+};
 
 class _NavButton extends StatelessWidget {
   const _NavButton({
@@ -75,7 +100,12 @@ class _NavButton extends StatelessWidget {
     final children = [
       ExcludeSemantics(child: Text(item.emoji, style: const TextStyle(fontSize: 22))),
       SizedBox(width: horizontal ? 12 : 0, height: horizontal ? 0 : 2),
-      Text(label, style: AppTheme.weighted(horizontal ? 15 : 11, 600, color: fg)),
+      horizontal
+          ? Text(label, style: AppTheme.weighted(15, 600, color: fg))
+          : FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(label, maxLines: 1, style: AppTheme.weighted(11, 600, color: fg)),
+            ),
     ];
     return Semantics(
       selected: selected,
@@ -89,10 +119,13 @@ class _NavButton extends StatelessWidget {
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutBack,
             transform: Matrix4.translationValues(
-                horizontal && selected ? 6 : 0, !horizontal && selected ? -6 : 0, 0),
+              horizontal && selected ? 6 : 0,
+              !horizontal && selected ? -6 : 0,
+              0,
+            ),
             padding: horizontal
                 ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
-                : const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                : const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             decoration: BoxDecoration(
               gradient: selected ? EcoGradients.green : null,
               color: selected ? null : (horizontal ? null : eco.card),
@@ -100,10 +133,11 @@ class _NavButton extends StatelessWidget {
               boxShadow: selected
                   ? [
                       BoxShadow(
-                          color: EcoColors.primary.withValues(alpha: .5),
-                          blurRadius: 18,
-                          spreadRadius: -8,
-                          offset: const Offset(0, 10)),
+                        color: EcoColors.primary.withValues(alpha: .5),
+                        blurRadius: 18,
+                        spreadRadius: -8,
+                        offset: const Offset(0, 10),
+                      ),
                     ]
                   : (horizontal ? null : eco.softShadow),
             ),
@@ -132,22 +166,35 @@ class _SideNav extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 26, 16, 26),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.only(start: 8, bottom: 20),
-              child: Text.rich(
-                TextSpan(children: [
-                  const TextSpan(text: '♻️ Eco'),
-                  const TextSpan(text: 'Flow', style: TextStyle(color: EcoColors.primary)),
-                ]),
-                style: AppTheme.weighted(26, 800, color: eco.ink),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 8, bottom: 20),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(text: '♻️ Eco'),
+                      const TextSpan(
+                        text: 'Flow',
+                        style: TextStyle(color: EcoColors.primary),
+                      ),
+                    ],
+                  ),
+                  style: AppTheme.weighted(26, 800, color: eco.ink),
+                ),
               ),
-            ),
-            for (final d in items) ...[
-              _NavButton(item: d, selected: d == active, horizontal: true, onTap: () => onSelect(d)),
-              const SizedBox(height: 6),
+              for (final d in items) ...[
+                _NavButton(
+                  item: d,
+                  selected: d == active,
+                  horizontal: true,
+                  onTap: () => onSelect(d),
+                ),
+                const SizedBox(height: 6),
+              ],
             ],
-          ]),
+          ),
         ),
       ),
     );
@@ -174,14 +221,29 @@ class _BottomNav extends StatelessWidget {
           stops: const [0, .6],
         ),
       ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        for (final d in items)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3),
-            child: _NavButton(
-                item: d, selected: d == active, horizontal: false, onTap: () => onSelect(d)),
+      // Boutons flexibles : 4 onglets tiennent sur les plus petits écrans.
+      child: Align(
+        heightFactor: 1,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 96.0 * items.length),
+          child: Row(
+            children: [
+              for (final d in items)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: _NavButton(
+                      item: d,
+                      selected: d == active,
+                      horizontal: false,
+                      onTap: () => onSelect(d),
+                    ),
+                  ),
+                ),
+            ],
           ),
-      ]),
+        ),
+      ),
     );
   }
 }

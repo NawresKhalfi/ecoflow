@@ -1,10 +1,6 @@
 /// Session de vérification SMS en cours.
 class OtpSession {
-  const OtpSession({
-    required this.verificationId,
-    required this.phoneNumber,
-    required this.sentAt,
-  });
+  const OtpSession({required this.verificationId, required this.phoneNumber, required this.sentAt});
 
   final String verificationId;
   final String phoneNumber;
@@ -21,14 +17,12 @@ class OtpPolicy {
   final Duration validity;
   final Duration resendCooldown;
 
-  bool isExpired(OtpSession s, DateTime now) =>
-      !now.isBefore(s.sentAt.add(validity));
+  bool isExpired(OtpSession s, DateTime now) => !now.isBefore(s.sentAt.add(validity));
 
   Duration remaining(OtpSession s, DateTime now) {
     final left = s.sentAt.add(validity).difference(now);
     return left.isNegative ? Duration.zero : left;
   }
 
-  bool canResend(OtpSession s, DateTime now) =>
-      !now.isBefore(s.sentAt.add(resendCooldown));
+  bool canResend(OtpSession s, DateTime now) => !now.isBefore(s.sentAt.add(resendCooldown));
 }
