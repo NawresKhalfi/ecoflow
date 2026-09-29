@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart' hide GeoPoint;
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:geocoding/geocoding.dart';
 
 import '../domain/feedback.dart';
@@ -175,16 +176,21 @@ Stream<CollectionConfig> watchCollectionConfig(FirebaseFirestore db) => db
 
 /// Adresse lisible à partir d'une position (géocodeur natif, sans clé).
 abstract interface class ReverseGeocoder {
-  Future<String?> addressOf(GeoPoint p);
+  /// [languageCode] : langue de l'application (sinon celle du système).
+  Future<String?> addressOf(GeoPoint p, {String? languageCode});
 }
 
 class NativeReverseGeocoder implements ReverseGeocoder {
   final _geocoding = Geocoding();
 
   @override
-  Future<String?> addressOf(GeoPoint p) async {
+  Future<String?> addressOf(GeoPoint p, {String? languageCode}) async {
     try {
-      final places = await _geocoding.placemarkFromCoordinates(p.lat, p.lng);
+      final places = await _geocoding.placemarkFromCoordinates(
+        p.lat,
+        p.lng,
+        locale: languageCode == null ? null : Locale(languageCode),
+      );
       final pl = places.firstOrNull;
       if (pl == null) return null;
       final parts = [

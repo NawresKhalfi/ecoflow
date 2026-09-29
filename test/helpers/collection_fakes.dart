@@ -4,7 +4,7 @@ import 'package:ecoflow/features/profile/data/location_service.dart';
 
 class FakeGeocoder implements ReverseGeocoder {
   @override
-  Future<String?> addressOf(GeoPoint p) async => 'Rue de test, Sousse';
+  Future<String?> addressOf(GeoPoint p, {String? languageCode}) async => 'Rue de test, Sousse';
 }
 
 class FakeLocation implements LocationService {

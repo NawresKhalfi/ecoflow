@@ -36,7 +36,9 @@ void main() {
     test('served zone check', () {
       expect(zoneFor(const GeoPoint(35.83, 10.63), defaultZones)!.id, 'sousse');
       expect(zoneFor(const GeoPoint(33.5, 9.0), defaultZones), isNull, reason: 'desert');
-      const inactive = [ServiceZone(id: 'x', name: 'X', center: sousse, radiusKm: 5, active: false)];
+      const inactive = [
+        ServiceZone(id: 'x', name: 'X', center: sousse, radiusKm: 5, active: false),
+      ];
       expect(zoneFor(sousse, inactive), isNull);
     });
   });
@@ -57,7 +59,11 @@ void main() {
       final counts = {slots[1].id: 10, slots[2].id: 3};
       expect(isSlotFull(counts, slots[1], 10), isTrue);
       expect(isSlotFull(counts, slots[2], 10), isFalse);
-      expect(freeSlotsAfter(slots, counts, 10, slots[0]).map((s) => s.id), [slots[2].id, slots[3].id, slots[4].id]);
+      expect(freeSlotsAfter(slots, counts, 10, slots[0]).map((s) => s.id), [
+        slots[2].id,
+        slots[3].id,
+        slots[4].id,
+      ]);
     });
   });
 
@@ -67,8 +73,14 @@ void main() {
     test('modifiable until 1 h before, before arrival', () {
       expect(req(slot: slot).canModify(DateTime(2026, 10, 1, 8, 59)), isTrue);
       expect(req(slot: slot).canModify(DateTime(2026, 10, 1, 9, 1)), isFalse);
-      expect(req(slot: slot, status: CollectionStatus.onTheWay).canModify(DateTime(2026, 9, 30)), isFalse);
-      expect(req(slot: slot, status: CollectionStatus.noCollector).canModify(DateTime(2026, 9, 30)), isTrue);
+      expect(
+        req(slot: slot, status: CollectionStatus.onTheWay).canModify(DateTime(2026, 9, 30)),
+        isFalse,
+      );
+      expect(
+        req(slot: slot, status: CollectionStatus.noCollector).canModify(DateTime(2026, 9, 30)),
+        isTrue,
+      );
     });
 
     test('cancellation penalty only after a collector accepted', () {
@@ -80,12 +92,28 @@ void main() {
   });
 
   group('matching (US-034)', () {
-    CollectorCandidate c(String id, double dLat, {double cap = 200, double rating = 0, int n = 0, bool online = true}) =>
-        CollectorCandidate(uid: id, point: GeoPoint(sousse.lat + dLat, sousse.lng), capacityKg: cap,
-            rating: rating, ratingCount: n, online: online);
+    CollectorCandidate c(
+      String id,
+      double dLat, {
+      double cap = 200,
+      double rating = 0,
+      int n = 0,
+      bool online = true,
+    }) => CollectorCandidate(
+      uid: id,
+      point: GeoPoint(sousse.lat + dLat, sousse.lng),
+      capacityKg: cap,
+      rating: rating,
+      ratingCount: n,
+      online: online,
+    );
 
     test('5 km first, then widened', () {
-      final near = matchCollector(pickup: sousse, neededKg: 3, candidates: [c('far', .12), c('near', .02)]);
+      final near = matchCollector(
+        pickup: sousse,
+        neededKg: 3,
+        candidates: [c('far', .12), c('near', .02)],
+      );
       expect(near.candidate!.uid, 'near');
       expect(near.radiusKm, 5);
       final widened = matchCollector(pickup: sousse, neededKg: 3, candidates: [c('far', .12)]);
@@ -98,7 +126,12 @@ void main() {
       final r = matchCollector(
         pickup: sousse,
         neededKg: 50,
-        candidates: [c('small', .01, cap: 20), c('off', .01, online: false), c('refused', .01), c('ok', .03)],
+        candidates: [
+          c('small', .01, cap: 20),
+          c('off', .01, online: false),
+          c('refused', .01),
+          c('ok', .03),
+        ],
         excluded: {'refused'},
       );
       expect(r.candidate!.uid, 'ok');

@@ -190,7 +190,9 @@ service cloud.firestore {
             && !changed().hasAny(['citizenUid', 'estimateCode', 'collectorUid', 'createdAt'])
             && request.resource.data.instructions.size() <= 300
             && request.resource.data.status in ['searching', 'noCollector', 'proposed', 'cancelled', 'completed', resource.data.status]
-            && (request.resource.data.status != 'completed' || resource.data.status == 'handedOver'))
+            && (request.resource.data.status != 'completed' || resource.data.status in ['handedOver', 'completed'])
+            // Une collecte terminée n'accepte plus que la marque « notée ».
+            && (resource.data.status != 'completed' || changed().hasOnly(['rated'])))
         // Collecteur vérifié : remise validée par sa propre pesée (même batch).
         || (isApprovedCollector()
             && request.resource.data.status == 'handedOver'

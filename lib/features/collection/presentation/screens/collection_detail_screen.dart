@@ -11,6 +11,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
 import '../../../auth/presentation/widgets/error_banner.dart';
+import '../../../estimation/application/estimation_providers.dart';
 import '../../../estimation/domain/handover_code.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../application/collection_actions_controller.dart';
@@ -36,6 +37,10 @@ class CollectionDetailScreen extends ConsumerWidget {
     final ctrl = ref.read(collectionActionsControllerProvider.notifier);
     final now = ref.watch(clockProvider)();
     final error = actions.error;
+    // Après la pesée : poids et montant réels (epic 3) au lieu de l'estimation.
+    final weighing = r == null
+        ? null
+        : ref.watch(estimateByCodeProvider(r.estimateCode)).value?.weighing;
     return LayeredPage(
       header: HeroHeader(
         title: r == null ? l.collectionsTitle : statusLabel(l, r.status),
@@ -60,16 +65,10 @@ class CollectionDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        statusLabel(l, r.status),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    EcoChip(label: statusLabel(l, r.status), tone: statusTone(r.status)),
-                  ],
+                // Le titre du hero affiche déjà le statut : ici la pastille seule.
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: EcoChip(label: statusLabel(l, r.status), tone: statusTone(r.status)),
                 ),
                 const SizedBox(height: 10),
                 if (r.status != CollectionStatus.cancelled) StatusTimeline(status: r.status),
@@ -88,8 +87,9 @@ class CollectionDetailScreen extends ConsumerWidget {
                 ),
                 EcoListTile(
                   leading: const EcoAvatar(text: '⚖️'),
-                  title:
-                      '${l.approxKg(fmtKg(context, r.estimatedKg))} · ${l.approxDt(fmtDt(context, r.estimatedDt))}',
+                  title: weighing == null
+                      ? '${l.approxKg(fmtKg(context, r.estimatedKg))} · ${l.approxDt(fmtDt(context, r.estimatedDt))}'
+                      : '${l.detWeighed} : ${l.kg(fmtKg(context, weighing.actualKg))} · ${l.dt(fmtDt(context, weighing.finalDt))}',
                   subtitle: r.instructions.isEmpty ? null : '📝 ${r.instructions}',
                   showDivider: r.recurrence != Recurrence.none,
                 ),

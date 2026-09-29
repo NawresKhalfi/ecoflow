@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/firebase/firebase_providers.dart';
+import '../../../core/localization/language_controller.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../estimation/application/estimation_providers.dart';
 import '../../estimation/domain/estimate_record.dart';
@@ -111,7 +112,9 @@ class RequestFormController extends Notifier<RequestFormState> {
   Future<void> setPoint(GeoPoint p, {LocationMode? mode, String? address}) async {
     state = state.copyWith(point: p, mode: mode, address: address ?? state.address);
     if (address != null) return;
-    final resolved = await ref.read(reverseGeocoderProvider).addressOf(p);
+    final resolved = await ref
+        .read(reverseGeocoderProvider)
+        .addressOf(p, languageCode: ref.read(languageControllerProvider).code);
     if (ref.mounted && state.point == p && resolved != null) {
       state = state.copyWith(address: resolved);
     }

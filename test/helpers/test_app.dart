@@ -104,6 +104,12 @@ Future<void> pumpRoutedScreen(
         path: '/test',
         builder: (_, _) => Scaffold(body: screen),
       ),
+      // Routes à paramètres (détails) : bouchon générique.
+      for (final path in ['/app/:a/:b', '/app/:a/:b/:c'])
+        GoRoute(
+          path: path,
+          builder: (_, s) => Scaffold(body: Text('route:${s.uri}')),
+        ),
       for (final path in stubs)
         GoRoute(
           path: path,

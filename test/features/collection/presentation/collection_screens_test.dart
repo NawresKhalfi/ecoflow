@@ -25,7 +25,13 @@ import '../../../helpers/collection_fakes.dart';
 import '../../../helpers/fake_auth_repository.dart';
 import '../../../helpers/test_app.dart';
 
-const line = EstimateLine(categoryId: 'can', count: 3, kg: 2, priceDtPerKg: 4, method: EstimationMethod.container);
+const line = EstimateLine(
+  categoryId: 'can',
+  count: 3,
+  kg: 2,
+  priceDtPerKg: 4,
+  method: EstimationMethod.container,
+);
 
 void main() {
   late FakeFirebaseFirestore db;
@@ -33,31 +39,58 @@ void main() {
 
   Future<List<Override>> citizen({String role = 'citizen', String status = 'notRequired'}) async {
     db = FakeFirebaseFirestore();
-    await db.doc('users/u').set({'displayName': 'Leila', 'role': role, 'status': 'active', 'verificationStatus': status});
+    await db.doc('users/u').set({
+      'displayName': 'Leila',
+      'role': role,
+      'status': 'active',
+      'verificationStatus': status,
+    });
     return [
-      authRepositoryProvider.overrideWithValue(FakeAuthRepository(
-          initialUser: const AuthUser(uid: 'u', phoneNumber: '+21622123456', providerIds: ['phone']))),
+      authRepositoryProvider.overrideWithValue(
+        FakeAuthRepository(
+          initialUser: const AuthUser(
+            uid: 'u',
+            phoneNumber: '+21622123456',
+            providerIds: ['phone'],
+          ),
+        ),
+      ),
       firestoreProvider.overrideWithValue(db),
       clockProvider.overrideWithValue(() => now),
       mapTilesEnabledProvider.overrideWithValue(false),
       reverseGeocoderProvider.overrideWithValue(FakeGeocoder()),
-      locationServiceProvider.overrideWithValue(FakeLocation((latitude: 35.8256, longitude: 10.6084))),
+      locationServiceProvider.overrideWithValue(
+        FakeLocation((latitude: 35.8256, longitude: 10.6084)),
+      ),
     ];
   }
 
   Future<String> estimate() => FirestoreEstimateRepository(db).create(
-      const EstimateRecord(code: '', citizenUid: 'u', lines: [line], confidence: .8, priceScaleId: 'default'));
+    const EstimateRecord(
+      code: '',
+      citizenUid: 'u',
+      lines: [line],
+      confidence: .8,
+      priceScaleId: 'default',
+    ),
+  );
 
   Future<String> request(String code, {CollectionStatus? status}) async {
-    final id = await FirestoreCollectionRepository(db).create(CollectionRequest(
-      id: '',
-      citizenUid: 'u',
-      estimateCode: code,
-      place: const CollectionPlace(point: GeoPoint(35.8256, 10.6084), address: 'Rue 1, Sousse', zoneId: 'sousse'),
-      slot: upcomingSlots(now)[2],
-      estimatedKg: 2,
-      estimatedDt: 8,
-    ));
+    final id = await FirestoreCollectionRepository(db).create(
+      CollectionRequest(
+        id: '',
+        citizenUid: 'u',
+        estimateCode: code,
+        place: const CollectionPlace(
+          point: GeoPoint(35.8256, 10.6084),
+          address: 'Rue 1, Sousse',
+          zoneId: 'sousse',
+        ),
+        slot: upcomingSlots(now)[2],
+        estimatedKg: 2,
+        estimatedDt: 8,
+      ),
+    );
     if (status != null) await db.doc('collections/$id').update({'status': status.name});
     return id;
   }
@@ -72,7 +105,12 @@ void main() {
   testWidgets('request form: GPS, zone, slot, instructions → detail with status', (t) async {
     final o = await citizen();
     final code = await estimate();
-    await pumpRoutedScreen(t, RequestFormScreen(estimateCode: code), size: const Size(420, 3200), overrides: o);
+    await pumpRoutedScreen(
+      t,
+      RequestFormScreen(estimateCode: code),
+      size: const Size(420, 3200),
+      overrides: o,
+    );
     await t.runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
     await settle(t);
     expect(find.text('📍 Emplacement'), findsOneWidget);
@@ -83,6 +121,8 @@ void main() {
     await t.enterText(find.byType(TextFormField).last, 'Code 1234');
     await tap(t, 'Chaque semaine');
     await tap(t, 'Confirmer la demande');
+    await t.runAsync(() => Future.delayed(const Duration(milliseconds: 800)));
+    await settle(t);
     expect(find.textContaining('route:/app/collections/'), findsOneWidget);
     final doc = (await db.collection('collections').get()).docs.single.data();
     expect(doc['status'], 'noCollector', reason: 'no collector online');
@@ -93,7 +133,12 @@ void main() {
     final o = await citizen();
     final code = await estimate();
     final id = await request(code, status: CollectionStatus.noCollector);
-    await pumpRoutedScreen(t, CollectionDetailScreen(id: id), size: const Size(420, 2600), overrides: o);
+    await pumpRoutedScreen(
+      t,
+      CollectionDetailScreen(id: id),
+      size: const Size(420, 2600),
+      overrides: o,
+    );
     await t.runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
     await settle(t);
     expect(find.text('Aucun collecteur disponible'), findsWidgets);
@@ -108,7 +153,12 @@ void main() {
     final code = await estimate();
     final id = await request(code, status: CollectionStatus.handedOver);
     await db.doc('collections/$id').update({'collectorUid': 'k'});
-    await pumpRoutedScreen(t, CollectionDetailScreen(id: id), size: const Size(420, 2600), overrides: o);
+    await pumpRoutedScreen(
+      t,
+      CollectionDetailScreen(id: id),
+      size: const Size(420, 2600),
+      overrides: o,
+    );
     await t.runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
     await settle(t);
     expect(find.text('Annuler la demande'), findsNothing);

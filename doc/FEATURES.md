@@ -11,7 +11,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E01 | Authentification & profils | MVP | 9/10 | 🟨 |
 | E02 | Vision IA – scan des déchets | MVP | 10/12 | 🟨 |
 | E03 | Estimation intelligente quantité & valeur | MVP | 8/8 | ✅ |
-| E04 | Demande de collecte | MVP | 0/11 | ⬜ |
+| E04 | Demande de collecte | MVP | 10/11 | 🟨 |
 | E05 | Espace collecteur & missions | MVP | 0/14 | ⬜ |
 | E06 | Optimisation IA des itinéraires | V1 | 0/7 | ⬜ |
 | E07 | Suivi temps réel & notifications | MVP | 0/6 | ⬜ |
@@ -80,17 +80,17 @@ _Création, modification, annulation d'une demande avec lieu et plage horaire ; 
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-031 | Citoyen | En tant que citoyen, je veux choisir l'emplacement de la collecte (GPS, carte ou adresse enregistrée) afin de être collecté là où je me trouve. | Must | MVP | ⬜ |  |
-| US-032 | Citoyen | En tant que citoyen, je veux sélectionner une plage horaire de collecte afin de planifier selon ma disponibilité. | Must | MVP | ⬜ |  |
-| US-033 | Citoyen | En tant que citoyen, je veux ajouter des instructions (étage, code d'accès, point de repère) afin de faciliter le travail du collecteur. | Should | MVP | ⬜ |  |
-| US-034 | Système | En tant que système, je dois rechercher automatiquement un collecteur disponible à proximité afin de assigner rapidement la collecte. | Must | MVP | ⬜ |  |
-| US-035 | Citoyen | En tant que citoyen, je veux modifier ou annuler ma demande avant l'arrivée du collecteur afin de garder la flexibilité. | Must | MVP | ⬜ |  |
-| US-036 | Citoyen | En tant que citoyen, je veux être informé si aucun collecteur n'est disponible et recevoir des alternatives (autre créneau, point de dépôt) afin de ne pas rester bloqué. | Should | V1 | ⬜ |  |
-| US-037 | Citoyen | En tant que citoyen, je veux planifier une collecte récurrente (hebdomadaire/mensuelle) afin de automatiser mon recyclage. | Could | V2 | ⬜ |  |
-| US-038 | Citoyen | En tant que citoyen, je veux consulter l'historique de mes demandes et leur statut afin de suivre mes collectes passées. | Must | MVP | ⬜ |  |
-| US-039 | Citoyen | En tant que citoyen, je veux remettre mes déchets en validant un code ou QR avec le collecteur afin de sécuriser la remise et le crédit de points. | Should | V1 | ⬜ |  |
-| US-040 | Citoyen | En tant que citoyen, je veux noter et commenter le collecteur après la collecte afin de améliorer la qualité du service. | Should | V1 | ⬜ |  |
-| US-041 | Citoyen | En tant que citoyen, je veux signaler un problème (collecteur absent, poids contesté, comportement) afin de obtenir une résolution. | Should | V1 | ⬜ |  |
+| US-031 | Citoyen | En tant que citoyen, je veux choisir l'emplacement de la collecte (GPS, carte ou adresse enregistrée) afin de être collecté là où je me trouve. | Must | MVP | ✅ | GPS, adresse enregistrée ou carte OpenStreetMap (épingle centrale, déplacer la carte) ; adresse inversée (géocodeur natif) ; zones desservies (cercles par défaut, gestion admin : US-117). |
+| US-032 | Citoyen | En tant que citoyen, je veux sélectionner une plage horaire de collecte afin de planifier selon ma disponibilité. | Must | MVP | ✅ | 4 créneaux/jour sur 7 jours, ≥ 1 h à l'avance ; capacité par zone et créneau via compteurs transactionnels ; complets grisés. |
+| US-033 | Citoyen | En tant que citoyen, je veux ajouter des instructions (étage, code d'accès, point de repère) afin de faciliter le travail du collecteur. | Should | MVP | ✅ | Instructions 300 caractères + photo facultative (compressée), lisibles par le collecteur (règles). |
+| US-034 | Système | En tant que système, je dois rechercher automatiquement un collecteur disponible à proximité afin de assigner rapidement la collecte. | Must | MVP | 🟨 | Rayon 5 → 10 → 20 km, score distance/note/capacité, positions arrondies à ~1 km. ⚠️ Exécuté sur le téléphone du citoyen (pas de backend Spark) ; acceptation/refus du collecteur : epic 5. |
+| US-035 | Citoyen | En tant que citoyen, je veux modifier ou annuler ma demande avant l'arrivée du collecteur afin de garder la flexibilité. | Must | MVP | ✅ | Modification ≤ 1 h avant (créneau → compteurs déplacés + nouvelle recherche), annulation avec pénalité uniquement après acceptation. Collecteur : voit la modification sur la demande ; push : epic 7. |
+| US-036 | Citoyen | En tant que citoyen, je veux être informé si aucun collecteur n'est disponible et recevoir des alternatives (autre créneau, point de dépôt) afin de ne pas rester bloqué. | Should | V1 | ✅ | Alternatives : 3 prochains créneaux libres, recycleurs validés de la ville comme points de dépôt, file d'attente (relance de la recherche). |
+| US-037 | Citoyen | En tant que citoyen, je veux planifier une collecte récurrente (hebdomadaire/mensuelle) afin de automatiser mon recyclage. | Could | V2 | ✅ | Hebdomadaire / mensuelle (fin de mois gérée) : occurrence suivante créée à la fin ou à l'annulation, avec nouvelle estimation (code à usage unique) ; arrêt à tout moment. |
+| US-038 | Citoyen | En tant que citoyen, je veux consulter l'historique de mes demandes et leur statut afin de suivre mes collectes passées. | Must | MVP | ✅ | Historique filtrable par statut (toutes / en cours / terminées / annulées) et période (30 j), détail avec frise de suivi ; poids réel après pesée. |
+| US-039 | Citoyen | En tant que citoyen, je veux remettre mes déchets en validant un code ou QR avec le collecteur afin de sécuriser la remise et le crédit de points. | Should | V1 | ✅ | Code + QR à usage unique (code de pesée) ; validation croisée : pesée du collecteur (règle getAfter) → confirmation du citoyen. Vérifié sur simulateur. |
+| US-040 | Citoyen | En tant que citoyen, je veux noter et commenter le collecteur après la collecte afin de améliorer la qualité du service. | Should | V1 | ✅ | 1 à 5 étoiles + commentaire, une note par collecte (id = collecte), moyenne collecteur en transaction. |
+| US-041 | Citoyen | En tant que citoyen, je veux signaler un problème (collecteur absent, poids contesté, comportement) afin de obtenir une résolution. | Should | V1 | ✅ | Motif (absent, poids contesté, comportement, autre) + description + 3 photos → ticket « open » pour l'admin (traitement : US-112). |
 
 ## E05 — Espace collecteur & missions
 
@@ -260,4 +260,5 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 - US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
 - US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
 - US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
+- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles) ; un bug de règle (note d'une collecte terminée) n'a été trouvé que sur l'émulateur. À traiter avec la CI (US-130) : tests de règles contre l'émulateur.
 - Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.

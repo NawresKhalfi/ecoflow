@@ -69,11 +69,27 @@ class _PinMapState extends ConsumerState<PinMap> {
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.example.ecoflow',
                   ),
-                  const SimpleAttributionWidget(source: Text('OpenStreetMap contributors')),
                 ],
               )
             else
               const ColoredBox(color: Color(0xFFDDEBDD), child: SizedBox.expand()),
+            // Attribution OpenStreetMap (obligatoire), discrète en bas à droite.
+            if (tiles)
+              Positioned(
+                right: 8,
+                bottom: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .8),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    '© OpenStreetMap',
+                    style: TextStyle(fontSize: 10, color: Colors.black87),
+                  ),
+                ),
+              ),
             const IgnorePointer(
               child: Center(
                 child: Padding(

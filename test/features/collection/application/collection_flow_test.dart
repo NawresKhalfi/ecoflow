@@ -22,7 +22,13 @@ import '../../../helpers/collection_fakes.dart';
 import '../../../helpers/fake_auth_repository.dart';
 import '../../../helpers/test_app.dart';
 
-const line = EstimateLine(categoryId: 'can', count: 3, kg: 2, priceDtPerKg: 4, method: EstimationMethod.container);
+const line = EstimateLine(
+  categoryId: 'can',
+  count: 3,
+  kg: 2,
+  priceDtPerKg: 4,
+  method: EstimationMethod.container,
+);
 const sousse = GeoPoint(35.8256, 10.6084);
 
 void main() {
@@ -37,15 +43,31 @@ void main() {
     now = DateTime(2026, 9, 29, 9);
     await db.doc('users/u').set({'displayName': 'Leila', 'role': 'citizen', 'status': 'active'});
     code = await FirestoreEstimateRepository(db).create(
-        const EstimateRecord(code: '', citizenUid: 'u', lines: [line], confidence: .8, priceScaleId: 'default'));
-    c = await testContainer(overrides: [
-      authRepositoryProvider.overrideWithValue(FakeAuthRepository(
-          initialUser: const AuthUser(uid: 'u', phoneNumber: '+21622123456', providerIds: ['phone']))),
-      firestoreProvider.overrideWithValue(db),
-      clockProvider.overrideWithValue(() => now),
-      reverseGeocoderProvider.overrideWithValue(FakeGeocoder()),
-      locationServiceProvider.overrideWithValue(location),
-    ]);
+      const EstimateRecord(
+        code: '',
+        citizenUid: 'u',
+        lines: [line],
+        confidence: .8,
+        priceScaleId: 'default',
+      ),
+    );
+    c = await testContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(
+          FakeAuthRepository(
+            initialUser: const AuthUser(
+              uid: 'u',
+              phoneNumber: '+21622123456',
+              providerIds: ['phone'],
+            ),
+          ),
+        ),
+        firestoreProvider.overrideWithValue(db),
+        clockProvider.overrideWithValue(() => now),
+        reverseGeocoderProvider.overrideWithValue(FakeGeocoder()),
+        locationServiceProvider.overrideWithValue(location),
+      ],
+    );
     c
       ..listen(currentProfileProvider, (_, _) {})
       ..listen(collectionConfigProvider, (_, _) {})
@@ -55,11 +77,8 @@ void main() {
     await pumpEventQueue();
   });
 
-  Future<void> online(String uid, GeoPoint p, {double cap = 200}) => db.doc('collectorPresence/$uid').set({
-    'online': true,
-    'point': p.toMap(),
-    'capacityKg': cap,
-  });
+  Future<void> online(String uid, GeoPoint p, {double cap = 200}) =>
+      db.doc('collectorPresence/$uid').set({'online': true, 'point': p.toMap(), 'capacityKg': cap});
 
   Future<String> submit({TimeSlot? slot, Recurrence recurrence = Recurrence.none}) async {
     final f = c.read(requestFormControllerProvider.notifier);
@@ -85,7 +104,11 @@ void main() {
     expect(c.read(requestFormControllerProvider).error, RequestFormError.outOfZone);
 
     await f.useGps();
-    expect(c.read(requestFormControllerProvider).address, 'Rue de test, Sousse', reason: 'reverse geocoded');
+    expect(
+      c.read(requestFormControllerProvider).address,
+      'Rue de test, Sousse',
+      reason: 'reverse geocoded',
+    );
     expect(await f.submit(), isNull);
     expect(c.read(requestFormControllerProvider).error, RequestFormError.noSlot);
   });
@@ -102,20 +125,23 @@ void main() {
     expect(c.read(requestFormControllerProvider).error, RequestFormError.slotFull);
   });
 
-  test('creation reserves the slot, links the estimate and finds a collector (US-033/034)', () async {
-    await online('near', const GeoPoint(35.83, 10.61));
-    await online('small', const GeoPoint(35.826, 10.608), cap: 1);
-    final id = await submit();
-    final r = await fetch(id);
-    expect(r.status, CollectionStatus.proposed);
-    expect(r.proposedCollectorUid, 'near', reason: 'small lacks capacity');
-    expect(r.searchRadiusKm, 5);
-    expect(r.instructions, '3e étage, code 1234');
-    expect((await db.doc('estimates/$code').get()).data()!['requestId'], id);
-    final slot = upcomingSlots(now)[1];
-    expect((await db.doc('slotCounters/sousse__${slot.id}').get()).data()!['count'], 1);
-    expect(c.read(requestFormControllerProvider.notifier).zone!.id, 'sousse');
-  });
+  test(
+    'creation reserves the slot, links the estimate and finds a collector (US-033/034)',
+    () async {
+      await online('near', const GeoPoint(35.83, 10.61));
+      await online('small', const GeoPoint(35.826, 10.608), cap: 1);
+      final id = await submit();
+      final r = await fetch(id);
+      expect(r.status, CollectionStatus.proposed);
+      expect(r.proposedCollectorUid, 'near', reason: 'small lacks capacity');
+      expect(r.searchRadiusKm, 5);
+      expect(r.instructions, '3e étage, code 1234');
+      expect((await db.doc('estimates/$code').get()).data()!['requestId'], id);
+      final slot = upcomingSlots(now)[1];
+      expect((await db.doc('slotCounters/sousse__${slot.id}').get()).data()!['count'], 1);
+      expect(c.read(requestFormControllerProvider.notifier).zone!.id, 'sousse');
+    },
+  );
 
   test('no collector → alternatives; retry once one comes online (US-036)', () async {
     final id = await submit();
@@ -153,34 +179,44 @@ void main() {
     expect(accepted.cancellationPenalty, isTrue);
   });
 
-  test('weighing hands over, citizen confirms, one rating, next recurrence (US-037/039/040)', () async {
-    await online('k', const GeoPoint(35.83, 10.61));
-    final id = await submit(recurrence: Recurrence.weekly);
-    // Pesée par le collecteur avec le code de remise (epic 3).
-    await FirestoreEstimateRepository(db).submitWeighing(code, {'can': 2.5}, compareWeighing([line], {'can': 2.5}), 'k');
-    var r = await fetch(id);
-    expect(r.status, CollectionStatus.handedOver);
-    expect(r.collectorUid, 'k');
+  test(
+    'weighing hands over, citizen confirms, one rating, next recurrence (US-037/039/040)',
+    () async {
+      await online('k', const GeoPoint(35.83, 10.61));
+      final id = await submit(recurrence: Recurrence.weekly);
+      // Pesée par le collecteur avec le code de remise (epic 3).
+      await FirestoreEstimateRepository(
+        db,
+      ).submitWeighing(code, {'can': 2.5}, compareWeighing([line], {'can': 2.5}), 'k');
+      var r = await fetch(id);
+      expect(r.status, CollectionStatus.handedOver);
+      expect(r.collectorUid, 'k');
 
-    final actions = c.read(collectionActionsControllerProvider.notifier);
-    await actions.confirmHandover(r);
-    r = await fetch(id);
-    expect(r.status, CollectionStatus.completed);
+      final actions = c.read(collectionActionsControllerProvider.notifier);
+      await actions.confirmHandover(r);
+      r = await fetch(id);
+      expect(r.status, CollectionStatus.completed);
 
-    final all = (await db.collection('collections').get()).docs;
-    expect(all, hasLength(2), reason: 'weekly occurrence scheduled');
-    final next = FirestoreCollectionRepository.fromDoc(all.firstWhere((d) => d.id != id));
-    expect(next.slot.date, r.slot.date.add(const Duration(days: 7)));
-    expect(next.estimateCode, isNot(code), reason: 'single-use handover code');
+      final all = (await db.collection('collections').get()).docs;
+      expect(all, hasLength(2), reason: 'weekly occurrence scheduled');
+      final next = FirestoreCollectionRepository.fromDoc(all.firstWhere((d) => d.id != id));
+      expect(next.slot.date, r.slot.date.add(const Duration(days: 7)));
+      expect(next.estimateCode, isNot(code), reason: 'single-use handover code');
 
-    expect(await actions.rate(r, 5, 'Très ponctuel'), isTrue);
-    expect((await db.doc('collectorStats/k').get()).data(), {'ratingAvg': 5.0, 'ratingCount': 1});
-    expect(await actions.rate(await fetch(id), 4, 'encore'), isFalse, reason: 'one rating per pickup');
-  });
+      expect(await actions.rate(r, 5, 'Très ponctuel'), isTrue);
+      expect((await db.doc('collectorStats/k').get()).data(), {'ratingAvg': 5.0, 'ratingCount': 1});
+      expect(
+        await actions.rate(await fetch(id), 4, 'encore'),
+        isFalse,
+        reason: 'one rating per pickup',
+      );
+    },
+  );
 
   test('problem report creates an admin ticket (US-041)', () async {
     final id = await submit();
-    await c.read(collectionActionsControllerProvider.notifier)
+    await c
+        .read(collectionActionsControllerProvider.notifier)
         .report(await fetch(id), ProblemReason.weightDisputed, 'Poids trop faible', const []);
     final t = (await db.collection('tickets').get()).docs.single.data();
     expect(t['reason'], 'weightDisputed');
