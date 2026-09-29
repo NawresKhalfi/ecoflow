@@ -196,7 +196,7 @@ class RequestFormController extends Notifier<RequestFormState> {
       );
       final repo = ref.read(collectionRepositoryProvider);
       final id = await repo.create(request, instructionPhoto: state.photo);
-      final created = await repo.watch(id).first;
+      final created = await repo.fetch(id);
       if (created != null) await runMatching(ref, created);
       if (ref.mounted) state = state.copyWith(submitting: false, createdId: id);
       return id;

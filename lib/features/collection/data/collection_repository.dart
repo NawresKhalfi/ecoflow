@@ -14,6 +14,7 @@ abstract interface class CollectionRepository {
   Future<String> create(CollectionRequest r, {Uint8List? instructionPhoto});
   Stream<List<CollectionRequest>> watchMine(String uid);
   Stream<CollectionRequest?> watch(String id);
+  Future<CollectionRequest?> fetch(String id);
 
   /// Nombre de demandes par créneau dans une zone.
   Stream<Map<String, int>> watchSlotCounts(String zoneId);
@@ -128,6 +129,12 @@ class FirestoreCollectionRepository implements CollectionRepository {
   @override
   Stream<CollectionRequest?> watch(String id) =>
       _col.doc(id).snapshots().map((s) => s.exists ? fromDoc(s) : null);
+
+  @override
+  Future<CollectionRequest?> fetch(String id) async {
+    final s = await _col.doc(id).get();
+    return s.exists ? fromDoc(s) : null;
+  }
 
   @override
   Stream<Map<String, int>> watchSlotCounts(String zoneId) => _db

@@ -46,7 +46,7 @@ class CollectionActionsController extends ActionController {
     final repo = ref.read(collectionRepositoryProvider);
     await repo.modify(r, after);
     if (after.slot.id != r.slot.id) {
-      final fresh = await repo.watch(r.id).first;
+      final fresh = await repo.fetch(r.id);
       if (fresh != null) lastMatch = await runMatching(ref, fresh);
     }
   });
@@ -139,7 +139,7 @@ class CollectionActionsController extends ActionController {
         seriesId: r.seriesId ?? r.id,
       ),
     );
-    final created = await repo.watch(id).first;
+    final created = await repo.fetch(id);
     if (created != null) await runMatching(ref, created);
   }
 }
