@@ -16,6 +16,10 @@ import '../../../auth/domain/verification_status.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
 import '../../../auth/presentation/widgets/role_picker.dart';
 import '../../../profile/presentation/widgets/verification_widgets.dart';
+import '../../../estimation/presentation/widgets/estimation_format.dart';
+import '../../../wallet/application/wallet_providers.dart';
+import '../../../wallet/domain/wallet.dart';
+import '../../../wallet/presentation/widgets/wallet_labels.dart';
 
 /// Accueil de l'espace du rôle. Écran de transition minimal en attendant
 /// les epics métier (scan, missions, stocks, pilotage).
@@ -29,6 +33,9 @@ class HomeScreen extends ConsumerWidget {
     if (profile == null) return const SizedBox.shrink();
     final unread = ref.watch(unreadCountProvider);
     final role = profile.role;
+    final wallet = role == UserRole.citizen
+        ? ref.watch(myWalletProvider).value ?? const Wallet()
+        : const Wallet();
     final subtitle = switch (role) {
       UserRole.citizen => l.homeCitizenSubtitle,
       UserRole.collector => l.homeCollectorSubtitle,
@@ -87,6 +94,7 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
+        if (role == UserRole.admin) const _AdminWalletCard(),
         if (role == UserRole.admin)
           EcoCard(
             gradient: EcoGradients.violet,
@@ -154,27 +162,48 @@ class HomeScreen extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: StatTile(emoji: '♻️', value: '0', label: l.statKg),
+                child: StatTile(emoji: '♻️', value: fmtKg(context, wallet.kg), label: l.statKg),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: StatTile(
                   emoji: '🚚',
-                  value: '0',
+                  value: '${wallet.collections}',
                   label: l.statCollections,
                   gradient: EcoGradients.sky,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: StatTile(
-                  emoji: '🏅',
-                  value: '0',
-                  label: l.statPoints,
-                  gradient: EcoGradients.violet,
+                child: Semantics(
+                  button: true,
+                  onTap: () => context.go(Routes.wallet),
+                  child: GestureDetector(
+                    onTap: () => context.go(Routes.wallet),
+                    child: StatTile(
+                      emoji: '🏅',
+                      value: fmtPoints(context, wallet.balance),
+                      label: l.statPoints,
+                      gradient: EcoGradients.violet,
+                    ),
+                  ),
                 ),
               ),
             ],
+          ),
+        if (role == UserRole.citizen)
+          EcoCard(
+            onTap: () => context.go(Routes.estimates),
+            child: Row(
+              children: [
+                const EcoAvatar(text: '🧾'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(l.navEstimates, style: Theme.of(context).textTheme.titleMedium),
+                ),
+                Icon(Icons.chevron_right, color: context.eco.muted),
+              ],
+            ),
           ),
         EcoCard(
           onTap: () => context.go(Routes.inbox),
@@ -235,6 +264,44 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Raccourcis de l'administration du Recycle Wallet (US-071, US-074, US-075).
+class _AdminWalletCard extends ConsumerWidget {
+  const _AdminWalletCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final held = ref.watch(heldEntriesProvider).value?.length ?? 0;
+    return EcoCard(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      child: Column(
+        children: [
+          EcoListTile(
+            leading: const EcoAvatar(text: '🏅', gradient: EcoGradients.violet),
+            title: l.pointsRulesTitle,
+            subtitle: l.pointsRulesSubtitle,
+            onTap: () => context.go(Routes.pointsRules),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '🤝', gradient: EcoGradients.sun),
+            title: l.rewardsAdminTitle,
+            subtitle: l.rewardsAdminSubtitle,
+            onTap: () => context.go(Routes.rewardsAdmin),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '🛡️', gradient: EcoGradients.coral),
+            title: l.fraudTitle,
+            subtitle: l.fraudPending(held),
+            trailing: held > 0 ? EcoChip(label: '$held', tone: ChipTone.coral) : null,
+            onTap: () => context.go(Routes.fraud),
+            showDivider: false,
+          ),
+        ],
+      ),
     );
   }
 }

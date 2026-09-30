@@ -40,6 +40,12 @@ abstract final class Routes {
   static const optimization = '/app/optimization';
   static const inbox = '/app/inbox';
   static String chat(String collectionId) => '/app/chat/$collectionId';
+  static const wallet = '/app/wallet';
+  static const walletRewards = '/app/wallet/rewards';
+  static const walletCoupons = '/app/wallet/coupons';
+  static const pointsRules = '/app/points-rules';
+  static const rewardsAdmin = '/app/rewards-admin';
+  static const fraud = '/app/fraud';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

@@ -16,6 +16,8 @@ import '../domain/recurrence_rules.dart';
 import '../domain/time_slot.dart';
 import '../../tracking/application/tracking_providers.dart';
 import '../../tracking/domain/app_notification.dart';
+import '../../wallet/application/wallet_providers.dart';
+import '../../wallet/domain/wallet.dart';
 import 'collection_providers.dart';
 import 'matching_service.dart';
 
@@ -27,6 +29,9 @@ class TooLateToModify implements Exception {
 /// Actions du citoyen sur une demande (US-035 à US-041).
 class CollectionActionsController extends ActionController {
   MatchResult? lastMatch;
+
+  /// EcoPoints de la dernière confirmation (US-069).
+  LedgerEntry? lastAward;
 
   DateTime get _now => ref.read(clockProvider)();
 
@@ -73,6 +78,11 @@ class CollectionActionsController extends ActionController {
   /// Confirmation citoyen après la pesée du collecteur (US-039).
   Future<bool> confirmHandover(CollectionRequest r) => run(() async {
     await ref.read(collectionRepositoryProvider).confirmHandover(r.id);
+    try {
+      lastAward = await awardCollection(ref, r);
+    } catch (_) {
+      // Rattrapé à l'ouverture du wallet (walletSyncProvider).
+    }
     await notify(ref, toUid: r.collectorUid, type: NotificationType.completed, r: r);
     await _scheduleNext(r);
   });

@@ -109,8 +109,8 @@
   "homeCollectorSubtitle": "Tes missions de collecte t’attendent bientôt ici.",
   "homeRecyclerSubtitle": "Pilote tes approvisionnements en matières recyclées.",
   "homeAdminSubtitle": "Vue globale de la plateforme EcoFlow.",
-  "homeComingTitle": "Ton espace se prépare 🌱",
-  "homeComingBody": "Suivi en temps réel, wallet EcoPoints et marketplace arrivent dans les prochaines versions.",
+  "homeComingTitle": "Bientôt disponible 🌱",
+  "homeComingBody": "Espace recycleur, marketplace circulaire et statistiques d’impact arrivent dans les prochaines versions.",
   "statKg": "kg recyclés",
   "statCollections": "collectes",
   "statPoints": "EcoPoints",
@@ -637,6 +637,122 @@
   "chatCallUnavailable": "Appel masqué : nécessite un fournisseur de téléphonie (non configuré). Utilise la messagerie.",
   "chatCall": "Appel masqué",
   "homeInboxCta": "Notifications",
+  "navWallet": "Wallet",
+  "walletTitle": "Recycle Wallet",
+  "walletSubtitle": "Tes EcoPoints, badges et récompenses.",
+  "walletBalance": "Solde disponible",
+  "walletHeldInfo": "Des points sont en cours de vérification (contrôle anti-fraude). Ils seront crédités après validation.",
+  "walletFrozen": "Wallet gelé : les échanges sont suspendus",
+  "walletFrozenShort": "Wallet gelé",
+  "walletHistory": "Historique",
+  "walletEmpty": "Aucun mouvement pour l’instant. Ta première collecte validée te rapportera des EcoPoints !",
+  "levelSeed": "Graine",
+  "levelSprout": "Pousse",
+  "levelShrub": "Arbuste",
+  "levelTree": "Arbre",
+  "levelForest": "Forêt",
+  "levelMax": "Niveau maximal atteint 🎉",
+  "badgeFirstCollection": "1re collecte",
+  "badgeFiveCollections": "5 collectes",
+  "badgeTwentyCollections": "20 collectes",
+  "badgeKg50": "50 kg recyclés",
+  "badgeKg200": "200 kg recyclés",
+  "badgeGlassHero": "Pro du verre",
+  "badgeCanHero": "Pro des canettes",
+  "badgeEWasteHero": "Pro des D3E",
+  "badgeAmbassador": "Ambassadeur",
+  "badgeFirstReward": "1re récompense",
+  "badgeEarned": "obtenu",
+  "badgeLocked": "à débloquer",
+  "entryEarn": "Collecte validée",
+  "entryReferral": "Bonus de parrainage",
+  "entryRedeem": "Récompense",
+  "entryExpire": "Points expirés",
+  "entryAdjust": "Ajustement",
+  "entryHeld": "en vérification",
+  "entryRejected": "refusé",
+  "flagOverweight": "Poids hors norme",
+  "flagEstimateGap": "Écart avec l’estimation",
+  "flagDailyLimit": "Trop de collectes le même jour",
+  "rewardKindDiscount": "Réduction",
+  "rewardKindProduct": "Produit recyclé",
+  "rewardKindDonation": "Don",
+  "rewardInsufficient": "Points insuffisants",
+  "rewardUnavailable": "Indisponible",
+  "couponActive": "Valide",
+  "couponUsed": "Utilisé",
+  "couponCancelled": "Annulé",
+  "policyTitle": "Politique des points",
+  "policyHeld": "Les gains inhabituels (poids, cadence) sont vérifiés avant d’être crédités.",
+  "policyFrozen": "En cas de fraude avérée, le wallet peut être gelé par l’administration.",
+  "referralTitle": "Parrainage",
+  "referralCopy": "Copier le code",
+  "referralCopied": "Code copié",
+  "referralGetCode": "Obtenir mon code",
+  "referralEnter": "Code de ton parrain",
+  "referralApply": "Valider le code",
+  "referralApplied": "Parrain enregistré 🤝",
+  "referralNotAllowed": "Code non applicable (le tien, ou après ta 1re collecte).",
+  "referralUnknown": "Code inconnu",
+  "referralLinked": "Tu as été parrainé·e",
+  "rewardsTitle": "Récompenses",
+  "rewardsAll": "Toutes",
+  "rewardsEmpty": "Aucune récompense pour l’instant : les partenaires arrivent bientôt.",
+  "rewardRedeem": "Échanger",
+  "rewardRedeemed": "Coupon obtenu 🎉",
+  "couponsTitle": "Mes coupons",
+  "couponsSubtitle": "À présenter chez le partenaire.",
+  "couponsEmpty": "Aucun coupon. Échange tes points dans le catalogue.",
+  "couponHowTo": "Présente ce QR ou ce code en caisse.",
+  "pointsRulesTitle": "Règles EcoPoints",
+  "pointsRulesSubtitle": "Points par kg, coefficients, bonus et anti-fraude.",
+  "rulesPerKg": "Points par kg",
+  "rulesFirstBonus": "Bonus 1re collecte",
+  "rulesBigDropKg": "Seuil « gros dépôt »",
+  "rulesBigDropBonus": "Bonus gros dépôt",
+  "rulesReferral": "Bonus parrain",
+  "rulesExpiry": "Validité des points",
+  "rulesMultipliers": "Coefficients par matière",
+  "rulesFraud": "Anti-fraude",
+  "rulesDailyLimit": "Collectes créditées par jour",
+  "rulesMaxKg": "Poids maximal par collecte",
+  "rulesRatio": "Écart max. pesée / estimation",
+  "partnerFormTitle": "Partenaire",
+  "partnerName": "Nom",
+  "partnerCity": "Ville",
+  "partnerEmoji": "Emoji",
+  "adminActive": "Actif",
+  "adminInactive": "inactif",
+  "rewardFormTitle": "Offre",
+  "rewardPartner": "Partenaire",
+  "rewardTitleField": "Intitulé",
+  "rewardDescription": "Description",
+  "rewardCost": "Coût (points)",
+  "rewardStockField": "Stock",
+  "rewardStockHelp": "Vide = illimité",
+  "rewardsAdminTitle": "Partenaires & offres",
+  "rewardsAdminSubtitle": "Catalogue de récompenses et coupons.",
+  "partnersTitle": "Partenaires",
+  "partnerAdd": "Ajouter un partenaire",
+  "rewardAdd": "Ajouter une offre",
+  "rewardNeedPartner": "Ajoute d’abord un partenaire.",
+  "couponCheckTitle": "Valider un coupon",
+  "couponCode": "Code du coupon",
+  "couponCheck": "Rechercher",
+  "couponNotFound": "Coupon introuvable",
+  "couponMarkUsed": "Marquer comme utilisé",
+  "couponMarkedUsed": "Coupon utilisé ✅",
+  "fraudTitle": "Contrôle anti-fraude",
+  "fraudSubtitle": "Points mis en attente par les règles.",
+  "fraudExplain": "Un gain est mis en attente si le poids dépasse le maximum, s’il s’écarte trop de l’estimation, ou si le citoyen dépasse le nombre de collectes créditées par jour. Chaque collecte ne peut être créditée qu’une fois.",
+  "fraudEmpty": "Aucun gain en attente.",
+  "fraudApprove": "Créditer",
+  "fraudApproved": "Points crédités",
+  "fraudReject": "Refuser",
+  "fraudRejected": "Gain refusé",
+  "fraudFreeze": "Geler le wallet",
+  "fraudFreezeReason": "Vérification en cours",
+  "fraudFrozen": "Wallet gelé",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -1085,6 +1201,215 @@
   },
   "inboxUnread": "{count, plural, =0{Tout est lu} =1{1 non lue} other{{count} non lues}}",
   "@inboxUnread": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBalanceSemantics": "Solde : {count} EcoPoints",
+  "@walletBalanceSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletEarned": "{count} gagnés",
+  "@walletEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletSpent": "{count} dépensés",
+  "@walletSpent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletHeld": "{count} en vérification",
+  "@walletHeld": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAwarded": "+{points} EcoPoints crédités 🎉",
+  "@walletAwarded": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAwardHeld": "+{points} EcoPoints en vérification ⏳",
+  "@walletAwardHeld": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "levelTitle": "Niveau {level}",
+  "@levelTitle": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "levelNext": "Encore {points} points pour « {level} »",
+  "@levelNext": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "badgesTitle": "Badges {count}/{total}",
+  "@badgesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "policyExpiry": "Les points sont valables {months} mois après leur gain ; les plus anciens sont utilisés en premier.",
+  "@policyExpiry": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "expiringSoon": "⚠️ {points} points expirent dans 30 jours",
+  "@expiringSoon": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "nextExpiry": "Prochaine échéance : {date}",
+  "@nextExpiry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "referralBody": "Partage ton code : tu gagnes {points} points à la 1re collecte de ton filleul.",
+  "@referralBody": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "walletHowItWorks": "Chaque collecte validée rapporte {points} points par kg pesé, multipliés selon la matière, plus des bonus.",
+  "@walletHowItWorks": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardsSubtitle": "Ton solde : {balance} EcoPoints",
+  "@rewardsSubtitle": {
+    "placeholders": {
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "points": "{value} pts",
+  "@points": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardStock": "{count} restants",
+  "@rewardStock": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardConfirm": "Échanger {points} EcoPoints contre ce coupon {partner} ?",
+  "@rewardConfirm": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      },
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "couponQr": "QR du coupon {code}",
+  "@couponQr": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "couponUsedOn": "Utilisé le {date}",
+  "@couponUsedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "months": "{count} mois",
+  "@months": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rulesSample": "Exemple — 5 kg PET + 3 kg verre + 1 kg canettes : {points}",
+  "@rulesSample": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "partnerOffers": "{count, plural, =0{aucune offre} =1{1 offre} other{{count} offres}}",
+  "@partnerOffers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fraudCitizen": "citoyen {id}…",
+  "@fraudCitizen": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "fraudPending": "{count, plural, =0{Aucun gain en attente} =1{1 gain en attente} other{{count} gains en attente}}",
+  "@fraudPending": {
     "placeholders": {
       "count": {
         "type": "int"

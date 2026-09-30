@@ -6,7 +6,9 @@ l'app : aucun accès administrateur n'est utilisé.
 
   python3 tool/seed_demo.py accounts   # étape 1 : comptes + profils
   python3 tool/seed_demo.py approve    # étape 2 : après avoir mis
-                                       # role = "admin" sur admin@ dans la console
+                                       # role = "admin" sur admin@ dans la console :
+                                       # valide Karim et GreenPlast, crée le
+                                       # catalogue de récompenses de démo (E08)
 
 Un administrateur ne peut pas s'auto-attribuer ce rôle (US-003) : le compte
 admin@ est donc créé en citoyen, puis promu à la main dans la console.
@@ -49,6 +51,8 @@ def value(v):
         return {'nullValue': None}
     if isinstance(v, bool):
         return {'booleanValue': v}
+    if isinstance(v, int):
+        return {'integerValue': str(v)}
     if isinstance(v, datetime):
         return {'timestampValue': v.isoformat().replace('+00:00', 'Z')}
     if isinstance(v, dict):
@@ -124,6 +128,31 @@ def approve():
         if email.startswith('greenplast'):
             set_doc(f'companies/{uid}', {'status': 'approved'}, admin, mask=['status'])
             print('  ✓ entreprise GreenPlast validée')
+    catalogue(admin)
+
+
+PARTNERS = {
+    'cafe-medina': {'name': 'Café de la Médina', 'city': 'Sousse', 'emoji': '☕', 'active': True},
+    'green-shop': {'name': 'Green Shop Sousse', 'city': 'Sousse', 'emoji': '🛍️', 'active': True},
+}
+REWARDS = {
+    'cafe': ('cafe-medina', 'Café offert', 'Un café ou un thé à la menthe.', 'discount', '☕', 50, 20),
+    'arbre': ('green-shop', 'Planter un arbre', 'Don à une association locale.', 'donation', '🌳', 100, None),
+    'sac': ('green-shop', 'Sac en PET recyclé', 'Sac cabas fabriqué à partir de bouteilles.', 'product', '👜', 150, None),
+    'remise': ('green-shop', '-15 % en boutique', 'Sur tout le rayon zéro déchet.', 'discount', '🏷️', 300, None),
+}
+
+
+def catalogue(admin):
+    for pid, p in PARTNERS.items():
+        set_doc(f'partners/{pid}', p, admin)
+    for rid, (pid, title, desc, kind, emoji, cost, stock) in REWARDS.items():
+        set_doc(f'rewards/{rid}', {
+            'partnerId': pid, 'partnerName': PARTNERS[pid]['name'], 'title': title,
+            'description': desc, 'kind': kind, 'emoji': emoji, 'cost': cost,
+            'stock': stock, 'active': True,
+        }, admin)
+    print(f'  ✓ catalogue : {len(PARTNERS)} partenaires, {len(REWARDS)} offres')
 
 
 if __name__ == '__main__':

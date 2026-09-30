@@ -423,5 +423,229 @@ service cloud.firestore {
       allow create, update: if signedIn() && request.resource.data.uid == request.auth.uid;
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
+
+    // --- Epic 8 : Recycle Wallet & EcoPoints ------------------------------
+    // Sans serveur, le citoyen écrit lui-même ses gains : les règles
+    // recalculent chaque gain à partir de la pesée du collecteur et
+    // n'autorisent une variation du wallet qu'avec son mouvement.
+    function doc(p) { return path('/databases/' + database + '/documents/' + p); }
+    function walletDoc(u) { return /databases/$(database)/documents/wallets/$(u); }
+    function entryDoc(id) { return /databases/$(database)/documents/pointEntries/$(id); }
+    function pointsRules() {
+      return exists(/databases/$(database)/documents/config/points)
+        ? get(/databases/$(database)/documents/config/points).data
+        : {'pointsPerKg': 10, 'firstCollectionBonus': 50, 'bigDropKg': 10, 'bigDropBonus': 20,
+           'referralBonus': 100, 'dailyLimit': 3, 'maxKgPerCollection': 200, 'anomalyRatio': 3,
+           'multipliers': {'pet_bottle': 1.5, 'can': 2.0, 'cardboard': 1.0, 'paper': 1.0, 'glass': 1.2,
+                           'e_waste': 3.0, 'organic': 0.5, 'medical': 0.0, 'other': 1.0}};
+    }
+    // Même calcul que computeAward (lib/features/wallet/domain/points_rules.dart).
+    function expectedPoints(est, r, first) {
+      let k = est.actualKg;
+      let m = r.multipliers;
+      let known = k.get('pet_bottle', 0) + k.get('can', 0) + k.get('cardboard', 0) + k.get('paper', 0)
+        + k.get('glass', 0) + k.get('e_waste', 0) + k.get('organic', 0) + k.get('medical', 0);
+      let weighted = k.get('pet_bottle', 0) * m.get('pet_bottle', 1) + k.get('can', 0) * m.get('can', 1)
+        + k.get('cardboard', 0) * m.get('cardboard', 1) + k.get('paper', 0) * m.get('paper', 1)
+        + k.get('glass', 0) * m.get('glass', 1) + k.get('e_waste', 0) * m.get('e_waste', 1)
+        + k.get('organic', 0) * m.get('organic', 1) + k.get('medical', 0) * m.get('medical', 1)
+        + (est.actualTotalKg - known) * m.get('other', 1);
+      return math.floor(weighted * r.pointsPerKg + 0.000001)
+        + (first ? r.firstCollectionBonus : 0)
+        + (est.actualTotalKg >= r.bigDropKg ? r.bigDropBonus : 0);
+    }
+    // Anti-fraude (US-075) : poids hors norme, écart à l'estimation, cadence.
+    function expectedHeld(est, r, dayCount) {
+      return est.actualTotalKg > r.maxKgPerCollection
+        || (est.get('totalKg', 0) > 0 && est.actualTotalKg > est.totalKg * r.anomalyRatio)
+        || dayCount > r.dailyLimit;
+    }
+
+    match /pointEntries/{eid} {
+      function e() { return request.resource.data; }
+      function walletBefore(u) { return exists(walletDoc(u)) ? get(walletDoc(u)).data : {}; }
+      function walletAfter(u) { return getAfter(walletDoc(u)).data; }
+      function earnEntry() {
+        let c = get(doc('collections/' + e().collectionId)).data;
+        let est = get(doc('estimates/' + c.estimateCode)).data;
+        let w = walletAfter(request.auth.uid);
+        let first = walletBefore(request.auth.uid).get('collections', 0) == 0;
+        return eid == 'c_' + e().collectionId
+          && c.citizenUid == request.auth.uid
+          && c.status == 'completed'
+          && est.status == 'weighed'
+          && e().kg == est.actualTotalKg
+          && e().byCategory == est.actualKg
+          && w.lastEntryId == eid
+          && math.abs(e().points - expectedPoints(est, pointsRules(), first)) <= 1
+          && e().status == (expectedHeld(est, pointsRules(), w.dayCount) ? 'held' : 'credited');
+      }
+      function redeemEntry() {
+        let red = getAfter(doc('redemptions/' + e().redemptionId)).data;
+        return eid == 'r_' + e().redemptionId
+          && red.uid == request.auth.uid
+          && e().points + red.cost == 0
+          && e().status == 'credited'
+          && walletAfter(request.auth.uid).lastEntryId == eid;
+      }
+      function expireEntry() {
+        return e().points < 0 && e().status == 'credited'
+          && walletAfter(request.auth.uid).lastEntryId == eid;
+      }
+      // Bonus du parrain, écrit par le filleul à sa première collecte (US-077).
+      function referralEntry() {
+        let me = walletBefore(request.auth.uid);
+        return eid == 'ref_' + request.auth.uid
+          && e().status == 'credited'
+          && me.get('referredBy', null) == e().uid
+          && me.get('collections', 0) == 0
+          && walletAfter(request.auth.uid).get('collections', 0) == 1
+          && e().points == pointsRules().referralBonus
+          && walletAfter(e().uid).lastEntryId == eid;
+      }
+      function ownEntry() {
+        return e().type == 'referral' ? referralEntry()
+          : e().uid == request.auth.uid && (
+              e().type == 'earn' ? earnEntry()
+              : e().type == 'redeem' ? redeemEntry()
+              : e().type == 'expire' ? expireEntry()
+              : false);
+      }
+      allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isAdmin());
+      allow list: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && (ownEntry() || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    match /wallets/{uid} {
+      function a() { return request.resource.data; }
+      function b(k, d) { return resource == null ? d : resource.data.get(k, d); }
+      function same(k, d) { return a().get(k, d) == b(k, d); }
+      function en() { return getAfter(entryDoc(a().lastEntryId)).data; }
+      function newEntry() {
+        return a().get('lastEntryId', null) is string
+          && !exists(entryDoc(a().lastEntryId)) && existsAfter(entryDoc(a().lastEntryId));
+      }
+      function balanceOk() {
+        return a().get('earned', 0) - a().get('spent', 0) - a().get('expired', 0) >= 0;
+      }
+      // Champs pilotés par l'administration ou posés une seule fois.
+      function fixed() {
+        return same('frozen', false) && same('frozenReason', null)
+          && same('referredBy', null) && same('referralCode', null);
+      }
+      function earnSide() {
+        return same('held', 0) && same('collections', 0) && same('kg', 0)
+          && same('dayCount', 0) && same('lastEarnAt', null);
+      }
+      function earnUpdate() {
+        let p = en().points;
+        let held = en().status == 'held';
+        // Premier gain : pas de date, compteur à 0 → 1 dans les deux branches.
+        let sameDay = b('lastEarnAt', request.time).date() == request.time.date();
+        return isSelf(uid) && en().uid == uid
+          && a().earned == b('earned', 0) + (held ? 0 : p)
+          && a().held == b('held', 0) + (held ? p : 0)
+          && a().collections == b('collections', 0) + 1
+          && a().kg == b('kg', 0) + en().kg
+          && a().dayCount == (sameDay ? b('dayCount', 0) + 1 : 1)
+          && a().lastEarnAt == request.time
+          && same('spent', 0) && same('expired', 0) && same('lastRedemptionId', null) && fixed();
+      }
+      function redeemUpdate() {
+        return isSelf(uid) && en().uid == uid && !b('frozen', false)
+          && a().spent == b('spent', 0) - en().points
+          && a().lastRedemptionId == en().redemptionId
+          && balanceOk() && same('earned', 0) && same('expired', 0) && earnSide() && fixed();
+      }
+      function expireUpdate() {
+        return isSelf(uid) && en().uid == uid
+          && a().expired == b('expired', 0) - en().points
+          && balanceOk() && same('earned', 0) && same('spent', 0)
+          && same('lastRedemptionId', null) && earnSide() && fixed();
+      }
+      function referralCredit() {
+        return signedIn() && request.auth.uid != uid
+          && a().lastEntryId == 'ref_' + request.auth.uid && en().uid == uid
+          && a().earned == b('earned', 0) + en().points
+          && same('spent', 0) && same('expired', 0) && same('lastRedemptionId', null)
+          && earnSide() && fixed();
+      }
+      function counters() {
+        return same('earned', 0) && same('spent', 0) && same('expired', 0)
+          && same('lastRedemptionId', null) && earnSide();
+      }
+      function setReferralCode() {
+        return isSelf(uid) && b('referralCode', null) == null && a().referralCode is string
+          && getAfter(doc('referralCodes/' + a().referralCode)).data.uid == uid
+          && counters() && same('referredBy', null) && same('frozen', false) && same('frozenReason', null);
+      }
+      function setReferrer() {
+        return isSelf(uid) && b('referredBy', null) == null && a().referredBy is string
+          && a().referredBy != uid && b('collections', 0) == 0
+          && get(walletDoc(a().referredBy)).data.get('referralCode', null) != null
+          && counters() && same('referralCode', null) && same('frozen', false) && same('frozenReason', null);
+      }
+      function walletChange() {
+        return a().keys().hasOnly(['earned', 'spent', 'expired', 'held', 'collections', 'kg', 'dayCount',
+            'lastEarnAt', 'lastEntryId', 'lastRedemptionId', 'referredBy', 'referralCode', 'frozen', 'frozenReason'])
+          && (same('lastEntryId', null)
+            ? (setReferralCode() || setReferrer())
+            : newEntry() && (en().type == 'earn' ? earnUpdate()
+                : en().type == 'redeem' ? redeemUpdate()
+                : en().type == 'expire' ? expireUpdate()
+                : en().type == 'referral' ? referralCredit()
+                : false));
+      }
+      allow read: if isSelf(uid) || isAdmin();
+      allow create, update: if signedIn() && (walletChange() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /referralCodes/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn() && code.size() == 6
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid
+        && getAfter(walletDoc(request.auth.uid)).data.referralCode == code;
+      allow update, delete: if isAdmin();
+    }
+
+    // Catalogue de récompenses (US-072, US-074).
+    match /partners/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /rewards/{id} {
+      // Stock décrémenté par l'échange (même batch que le coupon).
+      function stockTaken() {
+        let rid = getAfter(walletDoc(request.auth.uid)).data.lastRedemptionId;
+        return changed().hasOnly(['stock'])
+          && resource.data.get('stock', null) is int && resource.data.stock > 0
+          && request.resource.data.stock == resource.data.stock - 1
+          && !exists(doc('redemptions/' + rid))
+          && getAfter(doc('redemptions/' + rid)).data.rewardId == id;
+      }
+      allow read: if signedIn();
+      allow create, delete: if isAdmin();
+      allow update: if signedIn() && (stockTaken() || isAdmin());
+    }
+
+    // Coupons (US-073) : validés chez le partenaire par l'administration.
+    match /redemptions/{rid} {
+      function redemptionOk() {
+        let d = request.resource.data;
+        let rw = get(doc('rewards/' + d.rewardId)).data;
+        return d.uid == request.auth.uid && d.status == 'active'
+          && d.cost == rw.cost && rw.active == true
+          && d.code is string && d.code.size() == 9
+          && getAfter(walletDoc(request.auth.uid)).data.lastRedemptionId == rid
+          && existsAfter(entryDoc('r_' + rid))
+          && (rw.get('stock', null) == null || getAfter(doc('rewards/' + d.rewardId)).data.stock == rw.stock - 1);
+      }
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && redemptionOk();
+      allow update, delete: if isAdmin();
+    }
   }
 }

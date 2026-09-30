@@ -82,6 +82,7 @@ String navLabel(AppLocalizations l, NavDestination d) => switch (d) {
   NavDestination.home => l.navHome,
   NavDestination.scan => l.navScan,
   NavDestination.estimates => l.navEstimates,
+  NavDestination.wallet => l.navWallet,
   NavDestination.collections => l.navCollections,
   NavDestination.weighing => l.navWeighing,
   NavDestination.missions => l.navMissions,
@@ -134,7 +135,9 @@ class _NavButton extends StatelessWidget {
         child: ExcludeSemantics(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutBack,
+            // Pas de courbe à dépassement : l'interpolation des ombres
+            // produirait un flou négatif (assertion en mode debug).
+            curve: Curves.easeOutCubic,
             transform: Matrix4.translationValues(
               horizontal && selected ? 6 : 0,
               !horizontal && selected ? -6 : 0,

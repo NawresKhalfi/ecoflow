@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-5) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4-8) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -43,6 +43,8 @@ def upd(path, d, exists=True):
     if exists: w['currentDocument']={'exists':True}
     return w
 def create(path, d): return {'update':{'name':f'{ROOT}/{path}','fields':fields(d)},'currentDocument':{'exists':False}}
+def stamp(w, *paths):
+    w['updateTransforms']=[{'fieldPath':p,'setToServerValue':'REQUEST_TIME'} for p in paths]; return w
 def commit(token, writes): return http(B+':commit', {'writes':writes}, token)[0]
 results=[]
 def check(label, token, writes, expect):
@@ -133,13 +135,85 @@ s_,_=http(f'{B}/liveLocations/{cid3}', token=leila); results.append(s_==403); pr
 
 check('non-admin cannot write optimization history', karim, [create(f'config/optimization/history/h{code}', {'maxDetourKm':99.0,'by':kuid})], False)
 
+# --- Epic 8 : Recycle Wallet & EcoPoints ---------------------------------
+for u in (luid,): http(f'{B}/wallets/{u}', token='owner', method='DELETE')
+cit2, c2uid = login('probe-citizen2@ecoflow.test')
+owner_set(f'users/{c2uid}', {'displayName':'Probe citizen 2','role':'citizen','status':'active','verificationStatus':'notRequired'})
+http(f'{B}/wallets/{c2uid}', token='owner', method='DELETE')
+def wallet(uid, **kw):
+    base={'earned':0,'spent':0,'expired':0,'held':0,'collections':0,'kg':0.0,'dayCount':0,'lastEntryId':None,
+          'lastRedemptionId':None,'referredBy':None,'referralCode':None,'frozen':False,'frozenReason':None}
+    base.update(kw); return upd(f'wallets/{uid}', base, exists=False)
+def earn(uid, c, pts, kg, status='credited', by=None):
+    return create(f'pointEntries/c_{c}', {'uid':uid,'type':'earn','points':pts,'status':status,'collectionId':c,
+                 'redemptionId':None,'kg':kg,'byCategory':by or {'can':kg},'flags':[],'label':None,'createdAt':now})
+# Pesée : 2,5 kg de canettes (×2) → 2,5 × 2 × 10 = 50 + bonus 1re collecte 50 = 100.
+first=stamp(wallet(luid, earned=100, collections=1, kg=2.5, dayCount=1, lastEntryId=f'c_{cid}'), 'lastEarnAt')
+check('EcoPoints inflated (500) refused', leila, [earn(luid, cid, 500, 2.5), stamp(wallet(luid, earned=500, collections=1, kg=2.5, dayCount=1, lastEntryId=f'c_{cid}'), 'lastEarnAt')], False)
+check('points entry without wallet update refused', leila, [earn(luid, cid, 100, 2.5)], False)
+check('wallet tampering alone refused', leila, [wallet(luid, earned=9999)], False)
+check('points marked credited when not weighed refused', leila, [create(f'pointEntries/c_{cid3}', {'uid':luid,'type':'earn','points':50,'status':'credited','collectionId':cid3,'redemptionId':None,'kg':2.0,'byCategory':{'can':2.0},'flags':[],'label':None,'createdAt':now}), stamp(wallet(luid, earned=50, collections=1, kg=2.0, dayCount=1, lastEntryId=f'c_{cid3}'), 'lastEarnAt')], False)
+check('EcoPoints = weighing formula (+wallet)', leila, [earn(luid, cid, 100, 2.5), first], True)
+check('same collection credited twice refused', leila, [earn(luid, cid, 100, 2.5), stamp(wallet(luid, earned=200, collections=2, kg=5.0, dayCount=2, lastEntryId=f'c_{cid}'), 'lastEarnAt')], False)
+check('collector cannot credit citizen points', karim, [upd(f'wallets/{luid}', {'earned':1000})], False)
+s_,_=http(f'{B}/wallets/{luid}', token=cit2); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'other citizen cannot read wallet →', s_)
+check('non-admin cannot publish points rules', leila, [upd('config/points', {'pointsPerKg':1000.0}, exists=False)], False)
+
+owner_set(f'rewards/rw{code}', {'partnerId':'probe','partnerName':'Probe shop','title':'-10 %','cost':80,'stock':5,'active':True})
+owner_set(f'rewards/big{code}', {'partnerId':'probe','partnerName':'Probe shop','title':'Vélo','cost':500,'stock':None,'active':True})
+def redeem(rw, cost, rid, spent, stock=None, entry_pts=None):
+    w=[create(f'redemptions/{rid}', {'uid':luid,'rewardId':rw,'rewardTitle':'x','partnerName':'Probe shop','cost':cost,'code':'ABCD-EF23','status':'active','createdAt':now}),
+       create(f'pointEntries/r_{rid}', {'uid':luid,'type':'redeem','points':-(entry_pts or cost),'status':'credited','collectionId':None,'redemptionId':rid,'kg':0.0,'byCategory':{},'flags':[],'label':'x','createdAt':now}),
+       upd(f'wallets/{luid}', {'spent':spent,'lastEntryId':f'r_{rid}','lastRedemptionId':rid})]
+    if stock is not None: w.append(upd(f'rewards/{rw}', {'stock':stock}))
+    return w
+check('redeem above balance refused (500 > 100)', leila, redeem(f'big{code}', 500, f'rb{code}', 500), False)
+check('coupon with wrong cost refused', leila, redeem(f'rw{code}', 1, f'rc{code}', 1, stock=4), False)
+check('redeem without stock decrement refused', leila, redeem(f'rw{code}', 80, f'rd{code}', 80), False)
+check('redeem coupon (+entry, +stock)', leila, redeem(f'rw{code}', 80, f'ra{code}', 80, stock=4), True)
+owner_set(f'wallets/{luid}', {'earned':500,'spent':80,'expired':0,'held':0,'collections':1,'kg':2.5,'dayCount':1,'lastEntryId':f'r_ra{code}','lastRedemptionId':f'ra{code}','referredBy':None,'referralCode':None,'frozen':True,'frozenReason':'probe'})
+check('frozen wallet cannot redeem', leila, redeem(f'rw{code}', 80, f're{code}', 160, stock=3), False)
+check('citizen cannot unfreeze own wallet', leila, [upd(f'wallets/{luid}', {'frozen':False})], False)
+owner_set(f'wallets/{luid}', {'earned':100,'spent':80,'expired':0,'held':0,'collections':1,'kg':2.5,'dayCount':1,'lastEntryId':f'r_ra{code}','lastRedemptionId':f'ra{code}','referredBy':None,'referralCode':None,'frozen':False,'frozenReason':None})
+check('expire own points', leila, [create(f'pointEntries/x{code}', {'uid':luid,'type':'expire','points':-5,'status':'credited','collectionId':None,'redemptionId':None,'kg':0.0,'byCategory':{},'flags':[],'label':None,'createdAt':now}), upd(f'wallets/{luid}', {'expired':5,'lastEntryId':f'x{code}'})], True)
+
+ref=code[:6]
+check('citizen creates referral code', leila, [create(f'referralCodes/{ref}', {'uid':luid}), upd(f'wallets/{luid}', {'referralCode':ref})], True)
+check('self-referral refused', leila, [upd(f'wallets/{luid}', {'referredBy':luid})], False)
+check('friend enters referral code', cit2, [upd(f'wallets/{c2uid}', {'referredBy':luid}, exists=False)], True)
+code4=code[::-1]; cid4='probe4'+code.lower()
+check('friend creates estimate', cit2, [create(f'estimates/{code4}', {'citizenUid':c2uid,'lines':[line],'totalKg':2.0,'totalDt':8.0,'confidence':.8,'priceScaleId':'default','status':'estimated','createdAt':now})], True)
+check('friend creates request', cit2, [create(f'collections/{cid4}', {'citizenUid':c2uid,'estimateCode':code4,'place':{'point':{'lat':35.8256,'lng':10.6084},'address':'Rue probe 4','zoneId':'sousse'},'zoneId':'sousse','slotId':slot,'instructions':'','hasInstructionPhoto':False,'estimatedKg':2.0,'estimatedDt':8.0,'categories':['can'],'status':'searching','refusedBy':[],'recurrence':'none','lateCancellation':False,'rated':False,'createdAt':now})], True)
+check('collector accepts (4)', karim, [upd(f'collections/{cid4}', {'status':'accepted','collectorUid':kuid,'proposedCollectorUid':None,'acceptedAt':now,'updatedAt':now})], True)
+for st in ['onTheWay','arrived','inProgress']:
+    check(f'collector -> {st} (4)', karim, [upd(f'collections/{cid4}', {'status':st, st+'At':now})], True)
+check('proof (4)', karim, [create(f'collections/{cid4}/attachments/proof', {'uid':kuid,'data':'AQID','takenAt':now}), upd(f'collections/{cid4}', {'hasProof':True})], True)
+# Pesée anormale : 9 kg pour 2 kg estimés (> ×3) → points mis en attente.
+check('weighing (4)', karim, [upd(f'estimates/{code4}', {'status':'weighed','actualKg':{'glass':9.0},'actualTotalKg':9.0,'finalDt':9.0,'collectorUid':kuid,'weighedAt':now}), upd(f'collections/{cid4}', {'status':'handedOver','collectorUid':kuid,'handedOverAt':now})], True)
+check('friend confirms (4)', cit2, [upd(f'collections/{cid4}', {'status':'completed','completedAt':now})], True)
+# 9 × 1,2 × 10 = 108 + 50 = 158, attente anti-fraude (écart estimation).
+held=stamp(wallet(c2uid, held=158, collections=1, kg=9.0, dayCount=1, lastEntryId=f'c_{cid4}', referredBy=luid), 'lastEarnAt')
+refbonus=[create(f'pointEntries/ref_{c2uid}', {'uid':luid,'type':'referral','points':100,'status':'credited','collectionId':None,'redemptionId':None,'kg':0.0,'byCategory':{},'flags':[],'label':None,'createdAt':now}),
+          {'update':{'name':f'{ROOT}/wallets/{luid}','fields':fields({'lastEntryId':f'ref_{c2uid}'})},'updateMask':{'fieldPaths':['lastEntryId']},
+           'updateTransforms':[{'fieldPath':'earned','increment':{'integerValue':'100'}}]}]
+check('anomalous weighing credited directly refused', cit2, [earn(c2uid, cid4, 158, 9.0, by={'glass':9.0}), stamp(wallet(c2uid, earned=158, collections=1, kg=9.0, dayCount=1, lastEntryId=f'c_{cid4}', referredBy=luid), 'lastEarnAt')], False)
+bad=[refbonus[0] | {}, dict(refbonus[1])]
+bad[0]=create(f'pointEntries/ref_{c2uid}', {'uid':luid,'type':'referral','points':999,'status':'credited','collectionId':None,'redemptionId':None,'kg':0.0,'byCategory':{},'flags':[],'label':None,'createdAt':now})
+bad[1]={**refbonus[1], 'updateTransforms':[{'fieldPath':'earned','increment':{'integerValue':'999'}}]}
+check('referral bonus inflated refused', cit2, [earn(c2uid, cid4, 158, 9.0, 'held', {'glass':9.0}), held]+bad, False)
+check('held points + referral bonus in one batch', cit2, [earn(c2uid, cid4, 158, 9.0, 'held', {'glass':9.0}), held]+refbonus, True)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
              f'deposits/d{code}', f'tickets/t{code2}', f'slotCounters/sousse__{slot}',
              f'collectorBalances/{kuid}', f'companies/{ruid}', f'estimates/{code3}',
              f'collections/{cid3}', f'collections/{cid3}/messages/m1{code3}', f'liveLocations/{cid3}',
-             f'notifications/n{code3}assigned{kuid[:4]}']:
+             f'notifications/n{code3}assigned{kuid[:4]}', f'wallets/{luid}', f'wallets/{c2uid}',
+             f'pointEntries/c_{cid}', f'pointEntries/r_ra{code}', f'pointEntries/x{code}',
+             f'pointEntries/c_{cid4}', f'pointEntries/ref_{c2uid}', f'redemptions/ra{code}',
+             f'rewards/rw{code}', f'rewards/big{code}', f'referralCodes/{code[:6]}',
+             f'estimates/{code4}', f'collections/{cid4}', f'collections/{cid4}/attachments/proof']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

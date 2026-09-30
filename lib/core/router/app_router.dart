@@ -39,6 +39,12 @@ import '../../features/tracking/presentation/screens/chat_screen.dart';
 import '../../features/tracking/presentation/screens/inbox_screen.dart';
 import '../../features/shell/presentation/screens/home_screen.dart';
 import '../../features/vision_admin/presentation/screens/catalog_screen.dart';
+import '../../features/wallet/presentation/screens/coupons_screen.dart';
+import '../../features/wallet/presentation/screens/fraud_screen.dart';
+import '../../features/wallet/presentation/screens/points_rules_screen.dart';
+import '../../features/wallet/presentation/screens/rewards_admin_screen.dart';
+import '../../features/wallet/presentation/screens/rewards_screen.dart';
+import '../../features/wallet/presentation/screens/wallet_screen.dart';
 import '../../features/vision_admin/presentation/screens/model_screen.dart';
 import '../../features/shell/presentation/screens/splash_screen.dart';
 import '../../features/shell/presentation/widgets/role_shell.dart';
@@ -122,6 +128,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               _tab('receptions', (_) => const ReceptionsScreen()),
               _tab('optimization', (_) => const OptimizationScreen()),
               _tab('inbox', (_) => const InboxScreen()),
+              _tab(
+                'wallet',
+                (_) => const WalletScreen(),
+                routes: [
+                  _tab('rewards', (_) => const RewardsScreen()),
+                  _tab('coupons', (_) => const CouponsScreen()),
+                ],
+              ),
+              _tab('points-rules', (_) => const PointsRulesScreen()),
+              _tab('rewards-admin', (_) => const RewardsAdminScreen()),
+              _tab('fraud', (_) => const FraudScreen()),
               _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),
               _tab(
                 'collections',

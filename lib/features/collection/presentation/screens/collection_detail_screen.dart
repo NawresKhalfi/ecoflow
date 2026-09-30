@@ -24,6 +24,7 @@ import '../widgets/collection_labels.dart';
 import '../widgets/feedback_widgets.dart';
 import '../widgets/slot_picker.dart';
 import '../widgets/status_timeline.dart';
+import '../../../wallet/domain/wallet.dart';
 
 /// Détail et suivi d'une demande (US-035 à US-041).
 class CollectionDetailScreen extends ConsumerWidget {
@@ -137,7 +138,18 @@ class CollectionDetailScreen extends ConsumerWidget {
                     leading: '🤝',
                     style: EcoButtonStyle.ghost,
                     loading: actions.isLoading,
-                    onPressed: () => ctrl.confirmHandover(r),
+                    onPressed: () async {
+                      if (!await ctrl.confirmHandover(r) || !context.mounted) return;
+                      final award = ctrl.lastAward;
+                      if (award != null) {
+                        showEcoToast(
+                          context,
+                          award.status == EntryStatus.held
+                              ? l.walletAwardHeld(award.points)
+                              : l.walletAwarded(award.points),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),

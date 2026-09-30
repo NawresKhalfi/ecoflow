@@ -15,7 +15,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
 | E06 | Optimisation IA des itinéraires | V1 | 7/7 | ✅ |
 | E07 | Suivi temps réel & notifications | MVP | 2/6 | 🟨 |
-| E08 | Recycle Wallet & EcoPoints | V1 | 0/10 | ⬜ |
+| E08 | Recycle Wallet & EcoPoints | V1 | 9/10 | 🟨 |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 0/9 | ⬜ |
 | E10 | Prédiction IA des volumes | V2 | 0/6 | ⬜ |
 | E11 | Marketplace circulaire B2B | V2 | 0/12 | ⬜ |
@@ -146,16 +146,16 @@ _Portefeuille de points, règles d'attribution, catalogue de récompenses parten
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-069 | Citoyen | En tant que citoyen, je veux recevoir des EcoPoints après la validation de ma collecte afin de être récompensé pour mon recyclage. | Must | V1 | ⬜ |  |
-| US-070 | Citoyen | En tant que citoyen, je veux consulter mon solde EcoPoints et l'historique de mes gains/dépenses afin de suivre mon Recycle Wallet. | Must | V1 | ⬜ |  |
-| US-071 | Administrateur | En tant que administrateur, je veux définir les règles de calcul des EcoPoints (par kg, par matière, bonus) afin de piloter l'économie de points. | Must | V1 | ⬜ |  |
-| US-072 | Citoyen | En tant que citoyen, je veux parcourir le catalogue de récompenses partenaires afin de choisir comment utiliser mes points. | Must | V1 | ⬜ |  |
-| US-073 | Citoyen | En tant que citoyen, je veux échanger mes points contre un coupon ou un QR utilisable chez le partenaire afin de profiter concrètement de mes points. | Must | V1 | ⬜ |  |
-| US-074 | Administrateur | En tant que administrateur, je veux gérer les partenaires et leurs offres (réductions, produits recyclés) afin de alimenter le catalogue de récompenses. | Should | V1 | ⬜ |  |
-| US-075 | Système | En tant que système, je dois détecter les comportements frauduleux (collectes fictives, doublons) afin de protéger l'intégrité des points. | Should | V2 | ⬜ |  |
-| US-076 | Citoyen | En tant que citoyen, je veux gagner des badges et des niveaux selon mon activité afin de rester motivé. | Could | V2 | ⬜ |  |
-| US-077 | Citoyen | En tant que citoyen, je veux parrainer un proche et gagner des points bonus afin de faire grandir la communauté. | Could | V2 | ⬜ |  |
-| US-078 | Citoyen | En tant que citoyen, je veux faire expirer/geler mes points selon des règles claires afin de comprendre la politique de points. | Could | V2 | ⬜ |  |
+| US-069 | Citoyen | En tant que citoyen, je veux recevoir des EcoPoints après la validation de ma collecte afin de être récompensé pour mon recyclage. | Must | V1 | ✅ | Crédit à la confirmation de remise, calculé sur la pesée réelle : Σ kg × coefficient matière × points/kg + bonus 1re collecte et gros dépôt. Sans serveur, c’est l’app qui écrit : les règles Firestore recalculent le montant et refusent tout écart ; une seule écriture par collecte. Rattrapage automatique des collectes déjà terminées. Vérifié sur appareil (142 points pour 2 collectes). |
+| US-070 | Citoyen | En tant que citoyen, je veux consulter mon solde EcoPoints et l'historique de mes gains/dépenses afin de suivre mon Recycle Wallet. | Must | V1 | ✅ | Onglet Wallet : solde, gagnés / dépensés / en vérification, historique détaillé ; solde et kg sur l’accueil. |
+| US-071 | Administrateur | En tant que administrateur, je veux définir les règles de calcul des EcoPoints (par kg, par matière, bonus) afin de piloter l'économie de points. | Must | V1 | ✅ | Écran admin : points/kg, coefficient par matière, bonus, parrainage, validité, seuils anti-fraude ; brouillon + simulation en direct, publication historisée (écriture admin uniquement). |
+| US-072 | Citoyen | En tant que citoyen, je veux parcourir le catalogue de récompenses partenaires afin de choisir comment utiliser mes points. | Must | V1 | ✅ | Catalogue filtrable (réduction, produit recyclé, don), coût, stock, raison si indisponible. |
+| US-073 | Citoyen | En tant que citoyen, je veux échanger mes points contre un coupon ou un QR utilisable chez le partenaire afin de profiter concrètement de mes points. | Must | V1 | ✅ | Échange en une transaction (coupon, dépense, stock), vérifiée par les règles (solde, coût, stock, wallet gelé). Coupon QR + code lisible ; validation par l’administration (recherche du code, « utilisé »). Pas encore d’espace partenaire pour scanner lui-même. |
+| US-074 | Administrateur | En tant que administrateur, je veux gérer les partenaires et leurs offres (réductions, produits recyclés) afin de alimenter le catalogue de récompenses. | Should | V1 | ✅ | Gestion admin des partenaires et des offres (création, modification, activation, stock). |
+| US-075 | Système | En tant que système, je dois détecter les comportements frauduleux (collectes fictives, doublons) afin de protéger l'intégrité des points. | Should | V2 | ✅ | Mise en attente automatique imposée par les règles : poids > maximum, pesée > estimation × ratio, trop de collectes le même jour. Doublons impossibles (un gain par collecte, code de remise à usage unique). File de contrôle admin : créditer, refuser, geler le wallet. 31 scénarios de fraude rejoués sur l’émulateur. |
+| US-076 | Citoyen | En tant que citoyen, je veux gagner des badges et des niveaux selon mon activité afin de rester motivé. | Could | V2 | ✅ | 5 niveaux (Graine → Forêt) avec progression, 10 badges (collectes, kg, matières, parrainage, 1re récompense). |
+| US-077 | Citoyen | En tant que citoyen, je veux parrainer un proche et gagner des points bonus afin de faire grandir la communauté. | Could | V2 | ✅ | Code personnel, saisie du code d’un parrain avant la 1re collecte ; bonus au parrain à la 1re collecte du filleul, dans la même transaction. Auto-parrainage refusé. |
+| US-078 | Citoyen | En tant que citoyen, je veux faire expirer/geler mes points selon des règles claires afin de comprendre la politique de points. | Could | V2 | 🟨 | Politique affichée (validité, attente, gel), points expirant sous 30 jours et prochaine échéance ; expiration FIFO appliquée à l’ouverture du wallet ; gel par l’administration. Sans tâche planifiée (Blaze), l’expiration n’est pas appliquée tant que le citoyen n’ouvre pas son wallet. |
 
 ## E09 — Espace recycleur – dashboard & stocks
 

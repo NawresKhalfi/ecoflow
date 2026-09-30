@@ -47,12 +47,13 @@ void main() {
       containsAll([NavDestination.missions, NavDestination.earnings]),
     );
     expect(destinationsFor(UserRole.recycler), contains(NavDestination.receptions));
-    expect(destinationsFor(UserRole.citizen), contains(NavDestination.estimates));
+    expect(destinationsFor(UserRole.citizen), contains(NavDestination.wallet));
     expect(destinationsFor(UserRole.citizen), contains(NavDestination.scan));
     expect(destinationsFor(UserRole.collector), isNot(contains(NavDestination.scan)));
     final items = destinationsFor(UserRole.citizen);
     expect(activeDestination(items, '/app/collections/abc'), NavDestination.collections);
     expect(activeDestination(items, '/app'), NavDestination.home);
+    expect(activeDestination(items, '/app/wallet/coupons'), NavDestination.wallet);
   });
 
   Widget shell() => const RoleShell(location: '/app', child: HomeScreen());
