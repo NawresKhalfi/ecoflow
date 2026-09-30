@@ -194,6 +194,7 @@ class RequestFormController extends Notifier<RequestFormState> {
         slot: state.slot!,
         estimatedKg: estimate.estimate.totalKg,
         estimatedDt: estimate.estimate.totalDt,
+        categories: [for (final l in estimate.lines) l.categoryId],
         instructions: state.instructions.trim(),
         recurrence: state.recurrence,
       );

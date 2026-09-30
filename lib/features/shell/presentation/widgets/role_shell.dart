@@ -8,6 +8,8 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../auth/domain/user_role.dart';
+import '../../../collection/application/proposal_watcher.dart';
+import '../../../missions/application/collector_controllers.dart';
 import '../../../estimation/application/estimation_providers.dart';
 import '../../../estimation/domain/estimate_record.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
@@ -30,6 +32,8 @@ class RoleShell extends ConsumerWidget {
     final active = activeDestination(items, location);
     final wide = MediaQuery.sizeOf(context).width >= breakpoint;
     if (role == UserRole.citizen) _notifyWeighed(context, ref);
+    if (role == UserRole.citizen) ref.watch(proposalWatcherProvider);
+    if (role == UserRole.collector) ref.watch(earningsSyncProvider);
     void go(NavDestination d) => context.go(d.route);
 
     if (wide) {
@@ -71,6 +75,9 @@ String navLabel(AppLocalizations l, NavDestination d) => switch (d) {
   NavDestination.estimates => l.navEstimates,
   NavDestination.collections => l.navCollections,
   NavDestination.weighing => l.navWeighing,
+  NavDestination.missions => l.navMissions,
+  NavDestination.earnings => l.navEarnings,
+  NavDestination.receptions => l.navReceptions,
   NavDestination.pricing => l.navPricing,
   NavDestination.catalog => l.navCatalog,
   NavDestination.model => l.navModel,

@@ -30,6 +30,12 @@ abstract final class Routes {
   static const collections = '/app/collections';
   static String collectionNew(String estimateCode) => '/app/collections/new/$estimateCode';
   static String collectionDetail(String id) => '/app/collections/$id';
+  static const missions = '/app/missions';
+  static String missionDetail(String id) => '/app/missions/$id';
+  static const earnings = '/app/earnings';
+  static const deposit = '/app/earnings/deposit';
+  static const vehicle = '/app/vehicle';
+  static const receptions = '/app/receptions';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

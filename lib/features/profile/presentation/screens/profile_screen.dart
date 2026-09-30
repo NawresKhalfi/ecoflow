@@ -91,6 +91,12 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               if (profile.role == UserRole.collector)
                 MenuTile(
+                  emoji: '🚐',
+                  label: l.vehicleTitle,
+                  onTap: () => context.go(Routes.vehicle),
+                ),
+              if (profile.role == UserRole.collector)
+                MenuTile(
                   emoji: '🪪',
                   label: l.documentsMenu,
                   onTap: () => context.go(Routes.documents),

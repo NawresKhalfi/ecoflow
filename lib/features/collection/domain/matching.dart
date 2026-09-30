@@ -9,6 +9,8 @@ class CollectorCandidate {
     this.rating = 0,
     this.ratingCount = 0,
     this.online = true,
+    this.zoneCenter,
+    this.zoneRadiusKm,
   });
 
   final String uid;
@@ -17,6 +19,13 @@ class CollectorCandidate {
   final double rating;
   final int ratingCount;
   final bool online;
+
+  /// Zone de travail déclarée (US-042) : hors zone, pas de proposition.
+  final GeoPoint? zoneCenter;
+  final double? zoneRadiusKm;
+
+  bool covers(GeoPoint p) =>
+      zoneCenter == null || zoneRadiusKm == null || distanceKm(zoneCenter!, p) <= zoneRadiusKm!;
 }
 
 class MatchResult {
@@ -59,7 +68,7 @@ MatchResult matchCollector({
 }) {
   final eligible = [
     for (final c in candidates)
-      if (c.online && !excluded.contains(c.uid) && c.capacityKg >= neededKg)
+      if (c.online && !excluded.contains(c.uid) && c.capacityKg >= neededKg && c.covers(pickup))
         (c, distanceKm(pickup, c.point)),
   ];
   for (final r in radii) {

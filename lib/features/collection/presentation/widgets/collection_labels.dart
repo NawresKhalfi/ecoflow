@@ -14,6 +14,7 @@ String statusLabel(AppLocalizations l, CollectionStatus s) => switch (s) {
   CollectionStatus.accepted => l.stAccepted,
   CollectionStatus.onTheWay => l.stOnTheWay,
   CollectionStatus.arrived => l.stArrived,
+  CollectionStatus.inProgress => l.stInProgress,
   CollectionStatus.handedOver => l.stHandedOver,
   CollectionStatus.completed => l.stCompleted,
   CollectionStatus.cancelled => l.stCancelled,

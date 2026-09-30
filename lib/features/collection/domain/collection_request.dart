@@ -10,6 +10,9 @@ enum CollectionStatus {
   accepted,
   onTheWay,
   arrived,
+
+  /// Collecte en cours sur place (US-047).
+  inProgress,
   handedOver,
   completed,
   cancelled;
@@ -21,7 +24,7 @@ enum CollectionStatus {
   int get step => switch (this) {
     searching || noCollector => 0,
     proposed || accepted => 1,
-    onTheWay || arrived => 2,
+    onTheWay || arrived || inProgress => 2,
     handedOver => 3,
     completed => 4,
     cancelled => -1,
@@ -30,7 +33,8 @@ enum CollectionStatus {
   bool get isOpen => this != completed && this != cancelled;
 
   /// Un collecteur s'est engagé : annuler entraîne une pénalité (US-035).
-  bool get collectorCommitted => this == accepted || this == onTheWay || this == arrived;
+  bool get collectorCommitted =>
+      this == accepted || this == onTheWay || this == arrived || this == inProgress;
 }
 
 enum Recurrence { none, weekly, monthly }
@@ -77,6 +81,10 @@ class CollectionRequest {
     this.lateCancellation = false,
     this.rated = false,
     this.createdAt,
+    this.proposedAt,
+    this.categories = const [],
+    this.cancelledBy,
+    this.depositId,
   });
 
   final String id;
@@ -100,6 +108,18 @@ class CollectionRequest {
   final bool lateCancellation;
   final bool rated;
   final DateTime? createdAt;
+
+  /// Heure de la proposition au collecteur (délai de réponse, US-044).
+  final DateTime? proposedAt;
+
+  /// Catégories de déchets (filtres des missions, US-043).
+  final List<String> categories;
+
+  /// `citizen` ou `collector` (signalement d'absence, US-053).
+  final String? cancelledBy;
+
+  /// Dépôt chez le recycleur (US-055).
+  final String? depositId;
 
   /// Modification jusqu'à 1 h avant le créneau, avant l'arrivée (US-035).
   bool canModify(DateTime now) =>

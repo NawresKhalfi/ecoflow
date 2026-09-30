@@ -9,6 +9,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../collection/presentation/widgets/presence_card.dart';
+import '../../../missions/presentation/widgets/work_zone_card.dart';
 import '../../../auth/domain/user_role.dart';
 import '../../../auth/domain/verification_status.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
@@ -50,22 +51,27 @@ class HomeScreen extends ConsumerWidget {
         if (role == UserRole.collector && profile.verificationStatus == VerificationStatus.approved)
           const PresenceCard(),
         if (role == UserRole.collector && profile.verificationStatus == VerificationStatus.approved)
+          const WorkZoneCard(),
+        if (role == UserRole.collector && profile.verificationStatus == VerificationStatus.approved)
           EcoCard(
             gradient: EcoGradients.coral,
             decorated: true,
-            onTap: () => context.go(Routes.weighing),
-            semanticLabel: l.homeWeighCta,
+            onTap: () => context.go(Routes.missions),
+            semanticLabel: l.homeMissionsCta,
             child: Row(
               children: [
-                const ExcludeSemantics(child: Text('⚖️', style: TextStyle(fontSize: 40))),
+                const ExcludeSemantics(child: Text('🚚', style: TextStyle(fontSize: 40))),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l.homeWeighCta, style: AppTheme.weighted(20, 800, color: Colors.white)),
                       Text(
-                        l.homeWeighCtaBody,
+                        l.homeMissionsCta,
+                        style: AppTheme.weighted(20, 800, color: Colors.white),
+                      ),
+                      Text(
+                        l.homeMissionsCtaBody,
                         style: AppTheme.weighted(
                           14,
                           500,

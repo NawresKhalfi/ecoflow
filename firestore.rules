@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Règles EcoFlow – Epics 1 (profils), 2 (vision IA), 3 (estimation & pesée), 4 (collectes).
+// Règles EcoFlow – Epics 1 (profils), 2 (vision IA), 3 (estimation & pesée), 4 (collectes), 5 (missions).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -107,7 +107,8 @@ service cloud.firestore {
       allow delete: if ownsScan() || isAdmin();
 
       match /photos/{index} {
-        allow read: if ownsScan() || isAdmin();
+        // Collecteurs vérifiés : photos du scan visibles dans la mission (US-045).
+        allow read: if ownsScan() || isAdmin() || isApprovedCollector();
         allow create: if signedIn()
           && request.resource.data.uid == request.auth.uid
           && index in ['0', '1', '2', '3', '4']
@@ -177,7 +178,11 @@ service cloud.firestore {
 
     match /collections/{id} {
       allow get: if ownsCollection() || isApprovedCollector() || isAdmin();
-      allow list: if ownsCollection() || isAdmin();
+      // Collecteurs vérifiés : demandes ouvertes, proposées à eux, ou les leurs.
+      allow list: if ownsCollection() || isAdmin() || (isApprovedCollector()
+        && (resource.data.status in ['searching', 'noCollector']
+            || resource.data.proposedCollectorUid == request.auth.uid
+            || resource.data.collectorUid == request.auth.uid));
       allow create: if signedIn()
         && request.resource.data.citizenUid == request.auth.uid
         && request.resource.data.status == 'searching'
@@ -193,20 +198,56 @@ service cloud.firestore {
             && (request.resource.data.status != 'completed' || resource.data.status in ['handedOver', 'completed'])
             // Une collecte terminée n'accepte plus que la marque « notée ».
             && (resource.data.status != 'completed' || changed().hasOnly(['rated'])))
-        // Collecteur vérifié : remise validée par sa propre pesée (même batch).
+        // Collecteur : acceptation verrouillée (première acceptation).
+        || (isApprovedCollector()
+            && request.resource.data.status == 'accepted'
+            && request.resource.data.collectorUid == request.auth.uid
+            && resource.data.get('collectorUid', null) == null
+            && (resource.data.status in ['searching', 'noCollector']
+                || (resource.data.status == 'proposed' && resource.data.proposedCollectorUid == request.auth.uid))
+            && changed().hasOnly(['status', 'collectorUid', 'proposedCollectorUid', 'acceptedAt', 'statusHistory', 'updatedAt']))
+        // Collecteur : refus d'une proposition (ou délai dépassé).
+        || (isApprovedCollector()
+            && resource.data.status == 'proposed' && resource.data.proposedCollectorUid == request.auth.uid
+            && request.resource.data.status == 'searching'
+            && request.resource.data.refusedBy.hasAll(resource.data.refusedBy)
+            && request.auth.uid in request.resource.data.refusedBy
+            && changed().hasOnly(['status', 'proposedCollectorUid', 'refusedBy', 'statusHistory', 'updatedAt']))
+        // Collecteur : déroulé sur place, photo preuve, dépôt, absence du citoyen.
+        || (isApprovedCollector() && resource.data.collectorUid == request.auth.uid
+            && request.resource.data.collectorUid == request.auth.uid
+            && ((resource.data.status == 'accepted' && request.resource.data.status == 'onTheWay')
+                || (resource.data.status == 'onTheWay' && request.resource.data.status == 'arrived')
+                || (resource.data.status == 'arrived' && request.resource.data.status == 'inProgress')
+                || (request.resource.data.status == resource.data.status
+                    && changed().hasOnly(['hasProof', 'depositId', 'updatedAt']))
+                || (resource.data.status in ['arrived', 'inProgress'] && request.resource.data.status == 'cancelled'
+                    && request.resource.data.cancelledBy == 'collector'))
+            && !changed().hasAny(['citizenUid', 'estimateCode', 'place', 'slotId', 'estimatedKg', 'estimatedDt']))
+        // Collecteur vérifié : remise validée par sa propre pesée (même batch),
+        // photo preuve obligatoire (US-048).
         || (isApprovedCollector()
             && request.resource.data.status == 'handedOver'
             && request.resource.data.collectorUid == request.auth.uid
-            && resource.data.status in ['searching', 'noCollector', 'proposed', 'accepted', 'onTheWay', 'arrived']
+            && resource.data.collectorUid == request.auth.uid
+            && resource.data.get('hasProof', false) == true
+            && resource.data.status in ['accepted', 'onTheWay', 'arrived', 'inProgress']
             && getAfter(/databases/$(database)/documents/estimates/$(resource.data.estimateCode)).data.status == 'weighed'
             && getAfter(/databases/$(database)/documents/estimates/$(resource.data.estimateCode)).data.collectorUid == request.auth.uid
             && changed().hasOnly(['status', 'collectorUid', 'statusHistory', 'handedOverAt', 'updatedAt']));
       allow delete: if isAdmin();
 
       match /attachments/{name} {
-        allow read: if signedIn() && (resource.data.uid == request.auth.uid || isApprovedCollector() || isAdmin());
+        allow read: if signedIn() && (resource.data.uid == request.auth.uid || isApprovedCollector() || isAdmin()
+          || get(/databases/$(database)/documents/collections/$(id)).data.citizenUid == request.auth.uid);
+        // Instructions : le citoyen ; preuve : le collecteur de la mission.
         allow create: if signedIn() && request.resource.data.uid == request.auth.uid
-          && request.resource.data.data.size() < 1000000;
+          && request.resource.data.data.size() < 1000000
+          && ((name == 'instructions'
+                && get(/databases/$(database)/documents/collections/$(id)).data.citizenUid == request.auth.uid)
+              || (name == 'proof'
+                && get(/databases/$(database)/documents/collections/$(id)).data.collectorUid == request.auth.uid));
+        allow update: if name == 'proof' && signedIn() && resource.data.uid == request.auth.uid;
       }
     }
 
@@ -253,7 +294,8 @@ service cloud.firestore {
       allow create: if signedIn()
         && request.resource.data.reporterUid == request.auth.uid
         && request.resource.data.status == 'open'
-        && get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.citizenUid == request.auth.uid;
+        && (get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.citizenUid == request.auth.uid
+            || get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.collectorUid == request.auth.uid);
       allow update: if isAdmin();
 
       match /photos/{i} {
@@ -261,6 +303,42 @@ service cloud.firestore {
         allow create: if signedIn() && request.resource.data.uid == request.auth.uid
           && request.resource.data.data.size() < 1000000;
       }
+    }
+
+    // --- Epic 5 : revenus, retraits, dépôts ------------------------------
+    // Revenu d'une mission terminée : montant = valeur finale de la pesée.
+    match /earnings/{missionId} {
+      allow read: if signedIn() && (resource == null || resource.data.collectorUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedCollector()
+        && request.resource.data.collectorUid == request.auth.uid
+        && get(/databases/$(database)/documents/collections/$(missionId)).data.collectorUid == request.auth.uid
+        && get(/databases/$(database)/documents/collections/$(missionId)).data.status == 'completed'
+        && request.resource.data.amountDt == get(/databases/$(database)/documents/estimates/$(get(/databases/$(database)/documents/collections/$(missionId)).data.estimateCode)).data.finalDt;
+      allow update, delete: if isAdmin();
+    }
+
+    match /payouts/{id} {
+      allow read: if signedIn() && (resource.data.collectorUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedCollector()
+        && request.resource.data.collectorUid == request.auth.uid
+        && request.resource.data.status == 'requested'
+        && request.resource.data.amountDt >= 20;
+      allow update: if isAdmin();
+    }
+
+    match /deposits/{id} {
+      allow read: if signedIn() && (resource.data.collectorUid == request.auth.uid
+        || resource.data.recyclerUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedCollector()
+        && request.resource.data.collectorUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.missionIds.size() <= 50
+        && get(/databases/$(database)/documents/companies/$(request.resource.data.recyclerUid)).data.status == 'approved';
+      // Le recycleur destinataire confirme ou refuse la réception.
+      allow update: if isAdmin() || (signedIn() && resource.data.recyclerUid == request.auth.uid
+        && resource.data.status == 'pending'
+        && request.resource.data.status in ['confirmed', 'rejected']
+        && changed().hasOnly(['status', 'note', 'reviewedAt']));
     }
   }
 }

@@ -12,6 +12,10 @@ const _roleOnly = {
   Routes.model: UserRole.admin,
   Routes.estimates: UserRole.citizen,
   Routes.collections: UserRole.citizen,
+  Routes.missions: UserRole.collector,
+  Routes.earnings: UserRole.collector,
+  Routes.vehicle: UserRole.collector,
+  Routes.receptions: UserRole.recycler,
   Routes.weighing: UserRole.collector,
   Routes.pricing: UserRole.admin,
 };

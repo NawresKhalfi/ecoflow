@@ -157,12 +157,16 @@ class PresenceController extends ActionController {
     if (uid == null) return;
     final pos = online ? await ref.read(locationServiceProvider).currentPosition() : null;
     if (online && pos == null) throw const LocationRequired();
+    // Capacité du véhicule déclaré (US-054), 200 kg par défaut.
+    final profile = await ref.read(firestoreProvider).collection('users').doc(uid).get();
+    final capacity = ((profile.data()?['vehicle'] as Map?)?['capacityKg'] as num?)?.toDouble();
     await ref
         .read(presenceRepositoryProvider)
         .setOnline(
           uid,
           online: online,
           point: pos == null ? null : GeoPoint(pos.latitude, pos.longitude),
+          capacityKg: capacity ?? 200,
         );
   });
 }

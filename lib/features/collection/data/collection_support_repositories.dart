@@ -15,7 +15,12 @@ import '../domain/service_zone.dart';
 abstract interface class PresenceRepository {
   Future<List<CollectorCandidate>> onlineCollectors();
   Stream<bool> watchOnline(String uid);
-  Future<void> setOnline(String uid, {required bool online, GeoPoint? point, double capacityKg});
+  Future<void> setOnline(String uid, {required bool online, GeoPoint? point, double? capacityKg});
+
+  /// Zone de travail (US-042) et capacité du véhicule (US-054).
+  Future<void> setWorkZone(String uid, {required GeoPoint center, required double radiusKm});
+  Future<void> setCapacity(String uid, double capacityKg);
+  Stream<Map<String, dynamic>> watch(String uid);
 }
 
 class FirestorePresenceRepository implements PresenceRepository {
@@ -37,6 +42,8 @@ class FirestorePresenceRepository implements PresenceRepository {
           capacityKg: (d.data()['capacityKg'] as num?)?.toDouble() ?? 0,
           rating: (stats?['ratingAvg'] as num?)?.toDouble() ?? 0,
           ratingCount: (stats?['ratingCount'] as num?)?.toInt() ?? 0,
+          zoneCenter: GeoPoint.fromMap((d.data()['workZone'] as Map?)?['center']),
+          zoneRadiusKm: ((d.data()['workZone'] as Map?)?['radiusKm'] as num?)?.toDouble(),
         ),
       );
     }
@@ -51,17 +58,30 @@ class FirestorePresenceRepository implements PresenceRepository {
       .map((s) => s.data()?['online'] as bool? ?? false);
 
   @override
-  Future<void> setOnline(
-    String uid, {
-    required bool online,
-    GeoPoint? point,
-    double capacityKg = 200,
-  }) => _db.collection('collectorPresence').doc(uid).set({
-    'online': online,
-    if (point != null) 'point': point.rounded().toMap(),
-    'capacityKg': capacityKg,
-    'updatedAt': FieldValue.serverTimestamp(),
-  }, SetOptions(merge: true));
+  Future<void> setOnline(String uid, {required bool online, GeoPoint? point, double? capacityKg}) =>
+      _db.collection('collectorPresence').doc(uid).set({
+        'online': online,
+        // Position partagée seulement en ligne (US-042).
+        'point': online && point != null ? point.rounded().toMap() : FieldValue.delete(),
+        'capacityKg': ?capacityKg,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+  @override
+  Future<void> setWorkZone(String uid, {required GeoPoint center, required double radiusKm}) =>
+      _db.collection('collectorPresence').doc(uid).set({
+        'workZone': {'center': center.rounded().toMap(), 'radiusKm': radiusKm},
+      }, SetOptions(merge: true));
+
+  @override
+  Future<void> setCapacity(String uid, double capacityKg) => _db
+      .collection('collectorPresence')
+      .doc(uid)
+      .set({'capacityKg': capacityKg}, SetOptions(merge: true));
+
+  @override
+  Stream<Map<String, dynamic>> watch(String uid) =>
+      _db.collection('collectorPresence').doc(uid).snapshots().map((s) => s.data() ?? const {});
 }
 
 /// Notes (US-040) et signalements (US-041).

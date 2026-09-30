@@ -404,6 +404,7 @@
   "stAccepted": "Collecteur confirmé",
   "stOnTheWay": "En route",
   "stArrived": "Arrivé",
+  "stInProgress": "Collecte en cours",
   "stHandedOver": "Remise à confirmer",
   "stCompleted": "Terminée",
   "stCancelled": "Annulée",
@@ -454,6 +455,120 @@
   "presenceOn": "En ligne",
   "presenceOff": "Hors ligne",
   "presenceNeedsLocation": "Active la localisation pour passer en ligne.",
+  "navMissions": "Missions",
+  "navEarnings": "Revenus",
+  "navReceptions": "Réceptions",
+  "missionsTitle": "Missions autour de toi",
+  "missionsOffline": "Passe en ligne pour recevoir des missions.",
+  "missionsAvailable": "Disponibles",
+  "missionsMine": "Mes missions",
+  "missionsEmpty": "Aucune mission disponible pour ces critères.",
+  "missionsMineEmpty": "Aucune mission acceptée pour l’instant.",
+  "missionsList": "Liste",
+  "missionsMap": "Carte",
+  "sortDistance": "Plus proches",
+  "sortValue": "Plus rentables",
+  "filterAllMaterials": "Toutes matières",
+  "filterAnyQty": "Toute quantité",
+  "missionProposed": "Proposée pour toi",
+  "missionAccept": "Accepter",
+  "missionRefuse": "Refuser",
+  "missionAccepted": "Mission acceptée ✅",
+  "missionTaken": "Mission déjà prise par un autre collecteur.",
+  "missionExpired": "Délai de réponse dépassé : la mission est proposée à un autre collecteur.",
+  "missionNavigate": "Itinéraire",
+  "missionGoogleMaps": "Google Maps",
+  "missionWaze": "Waze",
+  "missionAppleMaps": "Plans",
+  "missionWaste": "Déchets estimés par l’IA",
+  "missionPhotos": "Photos du citoyen",
+  "missionInstructions": "Instructions",
+  "missionStartRoute": "Je pars (en route)",
+  "missionArrive": "Je suis arrivé",
+  "missionStart": "Démarrer la collecte",
+  "missionProofTitle": "Photo preuve",
+  "missionProofHelp": "Obligatoire avant la clôture : photographie les déchets collectés.",
+  "missionProofTake": "Prendre la photo preuve",
+  "missionProofOk": "Photo preuve enregistrée ✅",
+  "missionCloseTitle": "Clôturer la mission",
+  "missionCloseHelp": "Le citoyen te donne son code de remise : c’est sa validation. Saisis ensuite le poids réel.",
+  "missionCodeLabel": "Code de remise du citoyen",
+  "missionClose": "Clôturer la mission",
+  "missionWaitingCitizen": "Pesée enregistrée : en attente de la confirmation du citoyen.",
+  "missionDone": "Mission terminée 🎉",
+  "missionErrCode": "Code incorrect : demande le code affiché dans l’application du citoyen.",
+  "missionErrProof": "Prends d’abord la photo preuve.",
+  "missionErrWeights": "Saisis le poids réel de chaque matière (0 si absente).",
+  "missionNoShow": "Citoyen absent / adresse introuvable",
+  "noShowAbsent": "Citoyen absent",
+  "noShowAddress": "Adresse introuvable",
+  "noShowNote": "Précisions (appel, attente…)",
+  "noShowPhoto": "Ajouter une photo preuve",
+  "noShowSend": "Signaler et clore la mission",
+  "noShowDone": "Signalement envoyé : mission annulée sans pénalité pour toi.",
+  "scaleConnect": "Balance Bluetooth",
+  "scaleScanning": "Recherche de balances…",
+  "scaleNone": "Aucune balance compatible trouvée : saisie manuelle.",
+  "scaleUse": "Utiliser",
+  "earningsTitle": "Mes revenus",
+  "earningsSubtitle": "Suis ton activité et retire tes gains.",
+  "periodDay": "Aujourd’hui",
+  "periodWeek": "Cette semaine",
+  "periodMonth": "Ce mois",
+  "earningsTotal": "Total de la période",
+  "earningsChart": "Gains des 7 derniers jours",
+  "earningsBalance": "Solde disponible",
+  "earningsWithdraw": "Retirer mes revenus",
+  "earningsHistory": "Historique",
+  "earningsEmpty": "Aucun revenu pour l’instant : termine ta première mission.",
+  "withdrawAmount": "Montant (DT)",
+  "withdrawMethod": "Mode de paiement",
+  "methodBank": "Virement bancaire",
+  "methodWallet": "Portefeuille mobile",
+  "methodCash": "Espèces (agence)",
+  "withdrawSend": "Demander le retrait",
+  "withdrawSent": "Demande de retrait envoyée ✅",
+  "withdrawInvalid": "Montant invalide : minimum 20 DT, dans la limite du solde.",
+  "payoutRequested": "Demandé",
+  "payoutProcessing": "En cours",
+  "payoutPaid": "Payé",
+  "payoutRejected": "Refusé",
+  "depositTitle": "Déposer ma tournée",
+  "depositSubtitle": "Choisis le recycleur et les collectes déposées.",
+  "depositRecycler": "Recycleur destinataire",
+  "depositNoRecycler": "Aucun recycleur validé pour l’instant.",
+  "depositMissions": "Collectes à déposer",
+  "depositNothing": "Aucune collecte pesée à déposer.",
+  "depositSend": "Enregistrer le dépôt",
+  "depositSent": "Dépôt enregistré : en attente de la confirmation du recycleur.",
+  "depositMine": "Mes dépôts",
+  "depPending": "À confirmer",
+  "depConfirmed": "Confirmé",
+  "depRejected": "Refusé",
+  "receptionsTitle": "Réceptions de lots",
+  "receptionsSubtitle": "Confirme les dépôts des collecteurs.",
+  "receptionsEmpty": "Aucun dépôt en attente.",
+  "receptionConfirm": "Confirmer la réception",
+  "receptionReject": "Refuser",
+  "vehicleTitle": "Mon véhicule",
+  "vehicleSubtitle": "Sa capacité sert à te proposer des collectes adaptées.",
+  "vehicleType": "Type",
+  "vehBike": "Vélo",
+  "vehCargoBike": "Vélo cargo",
+  "vehMotorbike": "Moto",
+  "vehCar": "Voiture",
+  "vehVan": "Camionnette",
+  "vehTruck": "Camion",
+  "vehicleCapacity": "Capacité (kg)",
+  "vehicleVolume": "Volume (m³)",
+  "vehiclePlate": "Immatriculation (facultatif)",
+  "vehicleSaved": "Véhicule enregistré ✅",
+  "zoneTitle": "Zone de travail",
+  "zoneHelp": "Tu ne reçois que les missions dans ce rayon autour de toi.",
+  "zoneNone": "Aucune zone : toutes les missions proches.",
+  "zoneSaved": "Zone de travail enregistrée ✅",
+  "homeMissionsCta": "Voir les missions",
+  "homeMissionsCtaBody": "Accepte des collectes près de toi.",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -737,6 +852,54 @@
         "type": "int"
       },
       "end": {
+        "type": "int"
+      }
+    }
+  },
+  "missionCountdown": "⏱ {seconds} s pour répondre",
+  "@missionCountdown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "missionDistance": "{km} km",
+  "@missionDistance": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "missionCredited": "+{amount} crédités",
+  "@missionCredited": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "earningsMissions": "{count, plural, =0{aucune mission} =1{1 mission} other{{count} missions}}",
+  "@earningsMissions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneRadius": "{km} km",
+  "@zoneRadius": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneCurrent": "Rayon de {km} km autour de ta position",
+  "@zoneCurrent": {
+    "placeholders": {
+      "km": {
         "type": "int"
       }
     }

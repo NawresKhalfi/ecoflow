@@ -68,6 +68,10 @@ class FirestoreCollectionRepository implements CollectionRepository {
       lateCancellation: m['lateCancellation'] as bool? ?? false,
       rated: m['rated'] as bool? ?? false,
       createdAt: (m['createdAt'] as Timestamp?)?.toDate(),
+      proposedAt: (m['proposedAt'] as Timestamp?)?.toDate(),
+      categories: (m['categories'] as List? ?? const []).cast<String>(),
+      cancelledBy: m['cancelledBy'] as String?,
+      depositId: m['depositId'] as String?,
     );
   }
 
@@ -97,6 +101,7 @@ class FirestoreCollectionRepository implements CollectionRepository {
         'hasInstructionPhoto': instructionPhoto != null,
         'estimatedKg': r.estimatedKg,
         'estimatedDt': r.estimatedDt,
+        'categories': r.categories,
         'status': CollectionStatus.searching.name,
         'refusedBy': <String>[],
         'recurrence': r.recurrence.name,
@@ -153,6 +158,7 @@ class FirestoreCollectionRepository implements CollectionRepository {
     return _col.doc(id).update({
       'status': status.name,
       'proposedCollectorUid': collectorUid,
+      'proposedAt': collectorUid == null ? null : Timestamp.now(),
       'searchRadiusKm': radiusKm,
       'statusHistory': FieldValue.arrayUnion([_historyEntry(status)]),
       'updatedAt': FieldValue.serverTimestamp(),
@@ -198,6 +204,7 @@ class FirestoreCollectionRepository implements CollectionRepository {
     tx.update(_col.doc(r.id), {
       'status': CollectionStatus.cancelled.name,
       'lateCancellation': r.cancellationPenalty,
+      'cancelledBy': 'citizen',
       'statusHistory': FieldValue.arrayUnion([_historyEntry(CollectionStatus.cancelled)]),
       'cancelledAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
