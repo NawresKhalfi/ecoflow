@@ -36,6 +36,8 @@ abstract final class Routes {
   static const deposit = '/app/earnings/deposit';
   static const vehicle = '/app/vehicle';
   static const receptions = '/app/receptions';
+  static const tour = '/app/missions/tour';
+  static const optimization = '/app/optimization';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

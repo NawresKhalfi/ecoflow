@@ -106,6 +106,8 @@ check('no-show after arrival + ticket', karim, [
   create(f'tickets/t{code2}', {'collectionId':cid2,'reporterUid':kuid,'reporterRole':'collector','reason':'citizenAbsent','description':'','photoCount':0,'status':'open','createdAt':now}),
   upd(f'collections/{cid2}', {'status':'cancelled','cancelledBy':'collector','cancelReason':'citizenAbsent','noShowTicketId':f't{code2}','cancelledAt':now})], True)
 
+check('non-admin cannot write optimization history', karim, [create(f'config/optimization/history/h{code}', {'maxDetourKm':99.0,'by':kuid})], False)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',

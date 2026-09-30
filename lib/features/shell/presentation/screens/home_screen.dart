@@ -85,6 +85,39 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
+        if (role == UserRole.admin)
+          EcoCard(
+            gradient: EcoGradients.violet,
+            decorated: true,
+            onTap: () => context.go(Routes.optimization),
+            semanticLabel: l.homeOptimizationCta,
+            child: Row(
+              children: [
+                const ExcludeSemantics(child: Text('⚙️', style: TextStyle(fontSize: 40))),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.homeOptimizationCta,
+                        style: AppTheme.weighted(20, 800, color: Colors.white),
+                      ),
+                      Text(
+                        l.homeOptimizationCtaBody,
+                        style: AppTheme.weighted(
+                          14,
+                          500,
+                          color: Colors.white.withValues(alpha: .92),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+              ],
+            ),
+          ),
         if (role == UserRole.citizen)
           EcoCard(
             gradient: EcoGradients.coral,

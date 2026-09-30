@@ -131,6 +131,12 @@ service cloud.firestore {
     match /config/{id} {
       allow read: if signedIn();
       allow write: if isAdmin();
+
+      // Historique des paramètres (optimisation, US-062).
+      match /history/{h} {
+        allow read, create: if isAdmin();
+        allow update, delete: if false;
+      }
     }
 
     // --- Epic 3 : barèmes, estimations et pesées --------------------------

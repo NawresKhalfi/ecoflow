@@ -32,6 +32,8 @@ import '../../features/missions/presentation/screens/mission_detail_screen.dart'
 import '../../features/missions/presentation/screens/missions_screen.dart';
 import '../../features/missions/presentation/screens/receptions_screen.dart';
 import '../../features/missions/presentation/screens/vehicle_screen.dart';
+import '../../features/routing/presentation/screens/optimization_screen.dart';
+import '../../features/routing/presentation/screens/tour_screen.dart';
 import '../../features/scan/presentation/screens/scan_screen.dart';
 import '../../features/shell/presentation/screens/home_screen.dart';
 import '../../features/vision_admin/presentation/screens/catalog_screen.dart';
@@ -104,7 +106,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               _tab(
                 'missions',
                 (_) => const MissionsScreen(),
-                routes: [_tab(':id', (s) => MissionDetailScreen(id: s.pathParameters['id']!))],
+                routes: [
+                  _tab('tour', (_) => const TourScreen()),
+                  _tab(':id', (s) => MissionDetailScreen(id: s.pathParameters['id']!)),
+                ],
               ),
               _tab(
                 'earnings',
@@ -113,6 +118,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
               _tab('vehicle', (_) => const VehicleScreen()),
               _tab('receptions', (_) => const ReceptionsScreen()),
+              _tab('optimization', (_) => const OptimizationScreen()),
               _tab(
                 'collections',
                 (_) => const CollectionsScreen(),

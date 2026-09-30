@@ -14,6 +14,7 @@ import '../../../scan/domain/waste_category.dart';
 import '../../../scan/presentation/widgets/scan_labels.dart';
 import '../../application/missions_providers.dart';
 import '../../domain/mission_rules.dart';
+import '../../../routing/presentation/widgets/tour_entry_cards.dart';
 import '../widgets/mission_card.dart';
 import '../widgets/missions_map.dart';
 
@@ -85,6 +86,8 @@ class _MissionsScreenState extends ConsumerState<MissionsScreen> {
         else if (!online)
           EcoCard(child: Text(l.missionsOffline))
         else ...[
+          const TourEntryCard(),
+          const ClusterSuggestions(),
           const _FilterCard(),
           if (_map)
             MissionsMap(missions: [for (final m in available) m.$1], me: presence?.point)

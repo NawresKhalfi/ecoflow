@@ -13,7 +13,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E03 | Estimation intelligente quantité & valeur | MVP | 8/8 | ✅ |
 | E04 | Demande de collecte | MVP | 10/11 | 🟨 |
 | E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
-| E06 | Optimisation IA des itinéraires | V1 | 0/7 | ⬜ |
+| E06 | Optimisation IA des itinéraires | V1 | 7/7 | ✅ |
 | E07 | Suivi temps réel & notifications | MVP | 0/6 | ⬜ |
 | E08 | Recycle Wallet & EcoPoints | V1 | 0/10 | ⬜ |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 0/9 | ⬜ |
@@ -119,13 +119,13 @@ _Tournées multi-collectes optimisées (km, temps, carburant) sous contraintes d
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-056 | Système | En tant que système, je dois regrouper plusieurs collectes proches dans une même tournée afin de réduire les déplacements du collecteur. | Should | V1 | ⬜ |  |
-| US-057 | Collecteur | En tant que collecteur, je veux obtenir l'ordre de visite optimal pour mes collectes du jour afin de économiser kilomètres, temps et carburant. | Should | V1 | ⬜ |  |
-| US-058 | Système | En tant que système, je dois tenir compte de la capacité du véhicule et des créneaux horaires afin de produire des tournées réalistes. | Should | V1 | ⬜ |  |
-| US-059 | Système | En tant que système, je dois recalculer la tournée si une collecte est ajoutée, annulée ou retardée afin de rester optimal en temps réel. | Could | V2 | ⬜ |  |
-| US-060 | Collecteur | En tant que collecteur, je veux voir les économies estimées (km, temps, carburant, CO₂) de ma tournée afin de mesurer l'intérêt de l'optimisation. | Could | V2 | ⬜ |  |
-| US-061 | Système | En tant que système, je dois proposer au collecteur des missions compatibles avec son trajet en cours afin de augmenter son rendement. | Could | V2 | ⬜ |  |
-| US-062 | Administrateur | En tant que administrateur, je veux paramétrer les règles d'optimisation (poids des critères, détour maximal) afin de adapter l'algorithme à l'exploitation. | Could | V2 | ⬜ |  |
+| US-056 | Système | En tant que système, je dois regrouper plusieurs collectes proches dans une même tournée afin de réduire les déplacements du collecteur. | Should | V1 | ✅ | Regroupement glouton par densité (rayon paramétrable, capacité du véhicule), carte « tournée groupée suggérée » avec acceptation en un geste. |
+| US-057 | Collecteur | En tant que collecteur, je veux obtenir l'ordre de visite optimal pour mes collectes du jour afin de économiser kilomètres, temps et carburant. | Should | V1 | ✅ | Solveur CVRPTW à un véhicule (insertion + 2-opt/or-opt, jamais pire que l'ordre naïf), carte numérotée, gain vs ordre naïf. Heuristique, pas un solveur exact : optimal non garanti. |
+| US-058 | Système | En tant que système, je dois tenir compte de la capacité du véhicule et des créneaux horaires afin de produire des tournées réalistes. | Should | V1 | ✅ | Créneaux = contraintes dures, déchargement automatique si capacité dépassée ; 200 tournées aléatoires vérifiées à 100 %. Départ calé pour arriver au début du premier créneau. |
+| US-059 | Système | En tant que système, je dois recalculer la tournée si une collecte est ajoutée, annulée ou retardée afin de rester optimal en temps réel. | Could | V2 | ✅ | Recalcul automatique à chaque ajout / annulation / retard (2–4 ms mesurés sur simulateur pour 4–5 arrêts, < 10 s pour 30), message in-app au collecteur. Push : epic 7. |
+| US-060 | Collecteur | En tant que collecteur, je veux voir les économies estimées (km, temps, carburant, CO₂) de ma tournée afin de mesurer l'intérêt de l'optimisation. | Could | V2 | ✅ | Km, minutes, carburant (DT, conso par type de véhicule) et CO₂ évité (2,31 kg/L) ; bilan de la dernière journée terminée. Bilan de fin de journée non vu sur appareil. |
+| US-061 | Système | En tant que système, je dois proposer au collecteur des missions compatibles avec son trajet en cours afin de augmenter son rendement. | Could | V2 | ✅ | Missions ouvertes du jour insérables dans la tournée (créneaux et capacité respectés) avec détour ≤ maximum paramétrable ; ajout en un geste. |
+| US-062 | Administrateur | En tant que administrateur, je veux paramétrer les règles d'optimisation (poids des critères, détour maximal) afin de adapter l'algorithme à l'exploitation. | Could | V2 | ✅ | Poids km/attente, détour max, rayon de regroupement, facteur routier, vitesse, durée de collecte, prix carburant ; brouillon + simulation en direct sur 12 collectes ; publication historisée (règles : admin). Publication vérifiée par test UI, pas sur appareil. |
 
 ## E07 — Suivi temps réel & notifications
 
@@ -260,5 +260,5 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 - US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
 - US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
 - US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
-- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 33 écritures réelles (citoyen / collecteur / recycleur) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
+- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 34 écritures réelles (citoyen / collecteur / recycleur) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
 - Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.

@@ -16,6 +16,7 @@ const _roleOnly = {
   Routes.earnings: UserRole.collector,
   Routes.vehicle: UserRole.collector,
   Routes.receptions: UserRole.recycler,
+  Routes.optimization: UserRole.admin,
   Routes.weighing: UserRole.collector,
   Routes.pricing: UserRole.admin,
 };

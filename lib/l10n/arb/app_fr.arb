@@ -569,6 +569,46 @@
   "zoneSaved": "Zone de travail enregistrée ✅",
   "homeMissionsCta": "Voir les missions",
   "homeMissionsCtaBody": "Accepte des collectes près de toi.",
+  "navOptimization": "Optimisation",
+  "tourTitle": "Ma tournée optimisée",
+  "tourSubtitle": "Ordre de visite calculé par l’IA selon les créneaux et la capacité.",
+  "tourEmpty": "Accepte des missions pour construire ta tournée.",
+  "tourOpen": "Voir ma tournée optimisée",
+  "tourStart": "Départ",
+  "tourUnload": "Déchargement (capacité atteinte)",
+  "tourUnassigned": "Hors créneau : impossible à placer dans la tournée",
+  "tourSavingsTitle": "Économies vs ordre naïf",
+  "tourNoSavings": "L’ordre des créneaux est déjà optimal.",
+  "tourFuel": "carburant",
+  "tourCo2": "CO₂ évité",
+  "tourDetourTitle": "Missions sur ton trajet",
+  "tourDetourEmpty": "Aucune mission compatible avec ton trajet pour l’instant.",
+  "tourAdd": "Ajouter",
+  "tourUpdated": "Tournée recalculée",
+  "tourAddedNotice": "Tournée recalculée : nouvelle collecte ajoutée.",
+  "tourRemovedNotice": "Tournée recalculée : une collecte a été annulée.",
+  "tourReorderedNotice": "Tournée recalculée : l’ordre de visite a changé.",
+  "tourDoneTitle": "Tournée terminée 🎉",
+  "clusterTitle": "Tournée groupée suggérée",
+  "clusterAccept": "Accepter le groupe",
+  "optTitle": "Règles d’optimisation",
+  "optSubtitle": "Paramètres de l’algorithme de tournées, avec historique et simulation.",
+  "optRoadFactor": "Facteur routier (× vol d’oiseau)",
+  "optSpeed": "Vitesse moyenne (km/h)",
+  "optService": "Durée d’une collecte (min)",
+  "optDetour": "Détour maximal (km)",
+  "optCluster": "Rayon de regroupement (km)",
+  "optDistanceWeight": "Poids des kilomètres",
+  "optWaitWeight": "Poids de l’attente",
+  "optFuelPrice": "Prix du carburant (DT/L)",
+  "optPublish": "Publier les paramètres",
+  "optPublished": "Paramètres publiés ✅",
+  "optSimulation": "Simulation (12 collectes types à Sousse)",
+  "optHistory": "Historique",
+  "optCurrent": "Paramètres publiés",
+  "optDraft": "Brouillon",
+  "homeOptimizationCta": "Règles d’optimisation",
+  "homeOptimizationCtaBody": "Paramètres et simulation des tournées.",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -901,6 +941,90 @@
     "placeholders": {
       "km": {
         "type": "int"
+      }
+    }
+  },
+  "tourSummary": "{stops} arrêts · {km} km · {minutes} min",
+  "@tourSummary": {
+    "placeholders": {
+      "stops": {
+        "type": "int"
+      },
+      "km": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tourEta": "Arrivée {time}",
+  "@tourEta": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "tourWait": "attente {minutes} min",
+  "@tourWait": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tourSavedKm": "−{km} km",
+  "@tourSavedKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "tourSavedMin": "−{minutes} min",
+  "@tourSavedMin": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tourComputed": "Calculée en {ms} ms",
+  "@tourComputed": {
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "tourDetourKm": "+{km} km de détour",
+  "@tourDetourKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "clusterBody": "{count} collectes proches · {kg}",
+  "@clusterBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "optSimResult": "Optimisé {opt} km · ordre naïf {naive} km",
+  "@optSimResult": {
+    "placeholders": {
+      "opt": {
+        "type": "String"
+      },
+      "naive": {
+        "type": "String"
       }
     }
   }
