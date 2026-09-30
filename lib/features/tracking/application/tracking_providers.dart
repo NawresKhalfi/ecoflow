@@ -14,10 +14,16 @@ import '../domain/app_notification.dart';
 import '../domain/chat.dart';
 import '../domain/eta.dart';
 
-final notificationRepositoryProvider = Provider((ref) => NotificationRepository(ref.watch(firestoreProvider)));
-final liveLocationRepositoryProvider = Provider((ref) => LiveLocationRepository(ref.watch(firestoreProvider)));
+final notificationRepositoryProvider = Provider(
+  (ref) => NotificationRepository(ref.watch(firestoreProvider)),
+);
+final liveLocationRepositoryProvider = Provider(
+  (ref) => LiveLocationRepository(ref.watch(firestoreProvider)),
+);
 final chatRepositoryProvider = Provider((ref) => ChatRepository(ref.watch(firestoreProvider)));
-final pushTokenRepositoryProvider = Provider((ref) => PushTokenRepository(ref.watch(firestoreProvider)));
+final pushTokenRepositoryProvider = Provider(
+  (ref) => PushTokenRepository(ref.watch(firestoreProvider)),
+);
 final localNotifierProvider = Provider<LocalNotifier>((ref) => PluginLocalNotifier());
 final pushTokenSourceProvider = Provider<PushTokenSource>((ref) => FirebasePushTokenSource());
 final positionStreamProvider = Provider<PositionStreamSource>((ref) => GeolocatorPositionStream());
@@ -52,14 +58,16 @@ Future<void> notify(
   final from = ref.read(authRepositoryProvider).currentUser?.uid;
   if (toUid == null || from == null || toUid == from) return;
   try {
-    await ref.read(notificationRepositoryProvider).send(
-      toUid: toUid,
-      fromUid: from,
-      type: type,
-      collectionId: r.id,
-      address: r.place.address,
-      preview: preview,
-    );
+    await ref
+        .read(notificationRepositoryProvider)
+        .send(
+          toUid: toUid,
+          fromUid: from,
+          type: type,
+          collectionId: r.id,
+          address: r.place.address,
+          preview: preview,
+        );
   } catch (e) {
     debugPrint('notify($type) failed: $e');
   }
@@ -99,7 +107,11 @@ final livePublisherProvider = Provider<void>((ref) {
     });
   }
 
-  ref.listen(myMissionsProvider, (_, next) => update(next.value ?? const []), fireImmediately: true);
+  ref.listen(
+    myMissionsProvider,
+    (_, next) => update(next.value ?? const []),
+    fireImmediately: true,
+  );
   ref.onDispose(() => sub?.cancel());
 });
 
@@ -109,6 +121,8 @@ final pushRegistrationProvider = FutureProvider<bool>((ref) async {
   if (uid == null) return false;
   final token = await ref.read(pushTokenSourceProvider).token();
   if (token == null) return false;
-  await ref.read(pushTokenRepositoryProvider).save(uid, token, kIsWeb ? 'web' : Platform.operatingSystem);
+  await ref
+      .read(pushTokenRepositoryProvider)
+      .save(uid, token, kIsWeb ? 'web' : Platform.operatingSystem);
   return true;
 });

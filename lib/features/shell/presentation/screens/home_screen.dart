@@ -9,6 +9,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../collection/presentation/widgets/presence_card.dart';
+import '../../../tracking/application/tracking_providers.dart';
 import '../../../missions/presentation/widgets/work_zone_card.dart';
 import '../../../auth/domain/user_role.dart';
 import '../../../auth/domain/verification_status.dart';
@@ -26,6 +27,7 @@ class HomeScreen extends ConsumerWidget {
     final l = context.l10n;
     final profile = ref.watch(sessionProvider).profile;
     if (profile == null) return const SizedBox.shrink();
+    final unread = ref.watch(unreadCountProvider);
     final role = profile.role;
     final subtitle = switch (role) {
       UserRole.citizen => l.homeCitizenSubtitle,
@@ -174,6 +176,21 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
+        EcoCard(
+          onTap: () => context.go(Routes.inbox),
+          semanticLabel: l.homeInboxCta,
+          child: Row(
+            children: [
+              EcoAvatar(text: '🔔', gradient: unread > 0 ? EcoGradients.coral : null),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l.homeInboxCta, style: Theme.of(context).textTheme.titleMedium)),
+              EcoChip(
+                label: l.inboxUnread(unread),
+                tone: unread > 0 ? ChipTone.coral : ChipTone.green,
+              ),
+            ],
+          ),
+        ),
         ResponsiveGrid(
           children: [
             EcoCard(

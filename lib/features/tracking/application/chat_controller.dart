@@ -20,8 +20,16 @@ class ChatController extends ActionController {
     final r = await ref.read(collectionRepositoryProvider).fetch(collectionId);
     if (r == null) return;
     final other = uid == r.citizenUid ? r.collectorUid : r.citizenUid;
-    await notify(ref, toUid: other, type: NotificationType.message, r: r, preview: maskPhoneNumbers(text.trim()));
+    await notify(
+      ref,
+      toUid: other,
+      type: NotificationType.message,
+      r: r,
+      preview: maskPhoneNumbers(text.trim()),
+    );
   });
 }
 
-final chatControllerProvider = NotifierProvider.autoDispose<ChatController, AsyncValue<void>>(ChatController.new);
+final chatControllerProvider = NotifierProvider.autoDispose<ChatController, AsyncValue<void>>(
+  ChatController.new,
+);

@@ -11,6 +11,8 @@ import '../../../auth/domain/user_role.dart';
 import '../../../collection/application/proposal_watcher.dart';
 import '../../../missions/application/collector_controllers.dart';
 import '../../../routing/presentation/widgets/tour_entry_cards.dart';
+import '../../../tracking/application/tracking_providers.dart';
+import '../../../tracking/presentation/widgets/notification_listener.dart';
 import '../../../estimation/application/estimation_providers.dart';
 import '../../../estimation/domain/estimate_record.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
@@ -33,10 +35,13 @@ class RoleShell extends ConsumerWidget {
     final active = activeDestination(items, location);
     final wide = MediaQuery.sizeOf(context).width >= breakpoint;
     if (role == UserRole.citizen) _notifyWeighed(context, ref);
+    listenNotifications(context, ref);
+    ref.watch(pushRegistrationProvider);
     if (role == UserRole.citizen) ref.watch(proposalWatcherProvider);
     if (role == UserRole.collector) {
       ref.watch(earningsSyncProvider);
       listenTourChanges(context, ref);
+      ref.watch(livePublisherProvider);
     }
     void go(NavDestination d) => context.go(d.route);
 

@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/fake_auth_repository.dart';
 import 'helpers/test_app.dart';
+import 'helpers/tracking_fakes.dart';
 
 /// Parcours complet sur l'application réelle (routeur + garde), avec
 /// Firebase remplacé par des fakes.
@@ -28,6 +29,7 @@ void main() {
           deviceLocalesProvider.overrideWithValue(const [Locale('fr')]),
           authRepositoryProvider.overrideWithValue(auth),
           firestoreProvider.overrideWithValue(db),
+          ...deviceFakes(),
         ],
         retry: (_, _) => null,
         child: const EcoFlowApp(),

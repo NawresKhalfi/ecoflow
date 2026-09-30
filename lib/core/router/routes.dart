@@ -38,6 +38,8 @@ abstract final class Routes {
   static const receptions = '/app/receptions';
   static const tour = '/app/missions/tour';
   static const optimization = '/app/optimization';
+  static const inbox = '/app/inbox';
+  static String chat(String collectionId) => '/app/chat/$collectionId';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

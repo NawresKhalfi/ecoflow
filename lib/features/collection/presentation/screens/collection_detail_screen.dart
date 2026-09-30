@@ -18,6 +18,7 @@ import '../../application/collection_actions_controller.dart';
 import '../../application/collection_providers.dart';
 import '../../domain/collection_request.dart';
 import '../../domain/time_slot.dart';
+import '../../../tracking/presentation/widgets/tracking_card.dart';
 import '../widgets/alternatives_card.dart';
 import '../widgets/collection_labels.dart';
 import '../widgets/feedback_widgets.dart';
@@ -108,6 +109,15 @@ class CollectionDetailScreen extends ConsumerWidget {
           ),
           if (error != null)
             ErrorBanner(error is TooLateToModify ? l.reqErrTooLate : failureText(context, error)),
+          if (r.status == CollectionStatus.onTheWay || r.status == CollectionStatus.arrived)
+            TrackingCard(request: r),
+          if (r.collectorUid != null && r.status.isOpen)
+            EcoButton(
+              label: l.chatOpen,
+              leading: '💬',
+              style: EcoButtonStyle.ghost,
+              onPressed: () => context.go(Routes.chat(r.id)),
+            ),
           if (r.status == CollectionStatus.noCollector) AlternativesCard(request: r),
           if (r.status.isOpen && r.status.step < 3) _HandoverCard(code: r.estimateCode),
           if (r.awaitingCitizenConfirmation)

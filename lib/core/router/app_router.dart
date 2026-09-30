@@ -35,6 +35,8 @@ import '../../features/missions/presentation/screens/vehicle_screen.dart';
 import '../../features/routing/presentation/screens/optimization_screen.dart';
 import '../../features/routing/presentation/screens/tour_screen.dart';
 import '../../features/scan/presentation/screens/scan_screen.dart';
+import '../../features/tracking/presentation/screens/chat_screen.dart';
+import '../../features/tracking/presentation/screens/inbox_screen.dart';
 import '../../features/shell/presentation/screens/home_screen.dart';
 import '../../features/vision_admin/presentation/screens/catalog_screen.dart';
 import '../../features/vision_admin/presentation/screens/model_screen.dart';
@@ -119,6 +121,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               _tab('vehicle', (_) => const VehicleScreen()),
               _tab('receptions', (_) => const ReceptionsScreen()),
               _tab('optimization', (_) => const OptimizationScreen()),
+              _tab('inbox', (_) => const InboxScreen()),
+              _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),
               _tab(
                 'collections',
                 (_) => const CollectionsScreen(),

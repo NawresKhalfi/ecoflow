@@ -12,6 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'tracking_fakes.dart';
+
 Future<LocalPreferences> memoryPrefs([Map<String, Object> values = const {}]) async {
   SharedPreferences.setMockInitialValues(values);
   return LocalPreferences(await SharedPreferences.getInstance());
@@ -21,12 +23,14 @@ Future<LocalPreferences> memoryPrefs([Map<String, Object> values = const {}]) as
 Future<ProviderContainer> testContainer({
   List<Override> overrides = const [],
   List<Locale> deviceLocales = const [Locale('fr')],
+  FakePositions? positions,
 }) async {
   final prefs = await memoryPrefs();
   final c = ProviderContainer.test(
     overrides: [
       localPreferencesProvider.overrideWithValue(prefs),
       deviceLocalesProvider.overrideWithValue(deviceLocales),
+      ...deviceFakes(positions: positions),
       ...overrides,
     ],
     retry: (_, _) => null,
@@ -48,7 +52,11 @@ Future<void> pumpScreen(
   final prefs = await memoryPrefs();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [localPreferencesProvider.overrideWithValue(prefs), ...overrides],
+      overrides: [
+        localPreferencesProvider.overrideWithValue(prefs),
+        ...deviceFakes(),
+        ...overrides,
+      ],
       retry: (_, _) => null,
       child: MaterialApp(
         theme: AppTheme.light(),
@@ -81,6 +89,7 @@ Future<void> pumpRoutedScreen(
   Widget screen, {
   List<Override> overrides = const [],
   Size size = const Size(400, 900),
+  FakeNotifier? notifier,
 }) async {
   final stubs = <String>{
     ...Routes.public,
@@ -123,7 +132,11 @@ Future<void> pumpRoutedScreen(
   final prefs = await memoryPrefs();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [localPreferencesProvider.overrideWithValue(prefs), ...overrides],
+      overrides: [
+        localPreferencesProvider.overrideWithValue(prefs),
+        ...deviceFakes(notifier: notifier),
+        ...overrides,
+      ],
       retry: (_, _) => null,
       child: MaterialApp.router(
         theme: AppTheme.light(),

@@ -96,6 +96,13 @@ class MissionDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
+          if (mine && r.status.isOpen)
+            EcoButton(
+              label: l.chatOpen,
+              leading: '💬',
+              style: EcoButtonStyle.ghost,
+              onPressed: () => context.go(Routes.chat(r.id)),
+            ),
           WasteSection(request: r),
           if (mine && r.status.isOpen && r.status.step < 3) NavigationSection(request: r),
           if (mine && r.status == CollectionStatus.inProgress) ...[

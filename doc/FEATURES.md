@@ -14,7 +14,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E04 | Demande de collecte | MVP | 10/11 | 🟨 |
 | E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
 | E06 | Optimisation IA des itinéraires | V1 | 7/7 | ✅ |
-| E07 | Suivi temps réel & notifications | MVP | 0/6 | ⬜ |
+| E07 | Suivi temps réel & notifications | MVP | 2/6 | 🟨 |
 | E08 | Recycle Wallet & EcoPoints | V1 | 0/10 | ⬜ |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 0/9 | ⬜ |
 | E10 | Prédiction IA des volumes | V2 | 0/6 | ⬜ |
@@ -133,12 +133,12 @@ _Suivi du collecteur sur carte, ETA, notifications push/SMS, messagerie/appel ma
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-063 | Citoyen | En tant que citoyen, je veux suivre la position du collecteur en temps réel sur une carte afin de savoir quand il arrive. | Must | MVP | ⬜ |  |
-| US-064 | Citoyen | En tant que citoyen, je veux voir l'heure d'arrivée estimée (ETA) afin de m'organiser. | Should | V1 | ⬜ |  |
-| US-065 | Utilisateur | En tant qu'utilisateur, je veux recevoir des notifications push à chaque changement de statut afin de rester informé. | Must | MVP | ⬜ |  |
-| US-066 | Collecteur | En tant que collecteur, je veux être notifié immédiatement d'une nouvelle mission à proximité afin de ne pas manquer d'opportunité. | Must | MVP | ⬜ |  |
-| US-067 | Utilisateur | En tant qu'utilisateur, je veux échanger par messagerie ou appel masqué avec l'autre partie de la collecte afin de coordonner sans divulguer mon numéro. | Should | V1 | ⬜ |  |
-| US-068 | Utilisateur | En tant qu'utilisateur, je veux recevoir un SMS si je n'ai pas de connexion data afin de être prévenu malgré tout. | Could | V2 | ⬜ |  |
+| US-063 | Citoyen | En tant que citoyen, je veux suivre la position du collecteur en temps réel sur une carte afin de savoir quand il arrive. | Must | MVP | ✅ | Position du collecteur publiée toutes les 5 s (liveLocations, lisible par le citoyen et le collecteur uniquement, et seulement en route / sur place ; effacée ensuite) ; carte avec camion et domicile, alerte si la position a plus de 45 s. Vérifié sur 2 simulateurs. |
+| US-064 | Citoyen | En tant que citoyen, je veux voir l'heure d'arrivée estimée (ETA) afin de m'organiser. | Should | V1 | ✅ | ETA = distance × 1,3 (facteur routier) ÷ vitesse mesurée (8–90 km/h), sinon 25 km/h corrigés d’un facteur trafic selon l’heure (pointes 7–9 h et 17–19 h 30). Pas d’API trafic temps réel. Vérifié sur appareil (8 → 5 min). |
+| US-065 | Utilisateur | En tant qu'utilisateur, je veux recevoir des notifications push à chaque changement de statut afin de rester informé. | Must | MVP | 🟨 | Chaque changement de statut crée une notification dans Firestore (boîte de réception, compteur non lus, notification locale et toast quand l’app est ouverte ; respecte les préférences). Le push hors application (FCM) est prêt dans functions/ mais demande le plan Blaze et la clé APNs. |
+| US-066 | Collecteur | En tant que collecteur, je veux être notifié immédiatement d'une nouvelle mission à proximité afin de ne pas manquer d'opportunité. | Must | MVP | 🟨 | Nouvelle mission proposée → notification urgente au collecteur. Même limite hors application (Blaze + APNs). |
+| US-067 | Utilisateur | En tant qu'utilisateur, je veux échanger par messagerie ou appel masqué avec l'autre partie de la collecte afin de coordonner sans divulguer mon numéro. | Should | V1 | 🟨 | Messagerie in-app (500 caractères, numéros masqués automatiquement, visible par les deux parties uniquement). Vérifiée dans les deux sens sur appareil. Appel masqué non livré : il faut un opérateur téléphonique (Twilio Proxy…). |
+| US-068 | Utilisateur | En tant qu'utilisateur, je veux recevoir un SMS si je n'ai pas de connexion data afin de être prévenu malgré tout. | Could | V2 | 🟨 | Cloud Function écrite (SMS Twilio pour « arrivé » et « annulée » si aucun push n’a été délivré), non déployée : plan Blaze et compte Twilio requis. |
 
 ## E08 — Recycle Wallet & EcoPoints
 

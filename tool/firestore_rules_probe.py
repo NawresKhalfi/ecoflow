@@ -106,13 +106,40 @@ check('no-show after arrival + ticket', karim, [
   create(f'tickets/t{code2}', {'collectionId':cid2,'reporterUid':kuid,'reporterRole':'collector','reason':'citizenAbsent','description':'','photoCount':0,'status':'open','createdAt':now}),
   upd(f'collections/{cid2}', {'status':'cancelled','cancelledBy':'collector','cancelReason':'citizenAbsent','noShowTicketId':f't{code2}','cancelledAt':now})], True)
 
+# --- Epic 7 : notifications, position en direct, messagerie --------------
+code3=''.join(random.choice('ABCDEFGHJKMNPQRSTUVWXYZ23456789') for _ in range(8)); cid3='probe'+code3.lower()
+outsider, ouid = login('probe-outsider@ecoflow.test')
+owner_set(f'users/{ouid}', {'displayName':'Outsider','role':'citizen','status':'active','verificationStatus':'notRequired'})
+check('citizen creates 3rd estimate', leila, [create(f'estimates/{code3}', {'citizenUid':luid,'lines':[line],'totalKg':2.0,'totalDt':8.0,'confidence':.8,'priceScaleId':'default','status':'estimated','createdAt':now})], True)
+check('citizen creates 3rd request', leila, [create(f'collections/{cid3}', {'citizenUid':luid,'estimateCode':code3,'place':{'point':{'lat':35.8256,'lng':10.6084},'address':'Rue probe 3','zoneId':'sousse'},'zoneId':'sousse','slotId':slot,'instructions':'','hasInstructionPhoto':False,'estimatedKg':2.0,'estimatedDt':8.0,'categories':['can'],'status':'searching','refusedBy':[],'recurrence':'none','lateCancellation':False,'rated':False,'createdAt':now})], True)
+check('collector accepts 3rd', karim, [upd(f'collections/{cid3}', {'status':'accepted','collectorUid':kuid,'proposedCollectorUid':None,'acceptedAt':now,'updatedAt':now})], True)
+notif=lambda frm, to, t='assigned': create(f'notifications/n{code3}{t}{frm[:4]}', {'toUid':to,'fromUid':frm,'type':t,'collectionId':cid3,'address':'x','preview':'','critical':False,'read':False,'createdAt':now})
+check('collector notifies citizen', karim, [notif(kuid, luid)], True)
+check('outsider cannot notify citizen', outsider, [notif(ouid, luid, 'message')], False)
+check('collector cannot spoof sender', karim, [create(f'notifications/spoof{code3}', {'toUid':luid,'fromUid':ouid,'type':'assigned','collectionId':cid3,'read':False,'createdAt':now})], False)
+s_,q=http(B+':runQuery', {'structuredQuery':{'from':[{'collectionId':'notifications'}],'where':{'fieldFilter':{'field':{'fieldPath':'toUid'},'op':'EQUAL','value':val(luid)}}}}, leila)
+results.append(s_==200); print('PASS' if s_==200 else 'FAIL', 'citizen lists own notifications →', s_)
+check('live position refused before departure', karim, [create(f'liveLocations/{cid3}', {'collectorUid':kuid,'point':{'lat':35.83,'lng':10.61},'at':now})], False)
+check('collector -> onTheWay (3)', karim, [upd(f'collections/{cid3}', {'status':'onTheWay','onTheWayAt':now})], True)
+check('collector publishes live position', karim, [create(f'liveLocations/{cid3}', {'collectorUid':kuid,'point':{'lat':35.83,'lng':10.61},'at':now})], True)
+s_,_=http(f'{B}/liveLocations/{cid3}', token=leila); results.append(s_==200); print('PASS' if s_==200 else 'FAIL', 'citizen reads live position →', s_)
+s_,_=http(f'{B}/liveLocations/{cid3}', token=outsider); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'outsider cannot read live position →', s_)
+check('citizen sends message', leila, [create(f'collections/{cid3}/messages/m1{code3}', {'fromUid':luid,'text':'Bonjour, 2e étage','at':now})], True)
+check('outsider cannot post in chat', outsider, [create(f'collections/{cid3}/messages/m2{code3}', {'fromUid':ouid,'text':'spam','at':now})], False)
+check('message over 500 chars refused', karim, [create(f'collections/{cid3}/messages/m3{code3}', {'fromUid':kuid,'text':'x'*501,'at':now})], False)
+check('collector -> arrived (3)', karim, [upd(f'collections/{cid3}', {'status':'arrived','arrivedAt':now})], True)
+check('collector -> inProgress (3)', karim, [upd(f'collections/{cid3}', {'status':'inProgress','inProgressAt':now})], True)
+s_,_=http(f'{B}/liveLocations/{cid3}', token=leila); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'live position hidden once on site →', s_)
+
 check('non-admin cannot write optimization history', karim, [create(f'config/optimization/history/h{code}', {'maxDetourKm':99.0,'by':kuid})], False)
 
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
              f'deposits/d{code}', f'tickets/t{code2}', f'slotCounters/sousse__{slot}',
-             f'collectorBalances/{kuid}', f'companies/{ruid}']:
+             f'collectorBalances/{kuid}', f'companies/{ruid}', f'estimates/{code3}',
+             f'collections/{cid3}', f'collections/{cid3}/messages/m1{code3}', f'liveLocations/{cid3}',
+             f'notifications/n{code3}assigned{kuid[:4]}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

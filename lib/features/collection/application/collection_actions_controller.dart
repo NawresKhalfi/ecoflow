@@ -56,7 +56,12 @@ class CollectionActionsController extends ActionController {
   /// Annulation ; pénalité seulement après acceptation d'un collecteur.
   Future<bool> cancel(CollectionRequest r, {bool stopSeries = false}) => run(() async {
     await ref.read(collectionRepositoryProvider).cancel(r);
-    await notify(ref, toUid: r.collectorUid ?? r.proposedCollectorUid, type: NotificationType.cancelled, r: r);
+    await notify(
+      ref,
+      toUid: r.collectorUid ?? r.proposedCollectorUid,
+      type: NotificationType.cancelled,
+      r: r,
+    );
     if (!stopSeries) await _scheduleNext(r);
   });
 

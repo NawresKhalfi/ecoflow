@@ -70,20 +70,26 @@ class LiveLocationRepository {
   LiveLocationRepository(this._db);
   final FirebaseFirestore _db;
 
-  DocumentReference<Map<String, dynamic>> _doc(String id) => _db.collection('liveLocations').doc(id);
+  DocumentReference<Map<String, dynamic>> _doc(String id) =>
+      _db.collection('liveLocations').doc(id);
 
-  Future<void> publish(String collectionId, String collectorUid, LivePosition p) => _doc(collectionId).set({
-    'collectorUid': collectorUid,
-    'point': p.point.toMap(),
-    'speedKmh': p.speedKmh,
-    'at': Timestamp.fromDate(p.at),
-  });
+  Future<void> publish(String collectionId, String collectorUid, LivePosition p) =>
+      _doc(collectionId).set({
+        'collectorUid': collectorUid,
+        'point': p.point.toMap(),
+        'speedKmh': p.speedKmh,
+        'at': Timestamp.fromDate(p.at),
+      });
 
   Stream<LivePosition?> watch(String collectionId) => _doc(collectionId).snapshots().map((s) {
     final m = s.data();
     final point = GeoPoint.fromMap(m?['point']);
     if (m == null || point == null) return null;
-    return LivePosition(point: point, at: _date(m['at']) ?? DateTime.now(), speedKmh: (m['speedKmh'] as num?)?.toDouble());
+    return LivePosition(
+      point: point,
+      at: _date(m['at']) ?? DateTime.now(),
+      speedKmh: (m['speedKmh'] as num?)?.toDouble(),
+    );
   });
 
   Future<void> clear(String collectionId) => _doc(collectionId).delete();
@@ -97,16 +103,21 @@ class ChatRepository {
   CollectionReference<Map<String, dynamic>> _col(String id) =>
       _db.collection('collections').doc(id).collection('messages');
 
-  Stream<List<ChatMessage>> watch(String collectionId) =>
-      _col(collectionId).orderBy('at').limit(300).snapshots().map((s) => [
-            for (final d in s.docs)
-              ChatMessage(
-                id: d.id,
-                fromUid: d.data()['fromUid'] as String? ?? '',
-                text: d.data()['text'] as String? ?? '',
-                at: _date(d.data()['at']),
-              ),
-          ]);
+  Stream<List<ChatMessage>> watch(String collectionId) => _col(collectionId)
+      .orderBy('at')
+      .limit(300)
+      .snapshots()
+      .map(
+        (s) => [
+          for (final d in s.docs)
+            ChatMessage(
+              id: d.id,
+              fromUid: d.data()['fromUid'] as String? ?? '',
+              text: d.data()['text'] as String? ?? '',
+              at: _date(d.data()['at']),
+            ),
+        ],
+      );
 
   Future<void> send(String collectionId, String fromUid, String text) => _col(collectionId).add({
     'fromUid': fromUid,
@@ -121,9 +132,8 @@ class PushTokenRepository {
   PushTokenRepository(this._db);
   final FirebaseFirestore _db;
 
-  Future<void> save(String uid, String token, String platform) => _db.collection('fcmTokens').doc(token).set({
-    'uid': uid,
-    'platform': platform,
-    'updatedAt': FieldValue.serverTimestamp(),
-  });
+  Future<void> save(String uid, String token, String platform) => _db
+      .collection('fcmTokens')
+      .doc(token)
+      .set({'uid': uid, 'platform': platform, 'updatedAt': FieldValue.serverTimestamp()});
 }

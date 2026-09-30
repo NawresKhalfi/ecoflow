@@ -19,26 +19,40 @@ class PluginLocalNotifier implements LocalNotifier {
   final _plugin = FlutterLocalNotificationsPlugin();
   bool _ready = false;
 
+  Future<void>? _init;
+
+  /// Initialisation unique, même si l'écran se reconstruit ; un échec
+  /// (plateforme sans support) désactive simplement les notifications.
   @override
-  Future<void> init(void Function(String payload) onTap) async {
-    if (_ready || kIsWeb) return;
-    await _plugin.initialize(
-      settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(),
-      ),
-      onDidReceiveNotificationResponse: (r) {
-        if (r.payload != null) onTap(r.payload!);
-      },
-    );
-    await _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-    _ready = true;
-  }
+  Future<void> init(void Function(String payload) onTap) => _init ??= () async {
+    if (kIsWeb) return;
+    try {
+      await _plugin.initialize(
+        settings: const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(),
+        ),
+        onDidReceiveNotificationResponse: (r) {
+          if (r.payload != null) onTap(r.payload!);
+        },
+      );
+      await _plugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+      _ready = true;
+    } catch (e) {
+      debugPrint('Local notifications unavailable: $e');
+    }
+  }();
 
   @override
-  Future<void> show(int id, String title, String body, {String? payload, bool urgent = false}) async {
+  Future<void> show(
+    int id,
+    String title,
+    String body, {
+    String? payload,
+    bool urgent = false,
+  }) async {
     if (!_ready) return;
     await _plugin.show(
       id: id,
@@ -52,7 +66,11 @@ class PluginLocalNotifier implements LocalNotifier {
           importance: urgent ? Importance.max : Importance.high,
           priority: Priority.high,
         ),
-        iOS: const DarwinNotificationDetails(presentSound: true, presentBanner: true, presentList: true),
+        iOS: const DarwinNotificationDetails(
+          presentSound: true,
+          presentBanner: true,
+          presentList: true,
+        ),
       ),
     );
   }
@@ -84,11 +102,17 @@ abstract interface class PositionStreamSource {
 
 class GeolocatorPositionStream implements PositionStreamSource {
   @override
-  Stream<LivePosition> positions() => Geolocator.getPositionStream(
-    locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10),
-  ).map((p) => LivePosition(
-        point: GeoPoint(p.latitude, p.longitude),
-        at: DateTime.now(),
-        speedKmh: p.speed >= 0 ? p.speed * 3.6 : null,
-      ));
+  Stream<LivePosition> positions() =>
+      Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 10,
+        ),
+      ).map(
+        (p) => LivePosition(
+          point: GeoPoint(p.latitude, p.longitude),
+          at: DateTime.now(),
+          speedKmh: p.speed >= 0 ? p.speed * 3.6 : null,
+        ),
+      );
 }

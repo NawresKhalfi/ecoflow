@@ -609,6 +609,34 @@
   "optDraft": "Brouillon",
   "homeOptimizationCta": "Règles d’optimisation",
   "homeOptimizationCtaBody": "Paramètres et simulation des tournées.",
+  "ntAssigned": "Collecteur trouvé 🚚",
+  "ntOnTheWay": "Le collecteur est en route",
+  "ntArrived": "Le collecteur est arrivé 📍",
+  "ntHandedOver": "Pesée enregistrée : confirme la remise",
+  "ntCompleted": "Collecte confirmée par le citoyen ✅",
+  "ntCancelled": "Collecte annulée",
+  "ntNewMission": "Nouvelle mission près de toi 🔔",
+  "ntMessage": "Nouveau message 💬",
+  "inboxTitle": "Notifications",
+  "inboxSubtitle": "Suivi de tes collectes et messages.",
+  "inboxEmpty": "Aucune notification pour l’instant.",
+  "inboxMarkAll": "Tout marquer comme lu",
+  "inboxPushOff": "Notifications push hors application : disponibles après activation du plan Blaze (envoi serveur). Dans l’application, elles arrivent en temps réel.",
+  "trackTitle": "Suivi du collecteur",
+  "trackWaiting": "Position du collecteur en attente…",
+  "trackStale": "Position non mise à jour depuis un moment (réseau du collecteur).",
+  "trackEtaTitle": "Arrivée estimée",
+  "trackHere": "Le collecteur est sur place",
+  "trackTraffic": "Estimation selon la vitesse du collecteur ou le trafic habituel à cette heure.",
+  "chatTitle": "Messagerie",
+  "chatOpen": "Envoyer un message",
+  "chatHint": "Écris ton message…",
+  "chatEmpty": "Aucun message. Vos numéros restent masqués.",
+  "chatPrivacy": "🔒 Numéros de téléphone masqués automatiquement.",
+  "chatSend": "Envoyer",
+  "chatCallUnavailable": "Appel masqué : nécessite un fournisseur de téléphonie (non configuré). Utilise la messagerie.",
+  "chatCall": "Appel masqué",
+  "homeInboxCta": "Notifications",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -1025,6 +1053,41 @@
       },
       "naive": {
         "type": "String"
+      }
+    }
+  },
+  "ntBody": "{address}",
+  "@ntBody": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "trackEta": "{time} · dans {minutes} min",
+  "@trackEta": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "trackUpdated": "Mis à jour il y a {seconds} s",
+  "@trackUpdated": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "inboxUnread": "{count, plural, =0{Tout est lu} =1{1 non lue} other{{count} non lues}}",
+  "@inboxUnread": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   }

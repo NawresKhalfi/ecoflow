@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Règles EcoFlow – Epics 1 (profils), 2 (vision IA), 3 (estimation & pesée), 4 (collectes), 5 (missions).
+// Règles EcoFlow – Epics 1 (profils), 2 (vision IA), 3 (estimation & pesée), 4 (collectes), 5 (missions), 7 (suivi & notifications).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -243,6 +243,21 @@ service cloud.firestore {
             && changed().hasOnly(['status', 'collectorUid', 'statusHistory', 'handedOverAt', 'updatedAt']));
       allow delete: if isAdmin();
 
+      // Messagerie entre le citoyen et le collecteur assigné (US-067).
+      match /messages/{m} {
+        function party() {
+          let c = get(/databases/$(database)/documents/collections/$(id)).data;
+          return signedIn() && (c.citizenUid == request.auth.uid || c.get('collectorUid', '') == request.auth.uid);
+        }
+        allow read: if party() || isAdmin();
+        allow create: if party()
+          && get(/databases/$(database)/documents/collections/$(id)).data.get('collectorUid', null) != null
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500;
+        allow update, delete: if false;
+      }
+
       match /attachments/{name} {
         allow read: if signedIn() && (resource.data.uid == request.auth.uid || isApprovedCollector() || isAdmin()
           || get(/databases/$(database)/documents/collections/$(id)).data.citizenUid == request.auth.uid);
@@ -370,6 +385,43 @@ service cloud.firestore {
         && resource.data.status == 'pending'
         && request.resource.data.status in ['confirmed', 'rejected']
         && changed().hasOnly(['status', 'note', 'reviewedAt']));
+    }
+
+    // --- Epic 7 : suivi et notifications --------------------------------
+    // Boîte d'envoi : uniquement entre les parties d'une même collecte.
+    match /notifications/{id} {
+      function parties(c) {
+        return [c.citizenUid, c.get('collectorUid', ''), c.get('proposedCollectorUid', '')];
+      }
+      allow read: if signedIn() && (resource.data.toUid == request.auth.uid || isAdmin());
+      allow create: if signedIn()
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.read == false
+        && request.resource.data.toUid != request.auth.uid
+        && request.auth.uid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)
+        && request.resource.data.toUid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data);
+      allow update: if signedIn() && resource.data.toUid == request.auth.uid && changed().hasOnly(['read']);
+      allow delete: if isAdmin();
+    }
+
+    // Position du collecteur : écrite par lui, lue par le citoyen,
+    // seulement pendant le trajet (US-063).
+    match /liveLocations/{cid} {
+      function mission() { return get(/databases/$(database)/documents/collections/$(cid)).data; }
+      function travelling() { return mission().status in ['onTheWay', 'arrived']; }
+      allow get: if signedIn() && travelling()
+        && (mission().citizenUid == request.auth.uid || mission().get('collectorUid', '') == request.auth.uid);
+      allow create, update: if isApprovedCollector() && travelling()
+        && mission().collectorUid == request.auth.uid
+        && request.resource.data.collectorUid == request.auth.uid;
+      allow delete: if signedIn() && mission().get('collectorUid', '') == request.auth.uid;
+    }
+
+    // Jetons FCM : écrits par l'appareil, lus seulement par le serveur.
+    match /fcmTokens/{token} {
+      allow read: if false;
+      allow create, update: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
   }
 }
