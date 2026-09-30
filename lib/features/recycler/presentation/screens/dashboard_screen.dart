@@ -9,6 +9,9 @@ import '../../../../core/widgets/eco_widgets.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../../profile/application/profile_providers.dart';
 import '../../../profile/presentation/screens/company_screen.dart';
+import '../../../forecast/application/forecast_providers.dart';
+import '../../../forecast/domain/zone_forecast.dart';
+import '../../../forecast/presentation/widgets/forecast_widgets.dart';
 import '../../application/recycler_providers.dart';
 import '../../domain/analytics.dart';
 import '../../domain/stock.dart';
@@ -117,6 +120,14 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+        // Prévisions intégrées au dashboard (US-089), selon la zone filtrée.
+        PlasticForecastCard(
+          forecasts: [
+            for (final z in ref.watch(forecastsProvider).value ?? const <ZoneForecast>[])
+              if (f.zoneId == null || z.zoneId == f.zoneId) z,
+          ],
+          onTap: () => context.go(Routes.forecast),
         ),
         SectionTitle('♻️ ${l.dashByMaterial}'),
         EcoCard(

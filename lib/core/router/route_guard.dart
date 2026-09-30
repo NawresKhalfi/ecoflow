@@ -26,6 +26,9 @@ const _roleOnly = {
   Routes.dashboard: UserRole.recycler,
   Routes.stock: UserRole.recycler,
   Routes.purchasing: UserRole.recycler,
+  Routes.forecast: UserRole.recycler,
+  Routes.forecastAdmin: UserRole.admin,
+  Routes.heatmap: UserRole.admin,
 };
 
 /// Redirection de navigation, fonction pure testée unitairement.

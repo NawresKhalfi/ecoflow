@@ -24,13 +24,14 @@ Future<ProviderContainer> testContainer({
   List<Override> overrides = const [],
   List<Locale> deviceLocales = const [Locale('fr')],
   FakePositions? positions,
+  FakeNotifier? notifier,
 }) async {
   final prefs = await memoryPrefs();
   final c = ProviderContainer.test(
     overrides: [
       localPreferencesProvider.overrideWithValue(prefs),
       deviceLocalesProvider.overrideWithValue(deviceLocales),
-      ...deviceFakes(positions: positions),
+      ...deviceFakes(positions: positions, notifier: notifier),
       ...overrides,
     ],
     retry: (_, _) => null,

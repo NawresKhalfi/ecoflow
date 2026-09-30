@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-9) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4-10) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -229,6 +229,13 @@ check('recycler sets purchase prices', rec, [upd(f'companies/{ruid}', {'purchasi
 check('recycler cannot self-change status', rec, [upd(f'companies/{ruid}', {'status':'approved','purchasing':{}})], True)
 check('recycler cannot touch legal data with prices', rec, [upd(f'companies/{ruid}', {'legalName':'Autre','purchasing':{}})], False)
 
+# --- Epic 10 : prévisions ---------------------------------------------------
+owner_set(f'forecasts/probe{code}', {'zoneName':'Probe','method':'holtWinters','samples':90})
+s_,_=http(f'{B}/forecasts/probe{code}', token=rec); results.append(s_==200); print('PASS' if s_==200 else 'FAIL', 'approved recycler reads forecasts →', s_)
+s_,_=http(f'{B}/forecasts/probe{code}', token=leila); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'citizen cannot read forecasts →', s_)
+check('recycler cannot publish forecasts', rec, [upd(f'forecasts/probe{code}', {'samples':1})], False)
+check('collector cannot write training runs', karim, [create(f'forecastRuns/r{code}', {'records':1})], False)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
@@ -241,7 +248,8 @@ for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'
              f'rewards/rw{code}', f'rewards/big{code}', f'referralCodes/{code[:6]}',
              f'estimates/{code4}', f'collections/{cid4}', f'collections/{cid4}/attachments/proof',
              f'deposits/d2{code}', f'notifications/dep{code}', f'lots/l1{code}', f'lots/l2{code}',
-             f'stockMoves/m1{code}', f'stockMoves/m2{code}', f'productions/p{code}']:
+             f'stockMoves/m1{code}', f'stockMoves/m2{code}', f'productions/p{code}',
+             f'forecasts/probe{code}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

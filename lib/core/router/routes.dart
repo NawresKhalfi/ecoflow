@@ -50,6 +50,9 @@ abstract final class Routes {
   static const stock = '/app/stock';
   static String lotDetail(String id) => '/app/stock/$id';
   static const purchasing = '/app/purchasing';
+  static const forecast = '/app/forecast';
+  static const forecastAdmin = '/app/forecast-admin';
+  static const heatmap = '/app/heatmap';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

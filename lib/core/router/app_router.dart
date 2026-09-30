@@ -32,6 +32,9 @@ import '../../features/missions/presentation/screens/mission_detail_screen.dart'
 import '../../features/missions/presentation/screens/missions_screen.dart';
 import '../../features/missions/presentation/screens/receptions_screen.dart';
 import '../../features/missions/presentation/screens/vehicle_screen.dart';
+import '../../features/forecast/presentation/screens/forecast_admin_screen.dart';
+import '../../features/forecast/presentation/screens/forecast_screen.dart';
+import '../../features/forecast/presentation/screens/heatmap_screen.dart';
 import '../../features/recycler/presentation/screens/dashboard_screen.dart';
 import '../../features/recycler/presentation/screens/lot_detail_screen.dart';
 import '../../features/recycler/presentation/screens/purchasing_screen.dart';
@@ -150,6 +153,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [_tab(':id', (s) => LotDetailScreen(id: s.pathParameters['id']!))],
               ),
               _tab('purchasing', (_) => const PurchasingScreen()),
+              _tab('forecast', (_) => const ForecastScreen()),
+              _tab('forecast-admin', (_) => const ForecastAdminScreen()),
+              _tab('heatmap', (_) => const HeatmapScreen()),
               _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),
               _tab(
                 'collections',

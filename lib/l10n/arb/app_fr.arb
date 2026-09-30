@@ -837,6 +837,45 @@
   "purchasingCapacityHelp": "Vide = sans limite",
   "purchasingSaved": "Conditions enregistrées",
   "offerNone": "Prix non communiqués",
+  "forecastTitle": "Prévisions",
+  "forecastSubtitle": "Volumes attendus par zone à 7 et 30 jours.",
+  "forecastNone": "Pas encore de prévision : l’administration publie les prévisions après chaque entraînement du modèle.",
+  "forecastPlasticTitle": "Plastique attendu",
+  "forecastPlasticDaily": "Plastique prévu jour par jour (14 jours)",
+  "next7Days": "7 prochains jours",
+  "next30Days": "30 prochains jours",
+  "forecastAccuracy": "Précision",
+  "forecastExplain": "Modèle de Holt-Winters (niveau, tendance, saisonnalité hebdomadaire) entraîné sur l’historique des collectes pesées de la zone ; intervalle à 95 %. Moins de 3 semaines d’historique : moyenne mobile.",
+  "groupPlastic": "Plastique",
+  "groupCardboard": "Carton & papier",
+  "groupMetal": "Métal",
+  "groupGlass": "Verre",
+  "groupOther": "Autres",
+  "methodHoltWinters": "Holt-Winters",
+  "methodMovingAverage": "Moyenne mobile",
+  "methodNone": "Sans données",
+  "mapeGood": "fiable",
+  "mapeFair": "moyenne",
+  "mapePoor": "faible",
+  "mapeUnknown": "à évaluer",
+  "mapeExplain": "MAPE : écart moyen, en %, entre prévision et réel sur les 7 derniers jours (modèle entraîné sans eux). WAPE : même écart pondéré par les volumes, plus robuste aux jours sans collecte. Fiable sous 20 %.",
+  "forecastAdminTitle": "Modèle de prévision",
+  "forecastAdminSubtitle": "Entraînement, précision, alertes et carte de chaleur.",
+  "forecastNeverTrained": "Jamais entraîné",
+  "forecastAuto": "automatique",
+  "forecastManual": "manuel",
+  "forecastRetrain": "Réentraîner maintenant",
+  "forecastRetrainHelp": "Réentraînement automatique à l’ouverture de l’espace administrateur si le dernier date de plus de 24 h (tâche planifiée côté serveur : plan Blaze).",
+  "forecastTrained": "Modèle réentraîné, prévisions publiées ✅",
+  "forecastRuns": "Entraînements",
+  "alertsTitle": "Alertes",
+  "alertsNone": "Aucun déséquilibre prévu.",
+  "alertOverload": "surcharge prévue",
+  "alertUnder": "sous-collecte",
+  "heatmapTitle": "Carte de chaleur",
+  "heatmapSubtitle": "Zones à fort potentiel (90 derniers jours).",
+  "heatmapLegend": "Volume collecté par secteur d’environ 1 km",
+  "heatmapTop": "Zones par volume prévu à 30 jours",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -1634,6 +1673,146 @@
     "placeholders": {
       "pct": {
         "type": "int"
+      }
+    }
+  },
+  "forecast7": "7 j : {kg}",
+  "@forecast7": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "forecast30": "30 j : {kg}",
+  "@forecast30": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastRange": "Fourchette à 7 j : {low} – {high} kg",
+  "@forecastRange": {
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastVsLast": "{pct} vs 7 derniers jours",
+  "@forecastVsLast": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastPlasticSemantics": "Plastique attendu : {week} sur 7 jours, {month} sur 30 jours",
+  "@forecastPlasticSemantics": {
+    "placeholders": {
+      "week": {
+        "type": "String"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastDailySemantics": "Prévision sur {days} jours, total {kg}",
+  "@forecastDailySemantics": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastHistory": "{days} j d’historique",
+  "@forecastHistory": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "forecastTrainedOn": "Entraîné le {date}",
+  "@forecastTrainedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastLastRun": "Dernier entraînement : {date}",
+  "@forecastLastRun": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "forecastRunRecords": "{count, plural, =1{1 collecte} other{{count} collectes}}",
+  "@forecastRunRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "forecastAlertNotice": "{count, plural, =1{⚠️ 1 alerte de collecte prévue} other{⚠️ {count} alertes de collecte prévues}}",
+  "@forecastAlertNotice": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alertsCount": "{count, plural, =0{Aucune alerte} =1{1 alerte} other{{count} alertes}}",
+  "@alertsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "alertOverloadBody": "{forecast} attendus sur 7 j pour {capacity} de capacité",
+  "@alertOverloadBody": {
+    "placeholders": {
+      "forecast": {
+        "type": "String"
+      },
+      "capacity": {
+        "type": "String"
+      }
+    }
+  },
+  "alertUnderBody": "{pct} des demandes récentes sans collecteur",
+  "@alertUnderBody": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "alertNoCollector": "{forecast} attendus, aucun collecteur actif",
+  "@alertNoCollector": {
+    "placeholders": {
+      "forecast": {
+        "type": "String"
+      }
+    }
+  },
+  "heatmapZoneForecast": "30 j : {kg}",
+  "@heatmapZoneForecast": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
       }
     }
   }

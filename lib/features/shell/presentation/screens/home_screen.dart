@@ -21,6 +21,7 @@ import '../../../wallet/application/wallet_providers.dart';
 import '../../../wallet/domain/wallet.dart';
 import '../../../wallet/presentation/widgets/wallet_labels.dart';
 import '../../../missions/application/missions_providers.dart';
+import '../../../forecast/application/forecast_providers.dart';
 import '../../../missions/domain/deposit.dart';
 
 /// Accueil de l'espace du rôle. Écran de transition minimal en attendant
@@ -297,6 +298,14 @@ class _AdminWalletCard extends ConsumerWidget {
             onTap: () => context.go(Routes.rewardsAdmin),
           ),
           EcoListTile(
+            leading: const EcoAvatar(text: '🧠', gradient: EcoGradients.violet),
+            title: l.forecastAdminTitle,
+            subtitle: l.alertsCount(
+              ref.watch(forecastRunsProvider).value?.firstOrNull?.alerts.length ?? 0,
+            ),
+            onTap: () => context.go(Routes.forecastAdmin),
+          ),
+          EcoListTile(
             leading: const EcoAvatar(text: '🛡️', gradient: EcoGradients.coral),
             title: l.fraudTitle,
             subtitle: l.fraudPending(held),
@@ -336,6 +345,12 @@ class _RecyclerCard extends ConsumerWidget {
             title: l.dashTitle,
             subtitle: l.dashSubtitle,
             onTap: () => context.go(Routes.dashboard),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '🔮', gradient: EcoGradients.violet),
+            title: l.forecastTitle,
+            subtitle: l.forecastSubtitle,
+            onTap: () => context.go(Routes.forecast),
           ),
           EcoListTile(
             leading: const EcoAvatar(text: '💱', gradient: EcoGradients.sun),

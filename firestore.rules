@@ -709,5 +709,18 @@ service cloud.firestore {
         && lotAfter(request.resource.data.outputLotId).recyclerUid == request.auth.uid;
       allow update, delete: if false;
     }
+
+    // --- Epic 10 : prévision des volumes -------------------------------------
+    // Prévisions calculées et publiées par l'administration (pas de serveur) ;
+    // lues par les recycleurs validés (US-088, US-089).
+    match /forecasts/{zoneId} {
+      allow read: if isAdmin() || isApprovedRecycler();
+      allow write: if isAdmin();
+    }
+    // Historique des entraînements, précision et alertes (US-091 à US-093).
+    match /forecastRuns/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
   }
 }
