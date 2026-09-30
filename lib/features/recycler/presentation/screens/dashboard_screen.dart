@@ -61,34 +61,32 @@ class DashboardScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
+              // Empilés : sur téléphone, côte à côte, les libellés sont tronqués.
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String?>(
-                      initialValue: f.zoneId,
-                      isExpanded: true,
-                      decoration: InputDecoration(labelText: l.dashZone),
-                      items: [
-                        DropdownMenuItem(value: null, child: Text(l.dashAllZones)),
-                        for (final z in choices.zones.toList()..sort())
-                          DropdownMenuItem(value: z, child: Text(zoneLabel(z))),
-                      ],
-                      onChanged: (v) => setF(f.copyWith(zoneId: () => v)),
-                    ),
+                  DropdownButtonFormField<String?>(
+                    initialValue: f.zoneId,
+                    isExpanded: true,
+                    decoration: InputDecoration(labelText: l.dashZone),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l.dashAllZones)),
+                      for (final z in choices.zones.toList()..sort())
+                        DropdownMenuItem(value: z, child: Text(zoneLabel(z))),
+                    ],
+                    onChanged: (v) => setF(f.copyWith(zoneId: () => v)),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: DropdownButtonFormField<String?>(
-                      initialValue: f.collectorUid,
-                      isExpanded: true,
-                      decoration: InputDecoration(labelText: l.dashCollector),
-                      items: [
-                        DropdownMenuItem(value: null, child: Text(l.dashAllCollectors)),
-                        for (final e in choices.collectors.entries)
-                          DropdownMenuItem(value: e.key, child: Text(e.value)),
-                      ],
-                      onChanged: (v) => setF(f.copyWith(collectorUid: () => v)),
-                    ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<String?>(
+                    initialValue: f.collectorUid,
+                    isExpanded: true,
+                    decoration: InputDecoration(labelText: l.dashCollector),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l.dashAllCollectors)),
+                      for (final e in choices.collectors.entries)
+                        DropdownMenuItem(value: e.key, child: Text(e.value)),
+                    ],
+                    onChanged: (v) => setF(f.copyWith(collectorUid: () => v)),
                   ),
                 ],
               ),

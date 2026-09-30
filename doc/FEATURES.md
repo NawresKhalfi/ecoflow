@@ -16,7 +16,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E06 | Optimisation IA des itinéraires | V1 | 7/7 | ✅ |
 | E07 | Suivi temps réel & notifications | MVP | 2/6 | 🟨 |
 | E08 | Recycle Wallet & EcoPoints | V1 | 9/10 | 🟨 |
-| E09 | Espace recycleur – dashboard & stocks | V1 | 0/9 | ⬜ |
+| E09 | Espace recycleur – dashboard & stocks | V1 | 9/9 | ✅ |
 | E10 | Prédiction IA des volumes | V2 | 0/6 | ⬜ |
 | E11 | Marketplace circulaire B2B | V2 | 0/12 | ⬜ |
 | E12 | Administration & supervision | MVP | 0/12 | ⬜ |
@@ -163,15 +163,15 @@ _Réception des lots, traçabilité, stocks par matière (PET, HDPE, PP, autres)
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-079 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux consulter un dashboard des quantités collectées par type (PET, HDPE, PP, autres) afin de suivre mes approvisionnements. | Must | V1 | ⬜ |  |
-| US-080 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux enregistrer la réception d'un lot livré par un collecteur (poids, contrôle qualité) afin de valider l'entrée en stock. | Must | V1 | ⬜ |  |
-| US-081 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux gérer mon stock par matière et par qualité afin de connaître ce que je peux vendre. | Must | V1 | ⬜ |  |
-| US-082 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux filtrer les quantités par période, zone géographique et collecteur afin de analyser mes flux. | Should | V1 | ⬜ |  |
-| US-083 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux exporter mes rapports en PDF ou Excel afin de les partager en interne. | Should | V1 | ⬜ |  |
-| US-084 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux tracer l'origine d'un lot jusqu'aux collectes afin de garantir la traçabilité. | Should | V2 | ⬜ |  |
-| US-085 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux définir mes capacités et prix d'achat par matière afin de orienter les livraisons. | Could | V2 | ⬜ |  |
-| US-086 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux recevoir une notification quand un lot est en route afin de préparer la réception. | Could | V2 | ⬜ |  |
-| US-087 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux déclarer la production de matière recyclée (granulés, paillettes…) afin de alimenter la marketplace. | Could | V2 | ⬜ |  |
+| US-079 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux consulter un dashboard des quantités collectées par type (PET, HDPE, PP, autres) afin de suivre mes approvisionnements. | Must | V1 | ✅ | Dashboard des kg reçus par matière (PET, PEHD, PP, carton, aluminium, verre, autres), livraisons, qualité moyenne pondérée, réceptions par semaine, top collecteurs, aperçu du stock. Vérifié sur appareil. |
+| US-080 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux enregistrer la réception d'un lot livré par un collecteur (poids, contrôle qualité) afin de valider l'entrée en stock. | Must | V1 | ✅ | Réception d’un dépôt : poids pesés par matière (pré-remplis avec la déclaration du collecteur, reclassement PET / PEHD / PP possible), qualité A/B/C, taux d’indésirables, remarque, alerte si écart > 15 %. Crée un lot par matière ; règles : un lot de réception n’existe que lié à un dépôt confirmé par ce recycleur. |
+| US-081 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux gérer mon stock par matière et par qualité afin de connaître ce que je peux vendre. | Must | V1 | ✅ | Stock par matière et par qualité, liste des lots (forme, qualité, date, restant), sorties de stock (vente, perte, ajustement) contrôlées ; le poids d’un lot ne peut que baisser. |
+| US-082 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux filtrer les quantités par période, zone géographique et collecteur afin de analyser mes flux. | Should | V1 | ✅ | Filtres période (7 j, 30 j, 3 mois, 12 mois), zone et collecteur, appliqués aux indicateurs, graphiques et exports. |
+| US-083 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux exporter mes rapports en PDF ou Excel afin de les partager en interne. | Should | V1 | ✅ | Export PDF (police embarquée, accents) et Excel .xlsx (feuilles Synthèse et Lots), partagés via la feuille de partage. En arabe, le rapport est produit en français (police sans glyphes arabes). Vérifié sur appareil. |
+| US-084 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux tracer l'origine d'un lot jusqu'aux collectes afin de garantir la traçabilité. | Should | V2 | ✅ | Fiche lot : collecteur, dépôt, zones et collectes d’origine (instantané pris au dépôt : identifiant, zone, jour, kg, sans adresse du citoyen) ; pour un produit transformé, lots consommés cliquables ; historique des mouvements. |
+| US-085 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux définir mes capacités et prix d'achat par matière afin de orienter les livraisons. | Could | V2 | ✅ | Prix d’achat et capacité mensuelle par matière (matière acceptée ou non) ; visibles des collecteurs à l’écran de dépôt (meilleurs prix). Seul le champ « purchasing » est modifiable par le recycleur validé. |
+| US-086 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux recevoir une notification quand un lot est en route afin de préparer la réception. | Could | V2 | ✅ | Notification « Un lot arrive » au recycleur quand le collecteur enregistre son dépôt (règles : seulement du collecteur du dépôt vers son recycleur) ; compteur de lots en route. Push hors application : même limite que l’epic 7 (Blaze). |
+| US-087 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux déclarer la production de matière recyclée (granulés, paillettes…) afin de alimenter la marketplace. | Could | V2 | ✅ | Déclaration de production (paillettes, granulés, balles) : consommation FIFO des lots bruts, rendement contrôlé (sortie ≤ entrée), lot produit traçable jusqu’à ses lots d’origine, option « proposer sur la marketplace » (epic 11). |
 
 ## E10 — Prédiction IA des volumes
 
