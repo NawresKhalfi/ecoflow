@@ -14,6 +14,8 @@ import '../domain/geo.dart';
 import '../domain/matching.dart';
 import '../domain/recurrence_rules.dart';
 import '../domain/time_slot.dart';
+import '../../tracking/application/tracking_providers.dart';
+import '../../tracking/domain/app_notification.dart';
 import 'collection_providers.dart';
 import 'matching_service.dart';
 
@@ -54,6 +56,7 @@ class CollectionActionsController extends ActionController {
   /// Annulation ; pénalité seulement après acceptation d'un collecteur.
   Future<bool> cancel(CollectionRequest r, {bool stopSeries = false}) => run(() async {
     await ref.read(collectionRepositoryProvider).cancel(r);
+    await notify(ref, toUid: r.collectorUid ?? r.proposedCollectorUid, type: NotificationType.cancelled, r: r);
     if (!stopSeries) await _scheduleNext(r);
   });
 
@@ -65,6 +68,7 @@ class CollectionActionsController extends ActionController {
   /// Confirmation citoyen après la pesée du collecteur (US-039).
   Future<bool> confirmHandover(CollectionRequest r) => run(() async {
     await ref.read(collectionRepositoryProvider).confirmHandover(r.id);
+    await notify(ref, toUid: r.collectorUid, type: NotificationType.completed, r: r);
     await _scheduleNext(r);
   });
 

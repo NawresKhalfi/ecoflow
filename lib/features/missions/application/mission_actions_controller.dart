@@ -10,6 +10,8 @@ import '../../estimation/domain/handover_code.dart';
 import '../../estimation/domain/weighing.dart';
 import '../../profile/application/profile_providers.dart';
 import '../../profile/data/document_picker.dart';
+import '../../tracking/application/tracking_providers.dart';
+import '../../tracking/domain/app_notification.dart';
 import '../data/mission_repository.dart';
 import '../domain/mission_rules.dart';
 import 'missions_providers.dart';
@@ -34,14 +36,20 @@ class MissionActionsController extends ActionController {
   String get _uid => ref.read(currentUidProvider)!;
   MissionRepository get _repo => ref.read(missionRepositoryProvider);
 
-  Future<bool> accept(CollectionRequest r) => run(() => _repo.accept(r.id, _uid));
+  Future<bool> accept(CollectionRequest r) => run(() async {
+    await _repo.accept(r.id, _uid);
+    await notify(ref, toUid: r.citizenUid, type: NotificationType.assigned, r: r);
+  });
 
   /// Refus explicite ou délai de 60 s dépassé.
   Future<bool> refuse(CollectionRequest r) => run(() => _repo.refuse(r.id, _uid));
 
   Future<bool> advance(CollectionRequest r) => run(() async {
     final next = nextStep(r.status);
-    if (next != null) await _repo.advance(r.id, next);
+    if (next == null) return;
+    await _repo.advance(r.id, next);
+    final type = statusNotification(next.name);
+    if (type != null) await notify(ref, toUid: r.citizenUid, type: type, r: r);
   });
 
   Future<bool> takeProof(CollectionRequest r, PickSource source) => run(() async {
@@ -70,6 +78,7 @@ class MissionActionsController extends ActionController {
       compareWeighing(estimate.lines, actual),
       _uid,
     );
+    await notify(ref, toUid: r.citizenUid, type: NotificationType.handedOver, r: r);
   });
 
   Future<bool> reportNoShow(
@@ -77,7 +86,10 @@ class MissionActionsController extends ActionController {
     NoShowReason reason,
     String note,
     Uint8List? photo,
-  ) => run(() => _repo.reportNoShow(r, _uid, reason, note, photo));
+  ) => run(() async {
+    await _repo.reportNoShow(r, _uid, reason, note, photo);
+    await notify(ref, toUid: r.citizenUid, type: NotificationType.cancelled, r: r);
+  });
 
   /// Photo facultative jointe au signalement.
   Future<Uint8List?> pickPhoto(PickSource source) async =>
