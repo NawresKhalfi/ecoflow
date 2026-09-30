@@ -23,6 +23,9 @@ const _roleOnly = {
   Routes.pointsRules: UserRole.admin,
   Routes.rewardsAdmin: UserRole.admin,
   Routes.fraud: UserRole.admin,
+  Routes.dashboard: UserRole.recycler,
+  Routes.stock: UserRole.recycler,
+  Routes.purchasing: UserRole.recycler,
 };
 
 /// Redirection de navigation, fonction pure testée unitairement.

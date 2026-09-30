@@ -14,6 +14,8 @@ import '../data/collector_repositories.dart';
 import '../domain/deposit.dart';
 import '../domain/earnings.dart';
 import '../domain/vehicle.dart';
+import '../../tracking/application/tracking_providers.dart';
+import '../../tracking/domain/app_notification.dart';
 import 'missions_providers.dart';
 
 /// Retrait refusé : montant hors limites (minimum ou solde).
@@ -95,18 +97,47 @@ class DepositController extends ActionController {
     for (final m in missions) {
       perMission.add((await estimates.fetch(m.estimateCode))?.actualKg ?? const {});
     }
-    await ref
+    final uid = ref.read(currentUidProvider)!;
+    final name = ref.read(currentProfileProvider).value?.displayName;
+    final byCategory = aggregateByCategory(perMission);
+    final id = await ref
         .read(depositRepositoryProvider)
         .create(
           Deposit(
             id: '',
-            collectorUid: ref.read(currentUidProvider)!,
+            collectorUid: uid,
             recyclerUid: recycler.uid,
             recyclerName: recycler.name,
             missionIds: [for (final m in missions) m.id],
-            byCategoryKg: aggregateByCategory(perMission),
+            byCategoryKg: byCategory,
+            collectorName: name,
+            zoneIds: {for (final m in missions) m.place.zoneId}.toList(),
+            missions: [
+              for (final (i, m) in missions.indexed)
+                MissionRef(
+                  id: m.id,
+                  zoneId: m.place.zoneId,
+                  day: m.slot.date,
+                  kg: perMission[i].values.fold(0, (a, b) => a + b),
+                ),
+            ],
           ),
         );
+    // Lot en route : le recycleur prépare la réception (US-086).
+    try {
+      await ref
+          .read(notificationRepositoryProvider)
+          .send(
+            toUid: recycler.uid,
+            fromUid: uid,
+            type: NotificationType.depositIncoming,
+            collectionId: id,
+            address: name ?? '',
+            preview: '${byCategory.values.fold(0.0, (a, b) => a + b).toStringAsFixed(1)} kg',
+          );
+    } catch (_) {
+      // Best-effort : le dépôt apparaît de toute façon dans ses réceptions.
+    }
   });
 
   Future<bool> review(Deposit d, {required bool confirmed, String note = ''}) =>

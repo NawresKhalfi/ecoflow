@@ -20,6 +20,8 @@ import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../../wallet/application/wallet_providers.dart';
 import '../../../wallet/domain/wallet.dart';
 import '../../../wallet/presentation/widgets/wallet_labels.dart';
+import '../../../missions/application/missions_providers.dart';
+import '../../../missions/domain/deposit.dart';
 
 /// Accueil de l'espace du rôle. Écran de transition minimal en attendant
 /// les epics métier (scan, missions, stocks, pilotage).
@@ -95,6 +97,8 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
         if (role == UserRole.admin) const _AdminWalletCard(),
+        if (role == UserRole.recycler && profile.verificationStatus == VerificationStatus.approved)
+          const _RecyclerCard(),
         if (role == UserRole.admin)
           EcoCard(
             gradient: EcoGradients.violet,
@@ -298,6 +302,46 @@ class _AdminWalletCard extends ConsumerWidget {
             subtitle: l.fraudPending(held),
             trailing: held > 0 ? EcoChip(label: '$held', tone: ChipTone.coral) : null,
             onTap: () => context.go(Routes.fraud),
+            showDivider: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Raccourcis de l'espace recycleur (US-079, US-081, US-085).
+class _RecyclerCard extends ConsumerWidget {
+  const _RecyclerCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final incoming = (ref.watch(incomingDepositsProvider).value ?? const <Deposit>[])
+        .where((d) => d.status == DepositStatus.pending)
+        .length;
+    return EcoCard(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      child: Column(
+        children: [
+          EcoListTile(
+            leading: const EcoAvatar(text: '📥', gradient: EcoGradients.sky),
+            title: l.receptionsTitle,
+            subtitle: l.receptionsIncoming(incoming),
+            trailing: incoming > 0 ? EcoChip(label: '$incoming', tone: ChipTone.sun) : null,
+            onTap: () => context.go(Routes.receptions),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '📊', gradient: EcoGradients.violet),
+            title: l.dashTitle,
+            subtitle: l.dashSubtitle,
+            onTap: () => context.go(Routes.dashboard),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '💱', gradient: EcoGradients.sun),
+            title: l.purchasingTitle,
+            subtitle: l.purchasingSubtitle,
+            onTap: () => context.go(Routes.purchasing),
             showDivider: false,
           ),
         ],

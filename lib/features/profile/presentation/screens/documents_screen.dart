@@ -127,6 +127,7 @@ class _DocumentRow extends ConsumerWidget {
   Future<void> _pick(BuildContext context, WidgetRef ref) async {
     final l = context.l10n;
     final source = await showModalBottomSheet<PickSource>(
+      useRootNavigator: true,
       context: context,
       showDragHandle: true,
       builder: (ctx) => SafeArea(

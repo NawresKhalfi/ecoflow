@@ -188,6 +188,18 @@ class FirestoreDepositRepository implements DepositRepository {
           DepositStatus.pending,
       createdAt: _date(m['createdAt']),
       note: m['note'] as String? ?? '',
+      collectorName: m['collectorName'] as String?,
+      zoneIds: (m['zoneIds'] as List? ?? const []).cast<String>(),
+      missions: [
+        for (final x in (m['missions'] as List? ?? const [])) MissionRef.fromMap(x as Map, _date),
+      ],
+      receivedKg: {
+        for (final e in (m['receivedKg'] as Map? ?? const {}).entries)
+          '${e.key}': (e.value as num).toDouble(),
+      },
+      quality: m['quality'] as String?,
+      contaminationPct: (m['contaminationPct'] as num?)?.toDouble(),
+      lotIds: (m['lotIds'] as List? ?? const []).cast<String>(),
     );
   }
 
@@ -215,6 +227,9 @@ class FirestoreDepositRepository implements DepositRepository {
         'missionIds': d.missionIds,
         'byCategoryKg': d.byCategoryKg,
         'totalKg': d.totalKg,
+        'collectorName': d.collectorName,
+        'zoneIds': d.zoneIds,
+        'missions': [for (final m in d.missions) m.toMap()],
         'status': DepositStatus.pending.name,
         'createdAt': FieldValue.serverTimestamp(),
       });

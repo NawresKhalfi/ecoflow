@@ -34,7 +34,10 @@ void main() {
   test('each role gets its own navigation', () {
     expect(destinationsFor(UserRole.citizen), contains(NavDestination.collections));
     expect(destinationsFor(UserRole.collector), contains(NavDestination.documents));
-    expect(destinationsFor(UserRole.recycler), contains(NavDestination.company));
+    expect(
+      destinationsFor(UserRole.recycler),
+      containsAll([NavDestination.dashboard, NavDestination.stock]),
+    );
     expect(destinationsFor(UserRole.admin), [
       NavDestination.home,
       NavDestination.catalog,

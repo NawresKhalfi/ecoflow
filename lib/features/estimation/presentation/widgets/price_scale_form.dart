@@ -13,6 +13,7 @@ import 'estimation_format.dart';
 /// Publication d'un nouveau barème, prérempli avec le barème en vigueur.
 Future<void> showPriceScaleForm(BuildContext context, PriceScale current) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

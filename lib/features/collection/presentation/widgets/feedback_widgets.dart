@@ -83,6 +83,7 @@ class _RatingCardState extends ConsumerState<RatingCard> {
 /// Signalement d'un problème avec motif et photos (US-041).
 Future<void> showReportSheet(BuildContext context, CollectionRequest r) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

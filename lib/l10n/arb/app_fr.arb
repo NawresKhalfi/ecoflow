@@ -753,6 +753,90 @@
   "fraudFreeze": "Geler le wallet",
   "fraudFreezeReason": "Vérification en cours",
   "fraudFrozen": "Wallet gelé",
+  "navDashboard": "Tableau de bord",
+  "navStock": "Stock",
+  "ntDepositIncoming": "Un lot arrive 📦",
+  "dashTitle": "Tableau de bord",
+  "dashSubtitle": "Tes approvisionnements par matière.",
+  "dashZone": "Zone",
+  "dashAllZones": "Toutes les zones",
+  "dashCollector": "Collecteur",
+  "dashAllCollectors": "Tous les collecteurs",
+  "dashAllMaterials": "Toutes",
+  "dashTotal": "Total reçu",
+  "dashTotalKg": "kg reçus",
+  "dashDeposits": "livraisons",
+  "dashQuality": "qualité",
+  "dashByMaterial": "Par matière",
+  "dashByCollector": "Par collecteur",
+  "dashWeekly": "Réceptions par semaine",
+  "dashThisWeek": "Cette sem.",
+  "dashEmpty": "Aucune réception sur cette période.",
+  "period7": "7 jours",
+  "period30": "30 jours",
+  "period90": "3 mois",
+  "period365": "12 mois",
+  "exportPdf": "Exporter en PDF",
+  "exportExcel": "Exporter en Excel",
+  "reportTitle": "Rapport d’approvisionnement",
+  "reportMaterial": "Matière",
+  "reportShare": "Part",
+  "reportDate": "Date",
+  "reportGrade": "Qualité",
+  "reportReference": "Lot",
+  "gradeA": "Qualité A",
+  "gradeB": "Qualité B",
+  "gradeC": "Qualité C",
+  "formRaw": "Brut",
+  "formBales": "Balles",
+  "formFlakes": "Paillettes",
+  "formGranules": "Granulés",
+  "moveReception": "Réception",
+  "moveProduction": "Production",
+  "moveSale": "Vente",
+  "moveLoss": "Perte",
+  "moveAdjust": "Ajustement",
+  "receptionsHistory": "Historique",
+  "receiveAction": "Réceptionner",
+  "receiveTitle": "Réception du lot",
+  "receiveSort": "Reclasser (PET, PEHD, PP…)",
+  "receiveGrade": "Contrôle qualité",
+  "receiveNote": "Remarque",
+  "receiveConfirm": "Valider l’entrée en stock",
+  "receiveDone": "Lot réceptionné et entré en stock ✅",
+  "stockTitle": "Stock",
+  "stockSubtitle": "Par matière et par qualité.",
+  "stockEmpty": "Aucun stock pour l’instant.",
+  "stockLots": "Lots",
+  "stockNoLot": "Aucun lot.",
+  "stockShowEmpty": "Lots épuisés",
+  "stockDepleted": "épuisé",
+  "stockInsufficient": "Stock insuffisant",
+  "moveOutTitle": "Sortie de stock",
+  "moveOutKg": "Poids sorti (kg)",
+  "moveOutConfirm": "Enregistrer la sortie",
+  "moveOutDone": "Sortie enregistrée",
+  "lotMarketplace": "Proposer sur la marketplace",
+  "lotMarketplaceHelp": "Visible des acheteurs dès l’ouverture de la marketplace.",
+  "lotMoves": "Mouvements",
+  "traceTitle": "Traçabilité",
+  "traceNoMissions": "Origine non détaillée (dépôt antérieur à la traçabilité).",
+  "productionTitle": "Déclarer une production",
+  "productionBody": "La matière brute consommée est prélevée dans les lots les plus anciens.",
+  "productionInput": "Matière consommée (kg)",
+  "productionOutput": "Production obtenue (kg)",
+  "productionOverYield": "La production ne peut pas dépasser la matière consommée.",
+  "productionConfirm": "Enregistrer la production",
+  "productionDone": "Production enregistrée 🏭",
+  "purchasingTitle": "Conditions d’achat",
+  "purchasingSubtitle": "Prix et capacités par matière, vus par les collecteurs.",
+  "purchasingAccepting": "J’achète cette matière",
+  "purchasingRefusing": "Non achetée",
+  "purchasingPrice": "Prix (DT/kg)",
+  "purchasingCapacity": "Capacité (kg/mois)",
+  "purchasingCapacityHelp": "Vide = sans limite",
+  "purchasingSaved": "Conditions enregistrées",
+  "offerNone": "Prix non communiqués",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -1412,6 +1496,143 @@
   "@fraudPending": {
     "placeholders": {
       "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashWeeklySemantics": "Réceptions des {weeks} dernières semaines ; cette semaine : {kg}",
+  "@dashWeeklySemantics": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      },
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "reportGenerated": "Généré le {date} par EcoFlow",
+  "@reportGenerated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "receptionsIncoming": "{count, plural, =0{Aucun lot en route} =1{1 lot en route} other{{count} lots en route}}",
+  "@receptionsIncoming": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "receptionMissions": "{count, plural, =1{1 collecte} other{{count} collectes}}",
+  "@receptionMissions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "receptionContam": "{pct} % d’indésirables",
+  "@receptionContam": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "receiveDeclared": "Déclaré par {collector} : {kg}",
+  "@receiveDeclared": {
+    "placeholders": {
+      "collector": {
+        "type": "String"
+      },
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveDeclaredKg": "Déclaré : {kg} kg",
+  "@receiveDeclaredKg": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveContamination": "Indésirables : {pct} %",
+  "@receiveContamination": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "receiveGap": "Pesé {kg} : écart de {pct} % avec la déclaration du collecteur.",
+  "@receiveGap": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      },
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "receiveTotal": "Total pesé : {kg}",
+  "@receiveTotal": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "stockAvailable": "Disponible : {kg}",
+  "@stockAvailable": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "lotInitial": "Entrée en stock : {kg}",
+  "@lotInitial": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "traceDeposit": "Dépôt {id}",
+  "@traceDeposit": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "traceMission": "Collecte {id}",
+  "@traceMission": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "traceInput": "Matière d’origine : {kg}",
+  "@traceInput": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "productionYield": "Rendement : {pct} %",
+  "@productionYield": {
+    "placeholders": {
+      "pct": {
         "type": "int"
       }
     }

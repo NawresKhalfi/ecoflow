@@ -36,3 +36,6 @@ double? parseKg(String v) {
   final n = double.tryParse(t);
   return n == null || n < 0 ? null : n;
 }
+
+/// Date courte dans une langue donnée (rapports exportés).
+String fmtDateLocale(String lang, DateTime d) => DateFormat.yMMMd(lang).format(d);

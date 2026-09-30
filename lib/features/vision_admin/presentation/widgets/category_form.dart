@@ -27,6 +27,7 @@ const modelClasses = [
 /// Formulaire de création / modification d'une classe du catalogue.
 Future<void> showCategoryForm(BuildContext context, {WasteCategory? existing}) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

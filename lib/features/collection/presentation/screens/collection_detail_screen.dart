@@ -197,6 +197,7 @@ class CollectionDetailScreen extends ConsumerWidget {
   Future<void> _changeSlot(BuildContext context, WidgetRef ref, CollectionRequest r) async {
     final l = context.l10n;
     final chosen = await showModalBottomSheet<TimeSlot>(
+      useRootNavigator: true,
       context: context,
       showDragHandle: true,
       builder: (ctx) => Consumer(

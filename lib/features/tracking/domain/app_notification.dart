@@ -10,7 +10,11 @@ enum NotificationType {
   completed,
   cancelled,
   newMission,
-  message;
+  message,
+
+  /// Lot déposé par un collecteur, en route vers le recycleur (US-086) ;
+  /// `collectionId` porte alors l'identifiant du dépôt.
+  depositIncoming;
 
   static NotificationType? fromName(String? n) => values.where((v) => v.name == n).firstOrNull;
 

@@ -9,6 +9,7 @@ import '../../domain/rewards.dart';
 import 'wallet_labels.dart';
 
 Future<void> _sheet(BuildContext context, Widget child) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   isScrollControlled: true,
   showDragHandle: true,

@@ -9,6 +9,7 @@ import 'scan_labels.dart';
 Future<String?> pickCategory(BuildContext context, List<WasteCategory> catalog, {String? current}) {
   final lang = languageOf(context);
   return showModalBottomSheet<String>(
+    useRootNavigator: true,
     context: context,
     showDragHandle: true,
     isScrollControlled: true,

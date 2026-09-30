@@ -14,6 +14,7 @@ class EcoTextField extends StatelessWidget {
     this.autofillHints,
     this.textInputAction,
     this.onSubmitted,
+    this.onChanged,
     this.maxLength,
     this.enabled = true,
     this.helper,
@@ -30,6 +31,7 @@ class EcoTextField extends StatelessWidget {
   final Iterable<String>? autofillHints;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onChanged;
   final int? maxLength;
   final bool enabled;
   final String? helper;
@@ -38,6 +40,7 @@ class EcoTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: onChanged,
       controller: controller,
       validator: validator,
       keyboardType: keyboardType,

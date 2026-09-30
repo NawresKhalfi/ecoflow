@@ -32,6 +32,10 @@ import '../../features/missions/presentation/screens/mission_detail_screen.dart'
 import '../../features/missions/presentation/screens/missions_screen.dart';
 import '../../features/missions/presentation/screens/receptions_screen.dart';
 import '../../features/missions/presentation/screens/vehicle_screen.dart';
+import '../../features/recycler/presentation/screens/dashboard_screen.dart';
+import '../../features/recycler/presentation/screens/lot_detail_screen.dart';
+import '../../features/recycler/presentation/screens/purchasing_screen.dart';
+import '../../features/recycler/presentation/screens/stock_screen.dart';
 import '../../features/routing/presentation/screens/optimization_screen.dart';
 import '../../features/routing/presentation/screens/tour_screen.dart';
 import '../../features/scan/presentation/screens/scan_screen.dart';
@@ -139,6 +143,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               _tab('points-rules', (_) => const PointsRulesScreen()),
               _tab('rewards-admin', (_) => const RewardsAdminScreen()),
               _tab('fraud', (_) => const FraudScreen()),
+              _tab('dashboard', (_) => const DashboardScreen()),
+              _tab(
+                'stock',
+                (_) => const StockScreen(),
+                routes: [_tab(':id', (s) => LotDetailScreen(id: s.pathParameters['id']!))],
+              ),
+              _tab('purchasing', (_) => const PurchasingScreen()),
               _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),
               _tab(
                 'collections',

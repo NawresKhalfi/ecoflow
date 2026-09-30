@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-8) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4-9) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -203,6 +203,32 @@ bad[1]={**refbonus[1], 'updateTransforms':[{'fieldPath':'earned','increment':{'i
 check('referral bonus inflated refused', cit2, [earn(c2uid, cid4, 158, 9.0, 'held', {'glass':9.0}), held]+bad, False)
 check('held points + referral bonus in one batch', cit2, [earn(c2uid, cid4, 158, 9.0, 'held', {'glass':9.0}), held]+refbonus, True)
 
+# --- Epic 9 : espace recycleur -------------------------------------------
+dep2=f'd2{code}'
+check('collector deposits a 2nd batch (snapshot)', karim, [create(f'deposits/{dep2}', {'collectorUid':kuid,'recyclerUid':ruid,'recyclerName':'GreenPlast','missionIds':[cid4],'byCategoryKg':{'glass':9.0},'totalKg':9.0,'collectorName':'Probe collector','zoneIds':['sousse'],'missions':[{'id':cid4,'zoneId':'sousse','day':now,'kg':9.0}],'status':'pending','createdAt':now})], True)
+check('collector notifies recycler: batch on its way', karim, [create(f'notifications/dep{code}', {'toUid':ruid,'fromUid':kuid,'type':'depositIncoming','collectionId':dep2,'address':'Probe','preview':'9 kg','read':False,'createdAt':now})], True)
+check('deposit notice to someone else refused', karim, [create(f'notifications/dep2{code}', {'toUid':luid,'fromUid':kuid,'type':'depositIncoming','collectionId':dep2,'address':'','preview':'','read':False,'createdAt':now})], False)
+lot1=f'l1{code}'
+def lot(lid, **kw):
+    d={'recyclerUid':ruid,'material':'glass','grade':'a','form':'raw','source':'reception','initialKg':8.5,'kg':8.5,'depositId':dep2,'collectorUid':kuid,'collectorName':'Probe collector','zoneIds':['sousse'],'missions':[],'inputLotIds':[],'marketplace':False,'receivedAt':now}
+    d.update(kw); return create(f'lots/{lid}', d)
+check('lot without confirmed deposit refused', rec, [lot(lot1)], False)
+check('collector cannot create stock lots', karim, [lot(lot1, recyclerUid=kuid)], False)
+receive=[lot(lot1), create(f'stockMoves/m1{code}', {'recyclerUid':ruid,'lotId':lot1,'material':'glass','deltaKg':8.5,'reason':'reception','note':'','at':now}),
+         upd(f'deposits/{dep2}', {'status':'confirmed','note':'','reviewedAt':now,'receivedKg':{'glass':8.5},'quality':'a','contaminationPct':2.0,'lotIds':[lot1]})]
+check('recycler receives batch (QC + lot + move)', rec, receive, True)
+s_,_=http(f'{B}/lots/{lot1}', token=leila); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'citizen cannot read stock →', s_)
+check('lot weight cannot grow above intake', rec, [upd(f'lots/{lot1}', {'kg':50.0})], False)
+check('sale: stock out + movement', rec, [upd(f'lots/{lot1}', {'kg':6.5}), create(f'stockMoves/m2{code}', {'recyclerUid':ruid,'lotId':lot1,'material':'glass','deltaKg':-2.0,'reason':'sale','note':'','at':now})], True)
+lot2=f'l2{code}'
+prod=[upd(f'lots/{lot1}', {'kg':1.5}), lot(lot2, source='production', form='granules', initialKg=4.6, kg=4.6, depositId=None, inputLotIds=[lot1], marketplace=True),
+      create(f'productions/p{code}', {'recyclerUid':ruid,'material':'glass','inputKg':5.0,'outputKg':4.6,'form':'granules','grade':'a','inputLotIds':[lot1],'outputLotId':lot2,'at':now})]
+check('production as raw material refused', rec, [lot(f'l3{code}', source='production', depositId=None)], False)
+check('production (input consumed, output lot)', rec, prod, True)
+check('recycler sets purchase prices', rec, [upd(f'companies/{ruid}', {'purchasing':{'glass':{'accepting':True,'priceDtPerKg':0.12,'capacityKgMonth':5000.0}}})], True)
+check('recycler cannot self-change status', rec, [upd(f'companies/{ruid}', {'status':'approved','purchasing':{}})], True)
+check('recycler cannot touch legal data with prices', rec, [upd(f'companies/{ruid}', {'legalName':'Autre','purchasing':{}})], False)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
@@ -213,7 +239,9 @@ for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'
              f'pointEntries/c_{cid}', f'pointEntries/r_ra{code}', f'pointEntries/x{code}',
              f'pointEntries/c_{cid4}', f'pointEntries/ref_{c2uid}', f'redemptions/ra{code}',
              f'rewards/rw{code}', f'rewards/big{code}', f'referralCodes/{code[:6]}',
-             f'estimates/{code4}', f'collections/{cid4}', f'collections/{cid4}/attachments/proof']:
+             f'estimates/{code4}', f'collections/{cid4}', f'collections/{cid4}/attachments/proof',
+             f'deposits/d2{code}', f'notifications/dep{code}', f'lots/l1{code}', f'lots/l2{code}',
+             f'stockMoves/m1{code}', f'stockMoves/m2{code}', f'productions/p{code}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

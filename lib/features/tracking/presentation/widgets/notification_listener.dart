@@ -21,11 +21,13 @@ String notificationTitle(AppLocalizations l, NotificationType t) => switch (t) {
   NotificationType.cancelled => l.ntCancelled,
   NotificationType.newMission => l.ntNewMission,
   NotificationType.message => l.ntMessage,
+  NotificationType.depositIncoming => l.ntDepositIncoming,
 };
 
 /// Écran ouvert par une notification (ouverture directe, US-066).
 String routeFor(AppNotification n, UserRole role) => switch (n.type) {
   NotificationType.message => Routes.chat(n.collectionId),
+  NotificationType.depositIncoming => Routes.receptions,
   _ =>
     role == UserRole.collector
         ? Routes.missionDetail(n.collectionId)

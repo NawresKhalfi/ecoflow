@@ -46,6 +46,10 @@ abstract final class Routes {
   static const pointsRules = '/app/points-rules';
   static const rewardsAdmin = '/app/rewards-admin';
   static const fraud = '/app/fraud';
+  static const dashboard = '/app/dashboard';
+  static const stock = '/app/stock';
+  static String lotDetail(String id) => '/app/stock/$id';
+  static const purchasing = '/app/purchasing';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

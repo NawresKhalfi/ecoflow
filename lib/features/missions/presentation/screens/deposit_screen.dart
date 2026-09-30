@@ -16,6 +16,9 @@ import '../../application/missions_providers.dart';
 import '../../data/collector_repositories.dart';
 import '../../domain/deposit.dart';
 import '../widgets/mission_labels.dart';
+import '../../../recycler/application/recycler_providers.dart';
+import '../../../recycler/domain/purchasing.dart';
+import '../../../recycler/presentation/widgets/recycler_labels.dart';
 
 /// Dépôt de la tournée chez un recycleur (US-055).
 class DepositScreen extends ConsumerStatefulWidget {
@@ -33,6 +36,11 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final recyclers = ref.watch(approvedRecyclersProvider).value ?? const [];
+    // Conditions d'achat annoncées (US-085) pour orienter la livraison.
+    final offers = {
+      for (final o in ref.watch(recyclerOffersProvider).value ?? const <RecyclerOffer>[])
+        o.uid: o.purchasing,
+    };
     final ctrl = ref.read(depositControllerProvider.notifier);
     final state = ref.watch(depositControllerProvider);
     final candidates = ctrl.depositable(ref.watch(myMissionsProvider).value ?? const []);
@@ -62,17 +70,21 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
               Text(l.depositRecycler, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               if (recyclers.isEmpty) Text(l.depositNoRecycler),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final r in recyclers)
-                    EcoChip(
-                      label: '🏭 ${r.name} · ${r.city}',
-                      selected: _recycler?.uid == r.uid,
-                      onTap: () => setState(() => _recycler = r),
-                    ),
-                ],
+              RadioGroup<String>(
+                groupValue: _recycler?.uid,
+                onChanged: (uid) =>
+                    setState(() => _recycler = recyclers.where((r) => r.uid == uid).firstOrNull),
+                child: Column(
+                  children: [
+                    for (final r in recyclers)
+                      RadioListTile<String>(
+                        contentPadding: EdgeInsets.zero,
+                        value: r.uid,
+                        title: Text('🏭 ${r.name} · ${r.city}'),
+                        subtitle: Text(offerSummary(l, context, offers[r.uid])),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),

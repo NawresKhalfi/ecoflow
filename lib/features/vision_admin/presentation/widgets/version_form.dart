@@ -24,6 +24,7 @@ double? parseRatio(String v) {
 }
 
 Future<void> showVersionForm(BuildContext context) => showModalBottomSheet<void>(
+  useRootNavigator: true,
   context: context,
   isScrollControlled: true,
   showDragHandle: true,

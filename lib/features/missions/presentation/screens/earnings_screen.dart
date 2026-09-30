@@ -162,6 +162,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
     final amount = TextEditingController(text: balance.toStringAsFixed(3));
     var method = PayoutMethod.bankTransfer;
     final ok = await showModalBottomSheet<bool>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

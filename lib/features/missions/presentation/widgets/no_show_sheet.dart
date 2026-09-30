@@ -15,6 +15,7 @@ import 'mission_labels.dart';
 /// Citoyen absent / adresse introuvable (US-053).
 Future<void> showNoShowSheet(BuildContext context, CollectionRequest r) =>
     showModalBottomSheet<void>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       showDragHandle: true,

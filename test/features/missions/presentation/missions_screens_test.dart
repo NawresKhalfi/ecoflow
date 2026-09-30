@@ -170,8 +170,9 @@ void main() {
     expect(find.text('Déposer ma tournée'), findsOneWidget);
   });
 
-  testWidgets('recycler confirms an incoming deposit (US-055)', (t) async {
+  testWidgets('recycler receives an incoming deposit into stock (US-055, US-080)', (t) async {
     final o = await as('rec', 'recycler');
+    await db.doc('companies/rec').set({'legalName': 'GreenPlast', 'status': 'approved'});
     await db.collection('deposits').add({
       'collectorUid': 'k1',
       'recyclerUid': 'rec',
@@ -181,10 +182,25 @@ void main() {
       'status': 'pending',
     });
     await pumpIt(t, const ReceptionsScreen(), o);
-    await t.tap(find.text('Confirmer la réception'));
+    expect(find.textContaining('1 lot en route'), findsOneWidget);
+    await t.tap(find.text('Réceptionner'));
+    await settle(t);
+    // Canettes → aluminium, pré-rempli avec le poids déclaré.
+    expect(find.widgetWithText(TextFormField, '4.0'), findsOneWidget);
+    await t.tap(find.text('Qualité B'));
+    await settle(t);
+    await t.ensureVisible(find.text('Valider l’entrée en stock'));
+    await t.tap(find.text('Valider l’entrée en stock'));
     await t.runAsync(() => Future.delayed(const Duration(milliseconds: 250)));
     await settle(t);
-    expect((await db.collection('deposits').get()).docs.single.data()['status'], 'confirmed');
+    final dep = (await db.collection('deposits').get()).docs.single.data();
+    expect((dep['status'], dep['quality']), ('confirmed', 'b'));
+    expect(dep['receivedKg'], {'aluminium': 4.0});
+    final lot = (await db.collection('lots').get()).docs.single.data();
+    expect(
+      (lot['material'], lot['kg'], lot['grade'], lot['collectorUid']),
+      ('aluminium', 4.0, 'b', 'k1'),
+    );
   });
 
   testWidgets('vehicle form (US-054)', (t) async {

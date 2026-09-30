@@ -83,7 +83,10 @@ service cloud.firestore {
             && request.resource.data.ownerUid == uid
             && request.resource.data.rejectionReason == null
             && (resource == null || resource.data.status in ['notSubmitted', 'rejected']
-                || changed().hasOnly(['contactPhone'])));
+                || changed().hasOnly(['contactPhone'])))
+        // Recycleur validé : conditions d'achat par matière (US-085).
+        || (isSelf(uid) && resource != null && resource.data.status == 'approved'
+            && changed().hasOnly(['purchasing']) && request.resource.data.purchasing is map);
       allow delete: if isAdmin();
     }
 
@@ -384,7 +387,8 @@ service cloud.firestore {
       allow update: if isAdmin() || (signedIn() && resource.data.recyclerUid == request.auth.uid
         && resource.data.status == 'pending'
         && request.resource.data.status in ['confirmed', 'rejected']
-        && changed().hasOnly(['status', 'note', 'reviewedAt']));
+        && changed().hasOnly(['status', 'note', 'reviewedAt', 'receivedKg', 'quality',
+                              'contaminationPct', 'lotIds']));
     }
 
     // --- Epic 7 : suivi et notifications --------------------------------
@@ -394,12 +398,19 @@ service cloud.firestore {
         return [c.citizenUid, c.get('collectorUid', ''), c.get('proposedCollectorUid', '')];
       }
       allow read: if signedIn() && (resource.data.toUid == request.auth.uid || isAdmin());
+      // Lot en route (US-086) : du collecteur au recycleur du dépôt.
+      function depositNotice() {
+        let d = get(/databases/$(database)/documents/deposits/$(request.resource.data.collectionId)).data;
+        return d.collectorUid == request.auth.uid && d.recyclerUid == request.resource.data.toUid;
+      }
       allow create: if signedIn()
         && request.resource.data.fromUid == request.auth.uid
         && request.resource.data.read == false
         && request.resource.data.toUid != request.auth.uid
-        && request.auth.uid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)
-        && request.resource.data.toUid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data);
+        && ((request.resource.data.type == 'depositIncoming' && depositNotice())
+          || (request.resource.data.type != 'depositIncoming'
+            && request.auth.uid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)
+            && request.resource.data.toUid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)));
       allow update: if signedIn() && resource.data.toUid == request.auth.uid && changed().hasOnly(['read']);
       allow delete: if isAdmin();
     }
@@ -646,6 +657,57 @@ service cloud.firestore {
       allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
       allow create: if signedIn() && redemptionOk();
       allow update, delete: if isAdmin();
+    }
+
+    // --- Epic 9 : espace recycleur ------------------------------------------
+    function isApprovedRecycler() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/companies/$(request.auth.uid))
+        && get(/databases/$(database)/documents/companies/$(request.auth.uid)).data.status == 'approved';
+    }
+    function lotAfter(id) { return getAfter(/databases/$(database)/documents/lots/$(id)).data; }
+
+    // Lots en stock (US-081) : une réception n'existe que liée à un dépôt
+    // confirmé par ce recycleur (US-080) ; le poids restant ne fait que
+    // baisser (sorties, production).
+    match /lots/{id} {
+      function n() { return request.resource.data; }
+      function fromDeposit() {
+        let dep = getAfter(/databases/$(database)/documents/deposits/$(n().depositId)).data;
+        return dep.recyclerUid == request.auth.uid && dep.status == 'confirmed' && id in dep.lotIds;
+      }
+      allow read: if signedIn() && (resource.data.recyclerUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedRecycler()
+        && n().recyclerUid == request.auth.uid
+        && n().material in ['pet', 'hdpe', 'pp', 'cardboard', 'aluminium', 'glass', 'other']
+        && n().grade in ['a', 'b', 'c']
+        && n().form in ['raw', 'bales', 'flakes', 'granules']
+        && n().initialKg is number && n().initialKg > 0 && n().kg == n().initialKg
+        && (n().source == 'production' ? n().form != 'raw' : n().source == 'reception' && fromDeposit());
+      allow update: if signedIn() && resource.data.recyclerUid == request.auth.uid
+        && changed().hasOnly(['kg', 'marketplace'])
+        && request.resource.data.kg is number
+        && request.resource.data.kg >= 0 && request.resource.data.kg <= resource.data.initialKg;
+      allow delete: if isAdmin();
+    }
+
+    // Mouvements et productions : historique immuable du recycleur.
+    match /stockMoves/{id} {
+      allow read: if signedIn() && (resource.data.recyclerUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedRecycler()
+        && request.resource.data.recyclerUid == request.auth.uid
+        && request.resource.data.reason in ['reception', 'production', 'sale', 'loss', 'adjust']
+        && request.resource.data.deltaKg is number
+        && lotAfter(request.resource.data.lotId).recyclerUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+    match /productions/{id} {
+      allow read: if signedIn() && (resource.data.recyclerUid == request.auth.uid || isAdmin());
+      allow create: if isApprovedRecycler()
+        && request.resource.data.recyclerUid == request.auth.uid
+        && request.resource.data.outputKg <= request.resource.data.inputKg
+        && lotAfter(request.resource.data.outputLotId).recyclerUid == request.auth.uid;
+      allow update, delete: if false;
     }
   }
 }
