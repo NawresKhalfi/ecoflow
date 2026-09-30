@@ -75,32 +75,73 @@ void main() {
   group('mission list (US-043)', () {
     final list = [
       req('near-cheap', point: const GeoPoint(35.83, 10.61), dt: 2, kg: 1),
-      req('far-rich', point: const GeoPoint(35.90, 10.60), dt: 9, kg: 12, categories: ['pet_bottle']),
+      req(
+        'far-rich',
+        point: const GeoPoint(35.90, 10.60),
+        dt: 9,
+        kg: 12,
+        categories: ['pet_bottle'],
+      ),
       req('outside', point: const GeoPoint(36.5, 10.7), dt: 20),
     ];
     const zone = WorkZone(center: sousse, radiusKm: 15);
 
     test('work zone, distance sort and value sort', () {
-      final byDistance = selectMissions(list, filter: const MissionFilter(), from: sousse, zone: zone);
+      final byDistance = selectMissions(
+        list,
+        filter: const MissionFilter(),
+        from: sousse,
+        zone: zone,
+      );
       expect(byDistance.map((e) => e.$1.id), ['near-cheap', 'far-rich']);
       expect(byDistance.first.$2, lessThan(1));
-      final byValue = selectMissions(list, filter: const MissionFilter(sort: MissionSort.value), from: sousse, zone: zone);
+      final byValue = selectMissions(
+        list,
+        filter: const MissionFilter(sort: MissionSort.value),
+        from: sousse,
+        zone: zone,
+      );
       expect(byValue.first.$1.id, 'far-rich');
     });
 
     test('material and quantity filters', () {
-      expect(selectMissions(list, filter: const MissionFilter(categories: {'pet_bottle'})).map((e) => e.$1.id), ['far-rich']);
-      expect(selectMissions(list, filter: const MissionFilter(minKg: 5)).map((e) => e.$1.id), containsAll(['far-rich']));
-      expect(selectMissions(list, filter: const MissionFilter(maxKg: 2)).map((e) => e.$1.id), ['near-cheap']);
+      expect(
+        selectMissions(
+          list,
+          filter: const MissionFilter(categories: {'pet_bottle'}),
+        ).map((e) => e.$1.id),
+        ['far-rich'],
+      );
+      expect(
+        selectMissions(list, filter: const MissionFilter(minKg: 5)).map((e) => e.$1.id),
+        containsAll(['far-rich']),
+      );
+      expect(selectMissions(list, filter: const MissionFilter(maxKg: 2)).map((e) => e.$1.id), [
+        'near-cheap',
+      ]);
     });
 
     test('matching ignores collectors whose work zone excludes the pickup (US-042)', () {
-      final r = matchCollector(pickup: sousse, neededKg: 1, candidates: const [
-        CollectorCandidate(uid: 'elsewhere', point: GeoPoint(35.83, 10.61), capacityKg: 100,
-            zoneCenter: GeoPoint(36.8, 10.18), zoneRadiusKm: 10),
-        CollectorCandidate(uid: 'local', point: GeoPoint(35.84, 10.61), capacityKg: 100,
-            zoneCenter: sousse, zoneRadiusKm: 5),
-      ]);
+      final r = matchCollector(
+        pickup: sousse,
+        neededKg: 1,
+        candidates: const [
+          CollectorCandidate(
+            uid: 'elsewhere',
+            point: GeoPoint(35.83, 10.61),
+            capacityKg: 100,
+            zoneCenter: GeoPoint(36.8, 10.18),
+            zoneRadiusKm: 10,
+          ),
+          CollectorCandidate(
+            uid: 'local',
+            point: GeoPoint(35.84, 10.61),
+            capacityKg: 100,
+            zoneCenter: sousse,
+            zoneRadiusKm: 5,
+          ),
+        ],
+      );
       expect(r.candidate!.uid, 'local');
     });
   });
@@ -134,12 +175,20 @@ void main() {
   });
 
   test('deposit aggregates real weights by material (US-055)', () {
-    expect(aggregateByCategory([{'can': 1.5, 'pet_bottle': 2}, {'can': .5}]), {'can': 2, 'pet_bottle': 2});
+    expect(
+      aggregateByCategory([
+        {'can': 1.5, 'pet_bottle': 2},
+        {'can': .5},
+      ]),
+      {'can': 2, 'pet_bottle': 2},
+    );
   });
 
   test('vehicle defaults (US-054)', () {
     expect(Vehicle.defaultFor(VehicleType.van).capacityKg, 600);
-    final v = Vehicle.fromMap(const Vehicle(type: VehicleType.cargoBike, capacityKg: 70, volumeM3: .4).toMap())!;
+    final v = Vehicle.fromMap(
+      const Vehicle(type: VehicleType.cargoBike, capacityKg: 70, volumeM3: .4).toMap(),
+    )!;
     expect(v.type, VehicleType.cargoBike);
     expect(v.capacityKg, 70);
   });

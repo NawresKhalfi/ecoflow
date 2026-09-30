@@ -313,8 +313,32 @@ service cloud.firestore {
         && request.resource.data.collectorUid == request.auth.uid
         && get(/databases/$(database)/documents/collections/$(missionId)).data.collectorUid == request.auth.uid
         && get(/databases/$(database)/documents/collections/$(missionId)).data.status == 'completed'
-        && request.resource.data.amountDt == get(/databases/$(database)/documents/estimates/$(get(/databases/$(database)/documents/collections/$(missionId)).data.estimateCode)).data.finalDt;
+        && request.resource.data.amountDt == get(/databases/$(database)/documents/estimates/$(get(/databases/$(database)/documents/collections/$(missionId)).data.estimateCode)).data.finalDt
+        && getAfter(/databases/$(database)/documents/collectorBalances/$(request.auth.uid)).data.lastEarningId == missionId;
       allow update, delete: if isAdmin();
+    }
+
+    // Solde du collecteur, modifié uniquement avec un revenu ou un retrait
+    // du même batch : impossible de retirer plus que le total gagné.
+    match /collectorBalances/{uid} {
+      function before(k) { return resource == null ? 0 : resource.data[k]; }
+      function earningAdded() {
+        return request.resource.data.withdrawnDt == before('withdrawnDt')
+          && !exists(/databases/$(database)/documents/earnings/$(request.resource.data.lastEarningId))
+          && existsAfter(/databases/$(database)/documents/earnings/$(request.resource.data.lastEarningId))
+          && request.resource.data.earnedDt == before('earnedDt')
+               + getAfter(/databases/$(database)/documents/earnings/$(request.resource.data.lastEarningId)).data.amountDt;
+      }
+      function payoutAdded() {
+        return request.resource.data.earnedDt == before('earnedDt')
+          && !exists(/databases/$(database)/documents/payouts/$(request.resource.data.lastPayoutId))
+          && existsAfter(/databases/$(database)/documents/payouts/$(request.resource.data.lastPayoutId))
+          && request.resource.data.withdrawnDt == before('withdrawnDt')
+               + getAfter(/databases/$(database)/documents/payouts/$(request.resource.data.lastPayoutId)).data.amountDt
+          && request.resource.data.withdrawnDt <= request.resource.data.earnedDt;
+      }
+      allow read: if isSelf(uid) || isAdmin();
+      allow create, update: if isAdmin() || (isApprovedCollector() && isSelf(uid) && (earningAdded() || payoutAdded()));
     }
 
     match /payouts/{id} {
@@ -322,7 +346,8 @@ service cloud.firestore {
       allow create: if isApprovedCollector()
         && request.resource.data.collectorUid == request.auth.uid
         && request.resource.data.status == 'requested'
-        && request.resource.data.amountDt >= 20;
+        && request.resource.data.amountDt >= 20
+        && getAfter(/databases/$(database)/documents/collectorBalances/$(request.auth.uid)).data.lastPayoutId == id;
       allow update: if isAdmin();
     }
 

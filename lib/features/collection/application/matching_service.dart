@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/firebase_providers.dart';
+
 import '../domain/collection_request.dart';
 import '../domain/matching.dart';
 import 'collection_providers.dart';
@@ -17,6 +19,11 @@ Future<MatchResult> runMatching(Ref ref, CollectionRequest r) async {
   );
   await ref
       .read(collectionRepositoryProvider)
-      .setMatch(r.id, collectorUid: result.candidate?.uid, radiusKm: result.radiusKm);
+      .setMatch(
+        r.id,
+        collectorUid: result.candidate?.uid,
+        radiusKm: result.radiusKm,
+        at: ref.read(clockProvider)(),
+      );
   return result;
 }

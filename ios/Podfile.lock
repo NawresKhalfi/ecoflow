@@ -1419,12 +1419,19 @@ PODS:
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
     - PromisesObjC (= 2.4.1)
+  - Protobuf (3.29.6)
+  - reactive_ble_mobile (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - Protobuf (~> 3.5)
+    - SwiftProtobuf (~> 1.0)
   - RecaptchaInterop (101.0.0)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - SwiftProtobuf (1.38.1)
   - ultralytics_yolo (0.6.15):
     - Flutter
     - UltralyticsYOLO (< 9.0, >= 8.9.15)
@@ -1444,6 +1451,7 @@ DEPENDENCIES:
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - reactive_ble_mobile (from `.symlinks/plugins/reactive_ble_mobile/darwin`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - ultralytics_yolo (from `.symlinks/plugins/ultralytics_yolo/ios`)
@@ -1476,7 +1484,9 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - PromisesSwift
+    - Protobuf
     - RecaptchaInterop
+    - SwiftProtobuf
     - UltralyticsYOLO
 
 EXTERNAL SOURCES:
@@ -1498,6 +1508,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
+  reactive_ble_mobile:
+    :path: ".symlinks/plugins/reactive_ble_mobile/darwin"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -1543,9 +1555,12 @@ SPEC CHECKSUMS:
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
+  Protobuf: 8d5596f7468be5400861a6bbfb2dfe9d0d1cde34
+  reactive_ble_mobile: ea97709e18fa6f0b0592909725d7ae7e1c595b64
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
   ultralytics_yolo: 42d421b893c70089d0dd20cdef64d4e928f402fa
   UltralyticsYOLO: 7b7d9160a8a8d2fb95c57c5c97938ef468cd5cb3
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b

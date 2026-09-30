@@ -97,13 +97,15 @@ final availableMissionsProvider = Provider<List<(CollectionRequest, double?)>>((
   final uid = ref.watch(currentUidProvider) ?? '';
   final now = ref.watch(clockProvider)();
   final presence = ref.watch(myPresenceDataProvider).value;
+  // Mes propositions restent visibles même expirées : la carte les refuse
+  // automatiquement et les rend aux autres collecteurs (sinon la demande
+  // resterait bloquée tant que l'application du citoyen est fermée).
   final all = {
-    for (final r in [
-      ...?ref.watch(proposedToMeProvider).value,
-      ...?ref.watch(openMissionsProvider).value,
-    ])
-      r.id: r,
-  }.values.where((r) => canAccept(r, uid, now)).toList();
+    for (final r in ref.watch(openMissionsProvider).value ?? const <CollectionRequest>[])
+      if (canAccept(r, uid, now)) r.id: r,
+    for (final r in ref.watch(proposedToMeProvider).value ?? const <CollectionRequest>[])
+      if (!r.refusedBy.contains(uid)) r.id: r,
+  }.values.toList();
   return selectMissions(
     all,
     filter: ref.watch(missionFilterProvider),

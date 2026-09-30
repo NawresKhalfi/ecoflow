@@ -85,10 +85,13 @@ class MissionCard extends ConsumerWidget {
           ),
           if (proposed) ...[
             const SizedBox(height: 10),
-            Row(
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 6,
               children: [
                 EcoChip(label: '⭐ ${l.missionProposed}', tone: ChipTone.violet),
-                const Spacer(),
                 Text(
                   l.missionCountdown(left),
                   style: AppTheme.weighted(14, 800, color: const Color(0xFFC4482A)),

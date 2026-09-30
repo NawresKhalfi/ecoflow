@@ -12,7 +12,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E02 | Vision IA – scan des déchets | MVP | 10/12 | 🟨 |
 | E03 | Estimation intelligente quantité & valeur | MVP | 8/8 | ✅ |
 | E04 | Demande de collecte | MVP | 10/11 | 🟨 |
-| E05 | Espace collecteur & missions | MVP | 0/14 | ⬜ |
+| E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
 | E06 | Optimisation IA des itinéraires | V1 | 0/7 | ⬜ |
 | E07 | Suivi temps réel & notifications | MVP | 0/6 | ⬜ |
 | E08 | Recycle Wallet & EcoPoints | V1 | 0/10 | ⬜ |
@@ -98,20 +98,20 @@ _Disponibilité, missions, navigation, pesée, validation, historique, revenus e
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-042 | Collecteur | En tant que collecteur, je veux passer en ligne/hors ligne et définir ma zone de travail afin de recevoir des missions uniquement quand je suis disponible. | Must | MVP | ⬜ |  |
-| US-043 | Collecteur | En tant que collecteur, je veux consulter les missions disponibles autour de moi (liste et carte) afin de choisir les collectes intéressantes. | Must | MVP | ⬜ |  |
-| US-044 | Collecteur | En tant que collecteur, je veux accepter ou refuser une mission afin de gérer ma charge de travail. | Must | MVP | ⬜ |  |
-| US-045 | Collecteur | En tant que collecteur, je veux voir le détail de la mission (localisation, type de déchets, quantité estimée, valeur estimée) afin de préparer ma collecte. | Must | MVP | ⬜ |  |
-| US-046 | Collecteur | En tant que collecteur, je veux lancer la navigation GPS vers le point de collecte afin de arriver rapidement. | Must | MVP | ⬜ |  |
-| US-047 | Collecteur | En tant que collecteur, je veux signaler mon arrivée et démarrer la collecte afin de informer le citoyen. | Must | MVP | ⬜ |  |
-| US-048 | Collecteur | En tant que collecteur, je veux prendre une photo preuve de la collecte afin de limiter les litiges. | Should | MVP | ⬜ |  |
-| US-049 | Collecteur | En tant que collecteur, je veux connecter une balance Bluetooth pour enregistrer le poids automatiquement afin de éviter les erreurs de saisie. | Could | V2 | ⬜ |  |
-| US-050 | Collecteur | En tant que collecteur, je veux clôturer la mission après validation du citoyen afin de déclencher crédit des points et revenus. | Must | MVP | ⬜ |  |
-| US-051 | Collecteur | En tant que collecteur, je veux consulter l'historique de mes missions et mes revenus afin de suivre mon activité. | Must | MVP | ⬜ |  |
-| US-052 | Collecteur | En tant que collecteur, je veux demander le retrait de mes revenus afin de être payé pour mon travail. | Should | V1 | ⬜ |  |
-| US-053 | Collecteur | En tant que collecteur, je veux signaler un citoyen absent ou une adresse introuvable afin de clore une mission impossible. | Should | V1 | ⬜ |  |
-| US-054 | Collecteur | En tant que collecteur, je veux gérer mon véhicule et sa capacité afin de recevoir des missions adaptées. | Should | V1 | ⬜ |  |
-| US-055 | Collecteur | En tant que collecteur, je veux enregistrer le dépôt de ma tournée au centre de tri ou chez le recycleur afin de assurer la traçabilité des lots. | Must | V1 | ⬜ |  |
+| US-042 | Collecteur | En tant que collecteur, je veux passer en ligne/hors ligne et définir ma zone de travail afin de recevoir des missions uniquement quand je suis disponible. | Must | MVP | ✅ | En ligne / hors ligne instantané ; zone de travail en rayon (3 à 40 km) respectée par la recherche ; position arrondie ~1 km, effacée hors ligne. |
+| US-043 | Collecteur | En tant que collecteur, je veux consulter les missions disponibles autour de moi (liste et carte) afin de choisir les collectes intéressantes. | Must | MVP | ✅ | Liste et carte (OpenStreetMap), tri distance / valeur, filtres matière et quantité ; temps réel. |
+| US-044 | Collecteur | En tant que collecteur, je veux accepter ou refuser une mission afin de gérer ma charge de travail. | Must | MVP | ✅ | Acceptation verrouillée (transaction + règle : premier arrivé), refus ; 60 s puis refus automatique. ⚠️ Délai appliqué par les apps (collecteur et citoyen), pas par un serveur. |
+| US-045 | Collecteur | En tant que collecteur, je veux voir le détail de la mission (localisation, type de déchets, quantité estimée, valeur estimée) afin de préparer ma collecte. | Must | MVP | ✅ | Matières, nombre, poids et valeur estimés par l'IA, fiabilité, photos du scan, instructions. |
+| US-046 | Collecteur | En tant que collecteur, je veux lancer la navigation GPS vers le point de collecte afin de arriver rapidement. | Must | MVP | ✅ | Carte intégrée + ouverture Google Maps / Waze / Plans. Ouverture des apps externes non testée sur appareil. |
+| US-047 | Collecteur | En tant que collecteur, je veux signaler mon arrivée et démarrer la collecte afin de informer le citoyen. | Must | MVP | ✅ | Accepté → en route → arrivé → en cours, horodatés (transitions imposées par les règles). |
+| US-048 | Collecteur | En tant que collecteur, je veux prendre une photo preuve de la collecte afin de limiter les litiges. | Should | MVP | ✅ | Photo preuve obligatoire (app + règle : pas de remise sans preuve), liée à la mission. |
+| US-049 | Collecteur | En tant que collecteur, je veux connecter une balance Bluetooth pour enregistrer le poids automatiquement afin de éviter les erreurs de saisie. | Could | V2 | 🟨 | Profil Bluetooth standard « Weight Scale » (0x181D/0x2A9D), décodage SI et impérial testé ; saisie manuelle en secours. ⚠️ Jamais testé avec une vraie balance. |
+| US-050 | Collecteur | En tant que collecteur, je veux clôturer la mission après validation du citoyen afin de déclencher crédit des points et revenus. | Must | MVP | ✅ | Clôture = code de remise du citoyen (sa validation) + poids réels → remise → confirmation citoyen → terminée, revenu crédité. EcoPoints : epic 8. |
+| US-051 | Collecteur | En tant que collecteur, je veux consulter l'historique de mes missions et mes revenus afin de suivre mon activité. | Must | MVP | ✅ | Jour / semaine / mois, total DT et kg, gains 7 jours, historique. |
+| US-052 | Collecteur | En tant que collecteur, je veux demander le retrait de mes revenus afin de être payé pour mon travail. | Should | V1 | ✅ | Retrait ≥ 20 DT dans la limite du solde (solde transactionnel vérifié par les règles), virement / portefeuille / espèces, suivi du statut. Paiement effectif : admin (epic 12). |
+| US-053 | Collecteur | En tant que collecteur, je veux signaler un citoyen absent ou une adresse introuvable afin de clore une mission impossible. | Should | V1 | ✅ | Après l'arrivée seulement : motif + photo, ticket admin, mission annulée sans pénalité pour le collecteur, créneau libéré. |
+| US-054 | Collecteur | En tant que collecteur, je veux gérer mon véhicule et sa capacité afin de recevoir des missions adaptées. | Should | V1 | ✅ | Type, capacité (kg), volume (m³), immatriculation ; capacité utilisée par la recherche. |
+| US-055 | Collecteur | En tant que collecteur, je veux enregistrer le dépôt de ma tournée au centre de tri ou chez le recycleur afin de assurer la traçabilité des lots. | Must | V1 | ✅ | Recycleur validé, collectes pesées, poids total par matière ; confirmation / refus par le recycleur. Contrôle qualité détaillé : US-080. |
 
 ## E06 — Optimisation IA des itinéraires
 
@@ -260,5 +260,5 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 - US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
 - US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
 - US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
-- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles) ; un bug de règle (note d'une collecte terminée) n'a été trouvé que sur l'émulateur. À traiter avec la CI (US-130) : tests de règles contre l'émulateur.
+- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 33 écritures réelles (citoyen / collecteur / recycleur) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
 - Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.

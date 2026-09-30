@@ -45,6 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>EcoFlow se connecte à ta balance Bluetooth pour enregistrer le poids réel des collectes.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>EcoFlow utilise l’appareil photo pour photographier tes déchets et tes justificatifs.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

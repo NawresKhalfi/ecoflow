@@ -24,6 +24,14 @@ class FirestoreEarningsRepository implements EarningsRepository {
   FirestoreEarningsRepository(this._db);
   final FirebaseFirestore _db;
 
+  DocumentReference<Map<String, dynamic>> _balance(String uid) =>
+      _db.collection('collectorBalances').doc(uid);
+
+  static double _num(Map<String, dynamic>? m, String k) => (m?[k] as num?)?.toDouble() ?? 0;
+
+  /// Le solde (gagné / retiré) est mis à jour dans la même transaction que
+  /// chaque revenu ou retrait : les règles en vérifient la cohérence et
+  /// interdisent de retirer plus que le total gagné.
   @override
   Future<void> ensureEarning({
     required String missionId,
@@ -33,11 +41,18 @@ class FirestoreEarningsRepository implements EarningsRepository {
   }) => _db.runTransaction((tx) async {
     final ref = _db.collection('earnings').doc(missionId);
     if ((await tx.get(ref)).exists) return;
+    final bal = (await tx.get(_balance(uid))).data();
     tx.set(ref, {
       'collectorUid': uid,
       'amountDt': amountDt,
       'kg': kg,
       'createdAt': FieldValue.serverTimestamp(),
+    });
+    tx.set(_balance(uid), {
+      'earnedDt': _num(bal, 'earnedDt') + amountDt,
+      'withdrawnDt': _num(bal, 'withdrawnDt'),
+      'lastEarningId': missionId,
+      'lastPayoutId': bal?['lastPayoutId'],
     });
   });
 
@@ -86,12 +101,24 @@ class FirestoreEarningsRepository implements EarningsRepository {
 
   @override
   Future<void> requestPayout(String uid, double amountDt, PayoutMethod method) =>
-      _db.collection('payouts').add({
-        'collectorUid': uid,
-        'amountDt': amountDt,
-        'method': method.name,
-        'status': PayoutStatus.requested.name,
-        'requestedAt': FieldValue.serverTimestamp(),
+      _db.runTransaction((tx) async {
+        final ref = _db.collection('payouts').doc();
+        final bal = (await tx.get(_balance(uid))).data();
+        final withdrawn = _num(bal, 'withdrawnDt') + amountDt;
+        if (withdrawn > _num(bal, 'earnedDt') + 1e-9) throw StateError('insufficient balance');
+        tx.set(ref, {
+          'collectorUid': uid,
+          'amountDt': amountDt,
+          'method': method.name,
+          'status': PayoutStatus.requested.name,
+          'requestedAt': FieldValue.serverTimestamp(),
+        });
+        tx.set(_balance(uid), {
+          'earnedDt': _num(bal, 'earnedDt'),
+          'withdrawnDt': withdrawn,
+          'lastEarningId': bal?['lastEarningId'],
+          'lastPayoutId': ref.id,
+        });
       });
 }
 

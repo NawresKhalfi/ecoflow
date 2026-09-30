@@ -20,7 +20,13 @@ abstract interface class CollectionRepository {
   Stream<Map<String, int>> watchSlotCounts(String zoneId);
 
   /// Résultat de la recherche de collecteur (US-034, US-036).
-  Future<void> setMatch(String id, {required String? collectorUid, required double radiusKm});
+  /// [at] : heure de la proposition (horloge de l'application).
+  Future<void> setMatch(
+    String id, {
+    required String? collectorUid,
+    required double radiusKm,
+    DateTime? at,
+  });
 
   /// Modification : lieu, créneau, instructions ; relance la recherche (US-035).
   Future<void> modify(CollectionRequest before, CollectionRequest after);
@@ -153,12 +159,19 @@ class FirestoreCollectionRepository implements CollectionRepository {
       );
 
   @override
-  Future<void> setMatch(String id, {required String? collectorUid, required double radiusKm}) {
+  Future<void> setMatch(
+    String id, {
+    required String? collectorUid,
+    required double radiusKm,
+    DateTime? at,
+  }) {
     final status = collectorUid == null ? CollectionStatus.noCollector : CollectionStatus.proposed;
     return _col.doc(id).update({
       'status': status.name,
       'proposedCollectorUid': collectorUid,
-      'proposedAt': collectorUid == null ? null : Timestamp.now(),
+      'proposedAt': collectorUid == null
+          ? null
+          : (at == null ? Timestamp.now() : Timestamp.fromDate(at)),
       'searchRadiusKm': radiusKm,
       'statusHistory': FieldValue.arrayUnion([_historyEntry(status)]),
       'updatedAt': FieldValue.serverTimestamp(),

@@ -42,7 +42,10 @@ void main() {
       NavDestination.pricing,
       NavDestination.profile,
     ]);
-    expect(destinationsFor(UserRole.collector), containsAll([NavDestination.missions, NavDestination.earnings]));
+    expect(
+      destinationsFor(UserRole.collector),
+      containsAll([NavDestination.missions, NavDestination.earnings]),
+    );
     expect(destinationsFor(UserRole.recycler), contains(NavDestination.receptions));
     expect(destinationsFor(UserRole.citizen), contains(NavDestination.estimates));
     expect(destinationsFor(UserRole.citizen), contains(NavDestination.scan));
