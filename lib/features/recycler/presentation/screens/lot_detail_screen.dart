@@ -8,6 +8,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../../profile/presentation/screens/company_screen.dart';
+import '../../../market/application/market_providers.dart';
+import '../../../market/presentation/screens/order_detail_screen.dart';
+import '../../../market/presentation/widgets/listing_form.dart';
+import '../../../profile/application/profile_providers.dart';
 import '../../application/recycler_providers.dart';
 import '../../domain/stock.dart';
 import '../widgets/recycler_labels.dart';
@@ -94,6 +98,43 @@ class LotDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+        ResponsiveGrid(
+          children: [
+            EcoButton(
+              label: l.lotSell,
+              leading: '🏷️',
+              style: EcoButtonStyle.ghost,
+              onPressed: lot.inStock
+                  ? () async {
+                      final ok = await showListingForm(context, fromLot: lot);
+                      if (ok == true && context.mounted) showEcoToast(context, l.listingPublished);
+                    }
+                  : null,
+            ),
+            EcoButton(
+              label: l.docCertificate,
+              leading: '🏅',
+              style: EcoButtonStyle.ghost,
+              loading: ref.watch(marketControllerProvider).isLoading,
+              onPressed: () => ref
+                  .read(marketControllerProvider.notifier)
+                  .exportCertificate(
+                    // Lot produit : seule sa quantité compte ; l'origine
+                    // (collectes) vient de ses lots d'entrée.
+                    [lot],
+                    certificateTexts(l),
+                    company: ref.read(companyProfileProvider).value?.legalName ?? '',
+                    number: lot.reference,
+                    date: fmtDate(context, DateTime.now()),
+                    materialOf: (x) => '${materialLabel(l, x.material)} · ${formLabel(l, x.form)}',
+                    fmt: (v) => fmtKg(context, v),
+                    pickups: lot.source == LotSource.production
+                        ? {for (final x in inputs) ...x.missions.map((m) => m.id)}.length
+                        : null,
+                  ),
+            ),
+          ],
         ),
         SectionTitle('🔎 ${l.traceTitle}'),
         EcoCard(

@@ -102,7 +102,10 @@ class _ListingFormState extends ConsumerState<_ListingForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(e == null ? l.listingNew : l.listingEdit, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          e == null ? l.listingNew : l.listingEdit,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
         if (e == null && widget.lot == null)
           SegmentedButton<ListingType>(
@@ -133,7 +136,11 @@ class _ListingFormState extends ConsumerState<_ListingForm> {
           runSpacing: 8,
           children: [
             for (final f in MaterialForm.values)
-              EcoChip(label: formLabel(l, f), selected: _form == f, onTap: () => setState(() => _form = f)),
+              EcoChip(
+                label: formLabel(l, f),
+                selected: _form == f,
+                onTap: () => setState(() => _form = f),
+              ),
             for (final g in QualityGrade.values)
               EcoChip(
                 label: gradeLabel(l, g),
@@ -167,11 +174,18 @@ class _ListingFormState extends ConsumerState<_ListingForm> {
           ],
         ),
         const SizedBox(height: 10),
-        EcoTextField(label: l.listingCity, controller: _city, emoji: '📍', onChanged: (_) => setState(() {})),
+        EcoTextField(
+          label: l.listingCity,
+          controller: _city,
+          emoji: '📍',
+          onChanged: (_) => setState(() {}),
+        ),
         const SizedBox(height: 10),
         if (e == null) ...[
           Text(
-            _type == ListingType.buy ? l.listingNeededBy(fmtDate(context, deadline)) : l.listingAvailableUntil(fmtDate(context, deadline)),
+            _type == ListingType.buy
+                ? l.listingNeededBy(fmtDate(context, deadline))
+                : l.listingAvailableUntil(fmtDate(context, deadline)),
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 6),
@@ -179,7 +193,11 @@ class _ListingFormState extends ConsumerState<_ListingForm> {
             spacing: 8,
             children: [
               for (final d in [7, 14, 30, 60])
-                EcoChip(label: l.listingInDays(d), selected: _days == d, onTap: () => setState(() => _days = d)),
+                EcoChip(
+                  label: l.listingInDays(d),
+                  selected: _days == d,
+                  onTap: () => setState(() => _days = d),
+                ),
             ],
           ),
           const SizedBox(height: 10),

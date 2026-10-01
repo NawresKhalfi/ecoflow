@@ -27,10 +27,15 @@ class ListingDetailScreen extends ConsumerWidget {
     final uid = ref.watch(currentUidProvider);
     final state = ref.watch(marketControllerProvider);
     final ctrl = ref.read(marketControllerProvider.notifier);
-    final deals = (ref.watch(myDealsProvider).value ?? const <Deal>[]).where((d) => d.listingId == id).toList();
+    final deals = (ref.watch(myDealsProvider).value ?? const <Deal>[])
+        .where((d) => d.listingId == id)
+        .toList();
     final back = IconButton.filledTonal(
       tooltip: l.commonBack,
-      style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.white.withValues(alpha: .22),
+        foregroundColor: Colors.white,
+      ),
       onPressed: () => context.go(Routes.market),
       icon: const BackButtonIcon(),
     );
@@ -41,6 +46,12 @@ class ListingDetailScreen extends ConsumerWidget {
       );
     }
     final mine = x.ownerUid == uid;
+    // Écouté (et non lu) : le profil entreprise doit être chargé pour
+    // donner son nom au fil de négociation.
+    final myName =
+        ref.watch(companyProfileProvider).value?.legalName ??
+        ref.watch(currentProfileProvider).value?.displayName ??
+        '';
     return LayeredPage(
       header: HeroHeader(
         title: x.type == ListingType.buy ? l.listingBuy : l.listingSell,
@@ -59,8 +70,7 @@ class ListingDetailScreen extends ConsumerWidget {
             style: EcoButtonStyle.green,
             loading: state.isLoading,
             onPressed: () async {
-              final me = ref.read(companyProfileProvider).value?.legalName ?? '';
-              if (await ctrl.openDeal(x, me, listingTitle(l, context, x)) && context.mounted) {
+              if (await ctrl.openDeal(x, myName, listingTitle(l, context, x)) && context.mounted) {
                 context.go(Routes.deal(ctrl.lastId!));
               }
             },
@@ -81,7 +91,9 @@ class ListingDetailScreen extends ConsumerWidget {
                     children: [
                       for (final (i, d) in deals.indexed)
                         EcoListTile(
-                          leading: EcoAvatar(text: d.counterpartName.isEmpty ? '?' : d.counterpartName[0]),
+                          leading: EcoAvatar(
+                            text: d.counterpartName.isEmpty ? '?' : d.counterpartName[0],
+                          ),
                           title: d.counterpartName,
                           subtitle: d.lastMessage,
                           onTap: () => context.go(Routes.deal(d.id)),
@@ -141,18 +153,28 @@ class ListingDetailScreen extends ConsumerWidget {
                 runSpacing: 8,
                 children: [
                   for (final r in ReportReason.values)
-                    EcoChip(label: reasonLabel(l, r), selected: reason == r, onTap: () => set(() => reason = r)),
+                    EcoChip(
+                      label: reasonLabel(l, r),
+                      selected: reason == r,
+                      onTap: () => set(() => reason = r),
+                    ),
                 ],
               ),
               const SizedBox(height: 10),
               EcoTextField(label: l.receiveNote, controller: text, maxLength: 500),
-              EcoButton(label: l.reportSend, style: EcoButtonStyle.coral, onPressed: () => Navigator.pop(c, true)),
+              EcoButton(
+                label: l.reportSend,
+                style: EcoButtonStyle.coral,
+                onPressed: () => Navigator.pop(c, true),
+              ),
             ],
           ),
         ),
       ),
     );
-    if (ok == true && await ref.read(marketControllerProvider.notifier).report(x, reason, text.text) && context.mounted) {
+    if (ok == true &&
+        await ref.read(marketControllerProvider.notifier).report(x, reason, text.text) &&
+        context.mounted) {
       showEcoToast(context, l.reportSent);
     }
     text.dispose();

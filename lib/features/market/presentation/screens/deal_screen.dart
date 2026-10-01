@@ -49,8 +49,12 @@ class _DealScreenState extends ConsumerState<DealScreen> {
         gradient: EcoGradients.violet,
         leading: IconButton.filledTonal(
           tooltip: l.commonBack,
-          style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
-          onPressed: () => context.go(deal == null ? Routes.market : Routes.listing(deal.listingId)),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.white.withValues(alpha: .22),
+            foregroundColor: Colors.white,
+          ),
+          onPressed: () =>
+              context.go(deal == null ? Routes.market : Routes.listing(deal.listingId)),
           icon: const BackButtonIcon(),
         ),
       ),
@@ -62,7 +66,8 @@ class _DealScreenState extends ConsumerState<DealScreen> {
               Text(l.dealPrivacy, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 8),
               if (messages.isEmpty) Text(l.dealEmpty),
-              for (final m in messages) _Bubble(message: m, mine: m.fromUid == uid, deal: deal, listing: listing),
+              for (final m in messages)
+                _Bubble(message: m, mine: m.fromUid == uid, deal: deal, listing: listing),
               const SizedBox(height: 8),
               EcoTextField(label: l.chatHint, controller: _text, maxLength: maxMarketMessage),
               Row(
@@ -85,7 +90,8 @@ class _DealScreenState extends ConsumerState<DealScreen> {
                       label: l.dealPropose,
                       leading: '💼',
                       style: EcoButtonStyle.green,
-                      onPressed: deal == null || listing == null || listing.status != ListingStatus.open
+                      onPressed:
+                          deal == null || listing == null || listing.status != ListingStatus.open
                           ? null
                           : () => _propose(context, deal, listing),
                     ),
@@ -118,13 +124,21 @@ class _DealScreenState extends ConsumerState<DealScreen> {
           children: [
             Text(l.dealPropose, style: Theme.of(c).textTheme.titleLarge),
             const SizedBox(height: 10),
-            EcoTextField(label: l.listingPrice, controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+            EcoTextField(
+              label: l.listingPrice,
+              controller: price,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
             const SizedBox(height: 10),
             EcoTextField(label: l.listingQty, controller: qty, keyboardType: TextInputType.number),
             const SizedBox(height: 10),
             EcoTextField(label: l.dealDays, controller: days, keyboardType: TextInputType.number),
             const SizedBox(height: 10),
-            EcoButton(label: l.dealSendProposal, style: EcoButtonStyle.green, onPressed: () => Navigator.pop(c, true)),
+            EcoButton(
+              label: l.dealSendProposal,
+              style: EcoButtonStyle.green,
+              onPressed: () => Navigator.pop(c, true),
+            ),
           ],
         ),
       ),
@@ -132,7 +146,12 @@ class _DealScreenState extends ConsumerState<DealScreen> {
     if (ok == true) {
       final sent = await ref
           .read(marketControllerProvider.notifier)
-          .propose(deal, price: n(price) ?? 0, quantity: n(qty) ?? 0, days: int.tryParse(days.text.trim()) ?? -1);
+          .propose(
+            deal,
+            price: n(price) ?? 0,
+            quantity: n(qty) ?? 0,
+            days: int.tryParse(days.text.trim()) ?? -1,
+          );
       if (!sent && context.mounted) showEcoToast(context, l.dealInvalid);
     }
     for (final c in [price, qty, days]) {
@@ -163,7 +182,9 @@ class _Bubble extends ConsumerWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: proposal ? EcoColors.sun.withValues(alpha: .18) : (mine ? EcoColors.primary : eco.card),
+          color: proposal
+              ? EcoColors.sun.withValues(alpha: .18)
+              : (mine ? EcoColors.primary : eco.card),
           border: proposal ? Border.all(color: EcoColors.sunDeep) : null,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -183,16 +204,19 @@ class _Bubble extends ConsumerWidget {
               if (m.text.isNotEmpty) Text(m.text),
               const SizedBox(height: 6),
               if (m.canAnswer(uid) && deal != null && listing != null)
-                Row(
+                // Les boutons passent à la ligne si la bulle est étroite.
+                OverflowBar(
+                  alignment: MainAxisAlignment.spaceBetween,
+                  spacing: 8,
                   children: [
                     TextButton(
                       onPressed: () => ctrl.answer(deal!, listing!, m, accept: false),
                       child: Text(l.dealDecline),
                     ),
-                    const Spacer(),
                     FilledButton(
                       onPressed: () async {
-                        if (await ctrl.answer(deal!, listing!, m, accept: true) && context.mounted) {
+                        if (await ctrl.answer(deal!, listing!, m, accept: true) &&
+                            context.mounted) {
                           context.go(Routes.order(ctrl.lastId!));
                         }
                       },
@@ -213,7 +237,10 @@ class _Bubble extends ConsumerWidget {
                   tone: m.status == ProposalStatus.accepted ? ChipTone.green : ChipTone.sun,
                 ),
               if (m.status == ProposalStatus.accepted)
-                EcoLink(label: '📦 ${l.dealSeeOrder}', onPressed: () => context.go(Routes.order(m.id))),
+                EcoLink(
+                  label: '📦 ${l.dealSeeOrder}',
+                  onPressed: () => context.go(Routes.order(m.id)),
+                ),
             ] else
               Text(m.text, style: TextStyle(color: mine ? Colors.white : null)),
           ],

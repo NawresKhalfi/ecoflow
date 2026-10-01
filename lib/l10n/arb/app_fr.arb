@@ -876,6 +876,118 @@
   "heatmapSubtitle": "Zones à fort potentiel (90 derniers jours).",
   "heatmapLegend": "Volume collecté par secteur d’environ 1 km",
   "heatmapTop": "Zones par volume prévu à 30 jours",
+  "navMarket": "Marché",
+  "ntMarketMessage": "Nouveau message marketplace 💬",
+  "ntMarketProposal": "Nouvelle proposition 💼",
+  "ntOrderUpdate": "Commande mise à jour 📦",
+  "marketTitle": "Marketplace",
+  "marketSubtitle": "Achète et vends des matières recyclées entre entreprises.",
+  "marketBrowse": "Annonces",
+  "marketForYou": "Pour moi",
+  "marketForYouHelp": "Demandes d’achat que ton stock peut servir, et offres de vente des matières que tu achètes.",
+  "marketMine": "Mes annonces",
+  "marketMineEmpty": "Tu n’as publié aucune annonce.",
+  "marketDeals": "Négociations",
+  "marketDealsEmpty": "Aucune négociation en cours.",
+  "marketEmpty": "Aucune annonce ne correspond.",
+  "marketSearch": "Mot-clé",
+  "marketAnyQty": "Toute quantité",
+  "marketAnyDate": "Toute date",
+  "suggestMatchesNeed": "Correspond à tes achats",
+  "listingBuy": "Demande d’achat",
+  "listingSell": "Offre de vente",
+  "listingNew": "Publier une annonce",
+  "listingEdit": "Modifier",
+  "listingPublish": "Publier",
+  "listingPublished": "Annonce publiée 📢",
+  "listingQty": "Quantité (kg)",
+  "listingPrice": "Prix (DT/kg)",
+  "listingMaxPrice": "Prix maximal (DT/kg)",
+  "listingOptional": "Facultatif",
+  "listingCity": "Ville",
+  "listingClose": "Clôturer",
+  "listingReopen": "Rouvrir",
+  "listingOpen": "Ouverte",
+  "listingClosed": "Clôturée",
+  "listingSuspended": "Suspendue",
+  "listingRemoved": "Retirée",
+  "listingModerated": "Annonce suspendue par la modération.",
+  "lotSell": "Vendre",
+  "reportListing": "Signaler l’annonce",
+  "reportMisleading": "Trompeuse",
+  "reportProhibited": "Matière interdite",
+  "reportDuplicate": "Doublon",
+  "reportSpam": "Spam",
+  "reportOther": "Autre",
+  "dealNegotiate": "Négocier / faire une offre",
+  "dealRespond": "Répondre avec une offre",
+  "dealPrivacy": "🔒 Échanges réservés aux deux entreprises ; numéros et e-mails masqués.",
+  "dealEmpty": "Commence la négociation par un message ou une proposition.",
+  "dealPropose": "Proposer",
+  "dealProposal": "Proposition",
+  "dealDays": "Délai de livraison (jours)",
+  "dealSendProposal": "Envoyer la proposition",
+  "dealInvalid": "Proposition incomplète",
+  "dealAccept": "Accepter",
+  "dealDecline": "Refuser",
+  "dealWithdraw": "Retirer",
+  "dealPending": "En attente",
+  "dealAccepted": "Acceptée",
+  "dealDeclined": "Refusée",
+  "dealWithdrawn": "Retirée",
+  "dealSeeOrder": "Voir la commande",
+  "dealOpen": "Ouvrir la négociation",
+  "ordersTitle": "Commandes",
+  "ordersSubtitle": "Achats et ventes, jusqu’à la livraison.",
+  "ordersEmpty": "Aucune commande. Accepte une proposition pour en créer une.",
+  "orderSale": "Vente",
+  "orderPurchase": "Achat",
+  "orderConfirmed": "Confirmée",
+  "orderPreparing": "En préparation",
+  "orderShipped": "Expédiée",
+  "orderDelivered": "Livrée",
+  "orderCompleted": "Terminée",
+  "orderCancelled": "Annulée",
+  "orderDoPrepare": "Commencer la préparation",
+  "orderDoShip": "Marquer comme expédiée",
+  "orderDoDeliver": "Marquer comme livrée",
+  "orderDoComplete": "Confirmer la réception",
+  "orderCancel": "Annuler la commande",
+  "paymentPending": "Paiement en attente",
+  "paymentDeclared": "Paiement déclaré par l’acheteur",
+  "paymentReceived": "Paiement reçu",
+  "paymentDeclare": "J’ai payé (virement)",
+  "paymentConfirm": "Confirmer le paiement reçu",
+  "paymentExplain": "Paiement par virement entre entreprises : l’acheteur le déclare, le vendeur confirme sa réception. Le paiement sécurisé par la plateforme nécessite un prestataire de paiement (non configuré).",
+  "rateThanks": "Merci pour ton évaluation ⭐",
+  "docInvoice": "Facture",
+  "docSeller": "Vendeur",
+  "docBuyer": "Acheteur",
+  "docItem": "Désignation",
+  "docQty": "Quantité",
+  "docUnitPrice": "Prix unitaire HT",
+  "docAmount": "Montant HT",
+  "docTotalHt": "Total HT",
+  "docVat": "TVA",
+  "docTotalTtc": "Total TTC",
+  "docPayment": "Paiement",
+  "docDelivery": "Livraison",
+  "docInvoiceFooter": "Facture générée par EcoFlow à partir de la commande acceptée par les deux parties. Paiement par virement hors plateforme.",
+  "docCertificate": "Certificat de recyclage",
+  "docCertificateIntro": "EcoFlow certifie que les matières ci-dessous ont été collectées, triées et recyclées par",
+  "docBeneficiary": "Bénéficiaire",
+  "docRecycled": "matière recyclée",
+  "docCo2": "émissions évitées (estimation)",
+  "docPickups": "collectes d’origine",
+  "docCertificateMethod": "Traçabilité EcoFlow : pesée à la collecte, contrôle qualité à la réception. Émissions évitées estimées avec des facteurs moyens par matière (ADEME, EPA WARM).",
+  "modTitle": "Modération",
+  "modSubtitle": "Annonces et signalements de la marketplace.",
+  "modNoReport": "Aucun signalement en attente.",
+  "modListings": "Annonces",
+  "modSuspend": "Suspendre",
+  "modRemove": "Retirer",
+  "modRestore": "Rétablir",
+  "modResolve": "Traité",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -1813,6 +1925,113 @@
     "placeholders": {
       "kg": {
         "type": "String"
+      }
+    }
+  },
+  "listingNeededBy": "Avant le {date}",
+  "@listingNeededBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "listingAvailableUntil": "Jusqu’au {date}",
+  "@listingAvailableUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "listingInDays": "{days} jours",
+  "@listingInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "marketResults": "{count, plural, =0{Aucune annonce} =1{1 annonce} other{{count} annonces}}",
+  "@marketResults": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "marketMinKg": "≥ {kg} kg",
+  "@marketMinKg": {
+    "placeholders": {
+      "kg": {
+        "type": "int"
+      }
+    }
+  },
+  "marketWithinDays": "Sous {days} j",
+  "@marketWithinDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestFromStock": "Ton stock couvre {kg}",
+  "@suggestFromStock": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      }
+    }
+  },
+  "dealTotal": "Total {amount} DT HT",
+  "@dealTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dealInDays": "livraison sous {days} j",
+  "@dealInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "orderVatDetail": "{ht} DT HT + {vat} DT de TVA",
+  "@orderVatDetail": {
+    "placeholders": {
+      "ht": {
+        "type": "String"
+      },
+      "vat": {
+        "type": "String"
+      }
+    }
+  },
+  "rateTitle": "Évalue {name}",
+  "@rateTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rateStars": "{count} étoiles",
+  "@rateStars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "modReports": "{count, plural, =0{Aucun signalement} =1{1 signalement} other{{count} signalements}}",
+  "@modReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   }

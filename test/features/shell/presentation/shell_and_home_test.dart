@@ -36,7 +36,7 @@ void main() {
     expect(destinationsFor(UserRole.collector), contains(NavDestination.documents));
     expect(
       destinationsFor(UserRole.recycler),
-      containsAll([NavDestination.dashboard, NavDestination.stock]),
+      containsAll([NavDestination.market, NavDestination.stock]),
     );
     expect(destinationsFor(UserRole.admin), [
       NavDestination.home,

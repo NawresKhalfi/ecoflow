@@ -21,7 +21,10 @@ pw.Widget _kv(String k, String v) => pw.Padding(
   padding: const pw.EdgeInsets.symmetric(vertical: 2),
   child: pw.Row(
     children: [
-      pw.SizedBox(width: 150, child: pw.Text(k, style: const pw.TextStyle(color: PdfColors.grey700))),
+      pw.SizedBox(
+        width: 150,
+        child: pw.Text(k, style: const pw.TextStyle(color: PdfColors.grey700)),
+      ),
       pw.Expanded(child: pw.Text(v)),
     ],
   ),
@@ -45,8 +48,14 @@ Future<Uint8List> buildInvoicePdf(
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Text('EcoFlow', style: pw.TextStyle(fontSize: 22, color: _green, fontWeight: pw.FontWeight.bold)),
-              pw.Text('${t['invoice']} ${o.number}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'EcoFlow',
+                style: pw.TextStyle(fontSize: 22, color: _green, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.Text(
+                '${t['invoice']} ${o.number}',
+                style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+              ),
             ],
           ),
           pw.Text(date),
@@ -54,16 +63,25 @@ Future<Uint8List> buildInvoicePdf(
           pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              for (final (label, name) in [(t['seller']!, o.sellerName), (t['buyer']!, o.buyerName)])
+              for (final (label, name) in [
+                (t['seller']!, o.sellerName),
+                (t['buyer']!, o.buyerName),
+              ])
                 pw.Expanded(
                   child: pw.Container(
                     margin: const pw.EdgeInsets.only(right: 10),
                     padding: const pw.EdgeInsets.all(10),
-                    decoration: pw.BoxDecoration(color: _paper, borderRadius: pw.BorderRadius.circular(6)),
+                    decoration: pw.BoxDecoration(
+                      color: _paper,
+                      borderRadius: pw.BorderRadius.circular(6),
+                    ),
                     child: pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
-                        pw.Text(label, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
+                        pw.Text(
+                          label,
+                          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+                        ),
                         pw.Text(name, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ],
                     ),
@@ -75,11 +93,20 @@ Future<Uint8List> buildInvoicePdf(
           pw.TableHelper.fromTextArray(
             headers: [t['item']!, t['qty']!, t['unit']!, t['amount']!],
             data: [
-              [material, '${_n(o.quantityKg, 1)} kg', '${_n(o.priceDtPerKg)} DT', '${_n(o.totalHt)} DT'],
+              [
+                material,
+                '${_n(o.quantityKg, 1)} kg',
+                '${_n(o.priceDtPerKg)} DT',
+                '${_n(o.totalHt)} DT',
+              ],
             ],
             headerStyle: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold),
             headerDecoration: const pw.BoxDecoration(color: _green),
-            cellAlignments: {1: pw.Alignment.centerRight, 2: pw.Alignment.centerRight, 3: pw.Alignment.centerRight},
+            cellAlignments: {
+              1: pw.Alignment.centerRight,
+              2: pw.Alignment.centerRight,
+              3: pw.Alignment.centerRight,
+            },
           ),
           pw.SizedBox(height: 10),
           pw.Align(
@@ -119,8 +146,12 @@ Future<Uint8List> buildCertificatePdf(
   required String Function(StockLot) materialOf,
   String? beneficiary,
   int? pickups,
+  String Function(StockLot)? referenceOf,
+  String Function(double)? fmt,
   ByteData? font,
 }) async {
+  final num = fmt ?? (double v) => _n(v, 1);
+  final refOf = referenceOf ?? (StockLot l) => l.reference;
   final kg = lots.fold(0.0, (s, l) => s + l.initialKg);
   final co2 = lots.fold(0.0, (s, l) => s + l.initialKg * co2AvoidedPerKg(l.material));
   final pickupCount = pickups ?? {for (final l in lots) ...l.missions.map((m) => m.id)}.length;
@@ -138,7 +169,10 @@ Future<Uint8List> buildCertificatePdf(
         child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
-            pw.Text(t['certificate']!.toUpperCase(), style: pw.TextStyle(fontSize: 24, color: _green, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              t['certificate']!.toUpperCase(),
+              style: pw.TextStyle(fontSize: 24, color: _green, fontWeight: pw.FontWeight.bold),
+            ),
             pw.Text('N° $number · $date'),
             pw.SizedBox(height: 18),
             pw.Text(t['intro']!, textAlign: pw.TextAlign.center),
@@ -152,18 +186,25 @@ Future<Uint8List> buildCertificatePdf(
             pw.Row(
               children: [
                 for (final (k, v) in [
-                  (t['recycled']!, '${_n(kg, 1)} kg'),
-                  (t['co2']!, '${_n(co2, 1)} kg CO₂e'),
-                  (t['pickups']!, '$pickupCount'),
+                  (t['recycled']!, '${num(kg)} kg'),
+                  (t['co2']!, '${num(co2)} kg CO₂e'),
+                  // Sans lot lié (demande d'achat), l'origine n'est pas connue.
+                  if (pickupCount > 0) (t['pickups']!, '$pickupCount'),
                 ])
                   pw.Expanded(
                     child: pw.Container(
                       margin: const pw.EdgeInsets.symmetric(horizontal: 4),
                       padding: const pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(color: _paper, borderRadius: pw.BorderRadius.circular(8)),
+                      decoration: pw.BoxDecoration(
+                        color: _paper,
+                        borderRadius: pw.BorderRadius.circular(8),
+                      ),
                       child: pw.Column(
                         children: [
-                          pw.Text(v, style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                          pw.Text(
+                            v,
+                            style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                          ),
                           pw.Text(k, style: const pw.TextStyle(fontSize: 9)),
                         ],
                       ),
@@ -175,7 +216,7 @@ Future<Uint8List> buildCertificatePdf(
             pw.TableHelper.fromTextArray(
               headers: [t['lot']!, t['material']!, 'kg'],
               data: [
-                for (final l in lots) [l.reference, materialOf(l), _n(l.initialKg, 1)],
+                for (final l in lots) [refOf(l), materialOf(l), num(l.initialKg)],
               ],
               headerStyle: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold),
               headerDecoration: const pw.BoxDecoration(color: _green),
@@ -183,7 +224,11 @@ Future<Uint8List> buildCertificatePdf(
             pw.SizedBox(height: 10),
             if (zones.isNotEmpty) _kv(t['zones']!, zones.join(', ')),
             pw.Spacer(),
-            pw.Text(t['method']!, textAlign: pw.TextAlign.center, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
+            pw.Text(
+              t['method']!,
+              textAlign: pw.TextAlign.center,
+              style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+            ),
           ],
         ),
       ),

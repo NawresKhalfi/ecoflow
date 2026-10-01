@@ -152,11 +152,11 @@ class ListingFilter {
 
 String _norm(String s) => s
     .toLowerCase()
-    .replaceAll(RegExp('[éèêë]'), 'e')
-    .replaceAll(RegExp('[àâä]'), 'a')
-    .replaceAll(RegExp('[îï]'), 'i')
-    .replaceAll(RegExp('[ôö]'), 'o')
-    .replaceAll(RegExp('[ùûü]'), 'u')
+    .replaceAll(RegExp('[éèêëẽ]'), 'e')
+    .replaceAll(RegExp('[àâäáã]'), 'a')
+    .replaceAll(RegExp('[îïíì]'), 'i')
+    .replaceAll(RegExp('[ôöóò]'), 'o')
+    .replaceAll(RegExp('[ùûüú]'), 'u')
     .replaceAll('ç', 'c')
     .trim();
 

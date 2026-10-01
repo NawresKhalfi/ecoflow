@@ -31,7 +31,10 @@ class OrdersScreen extends ConsumerWidget {
         gradient: EcoGradients.sky,
         leading: IconButton.filledTonal(
           tooltip: l.commonBack,
-          style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.white.withValues(alpha: .22),
+            foregroundColor: Colors.white,
+          ),
           onPressed: () => context.go(Routes.market),
           icon: const BackButtonIcon(),
         ),

@@ -130,7 +130,8 @@ class MarketController extends ActionController {
     lastId = await _repo.saveListing(l);
   });
 
-  Future<bool> setListingStatus(String id, ListingStatus s) => run(() => _repo.setListingStatus(id, s));
+  Future<bool> setListingStatus(String id, ListingStatus s) =>
+      run(() => _repo.setListingStatus(id, s));
 
   Future<bool> openDeal(Listing l, String myName, String title) => run(() async {
     lastId = await _repo.openDeal(l, _uid, myName, title);
@@ -143,12 +144,22 @@ class MarketController extends ActionController {
     await _notify(d.otherUid(_uid), NotificationType.marketMessage, d.id, t);
   });
 
-  Future<bool> propose(Deal d, {required double price, required double quantity, required int days, String note = ''}) =>
-      run(() async {
-        if (price <= 0 || quantity <= 0 || days < 0) throw ArgumentError('proposal');
-        await _repo.send(d.id, _uid, text: note, price: price, quantity: quantity, days: days);
-        await _notify(d.otherUid(_uid), NotificationType.marketProposal, d.id, '$price DT/kg × $quantity kg');
-      });
+  Future<bool> propose(
+    Deal d, {
+    required double price,
+    required double quantity,
+    required int days,
+    String note = '',
+  }) => run(() async {
+    if (price <= 0 || quantity <= 0 || days < 0) throw ArgumentError('proposal');
+    await _repo.send(d.id, _uid, text: note, price: price, quantity: quantity, days: days);
+    await _notify(
+      d.otherUid(_uid),
+      NotificationType.marketProposal,
+      d.id,
+      '$price DT/kg × $quantity kg',
+    );
+  });
 
   Future<bool> answer(Deal d, Listing l, MarketMessage p, {required bool accept}) => run(() async {
     lastId = await _repo.answer(d, l, p, accept: accept, now: ref.read(clockProvider)());
@@ -177,7 +188,9 @@ class MarketController extends ActionController {
       final take = o.quantityKg < avail ? o.quantityKg : avail;
       if (take > 0) {
         for (final (lot, kg) in consumeFifo(lots, o.material, take)) {
-          await ref.read(recyclerRepositoryProvider).moveOut(_uid, lot, kg, MoveReason.sale, o.number);
+          await ref
+              .read(recyclerRepositoryProvider)
+              .moveOut(_uid, lot, kg, MoveReason.sale, o.number);
         }
       }
       origin = {
@@ -186,13 +199,23 @@ class MarketController extends ActionController {
       };
     }
     await _repo.setStatus(o, next, origin: origin);
-    await _notify(o.isSeller(_uid) ? o.buyerUid : o.sellerUid, NotificationType.orderUpdate, o.id, next.name);
+    await _notify(
+      o.isSeller(_uid) ? o.buyerUid : o.sellerUid,
+      NotificationType.orderUpdate,
+      o.id,
+      next.name,
+    );
   });
 
   Future<bool> cancel(MarketOrder o) => run(() async {
     if (!canCancel(o)) throw StateError('cancel');
     await _repo.setStatus(o, OrderStatus.cancelled);
-    await _notify(o.isSeller(_uid) ? o.buyerUid : o.sellerUid, NotificationType.orderUpdate, o.id, 'cancelled');
+    await _notify(
+      o.isSeller(_uid) ? o.buyerUid : o.sellerUid,
+      NotificationType.orderUpdate,
+      o.id,
+      'cancelled',
+    );
   });
 
   /// Paiement hors plateforme (virement) : l'acheteur le déclare, le
@@ -200,7 +223,12 @@ class MarketController extends ActionController {
   Future<bool> payment(MarketOrder o) => run(() async {
     final next = o.isSeller(_uid) ? PaymentStatus.received : PaymentStatus.declared;
     await _repo.setPayment(o, next);
-    await _notify(o.isSeller(_uid) ? o.buyerUid : o.sellerUid, NotificationType.orderUpdate, o.id, next.name);
+    await _notify(
+      o.isSeller(_uid) ? o.buyerUid : o.sellerUid,
+      NotificationType.orderUpdate,
+      o.id,
+      next.name,
+    );
   });
 
   Future<bool> rate(MarketOrder o, int stars) => run(() => _repo.rate(o, _uid, stars));
@@ -219,13 +247,17 @@ class MarketController extends ActionController {
 
   Future<ByteData> _font() => rootBundle.load('assets/fonts/BricolageGrotesque.ttf');
 
-  Future<bool> exportInvoice(MarketOrder o, Map<String, String> t, {required String material, required String date}) =>
-      run(() async {
-        await _share(
-          await buildInvoicePdf(o, t, material: material, date: date, font: await _font()),
-          'facture_${o.number}.pdf',
-        );
-      });
+  Future<bool> exportInvoice(
+    MarketOrder o,
+    Map<String, String> t, {
+    required String material,
+    required String date,
+  }) => run(() async {
+    await _share(
+      await buildInvoicePdf(o, t, material: material, date: date, font: await _font()),
+      'facture_${o.number}.pdf',
+    );
+  });
 
   /// Certificat d'une commande (acheteur) ou de lots du stock (vendeur).
   Future<bool> exportCertificate(
@@ -237,6 +269,8 @@ class MarketController extends ActionController {
     required String Function(StockLot) materialOf,
     String? beneficiary,
     int? pickups,
+    String Function(StockLot)? referenceOf,
+    String Function(double)? fmt,
   }) => run(() async {
     await _share(
       await buildCertificatePdf(
@@ -248,6 +282,8 @@ class MarketController extends ActionController {
         materialOf: materialOf,
         beneficiary: beneficiary,
         pickups: pickups,
+        referenceOf: referenceOf,
+        fmt: fmt,
         font: await _font(),
       ),
       'certificat_$number.pdf',
@@ -255,8 +291,9 @@ class MarketController extends ActionController {
   });
 }
 
-final marketControllerProvider =
-    NotifierProvider.autoDispose<MarketController, AsyncValue<void>>(MarketController.new);
+final marketControllerProvider = NotifierProvider.autoDispose<MarketController, AsyncValue<void>>(
+  MarketController.new,
+);
 
 /// Lot virtuel représentant la matière d'une commande (certificat acheteur).
 StockLot orderAsLot(MarketOrder o) => StockLot(

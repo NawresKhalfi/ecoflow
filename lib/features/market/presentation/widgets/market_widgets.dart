@@ -71,10 +71,15 @@ class ListingCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // Wrap : les étiquettes passent à la ligne dans une carte étroite.
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
             children: [
-              EcoChip(label: buy ? '🔎 ${l.listingBuy}' : '🏷️ ${l.listingSell}', tone: buy ? ChipTone.sky : ChipTone.green),
-              const Spacer(),
+              EcoChip(
+                label: buy ? '🔎 ${l.listingBuy}' : '🏷️ ${l.listingSell}',
+                tone: buy ? ChipTone.sky : ChipTone.green,
+              ),
               if (x.status != ListingStatus.open)
                 EcoChip(label: listingStatusLabel(l, x.status), tone: ChipTone.sun),
             ],
@@ -108,7 +113,10 @@ class ListingCard extends ConsumerWidget {
                 ),
             ],
           ),
-          if (extra != null) ...[const SizedBox(height: 6), EcoChip(label: extra!, tone: ChipTone.violet)],
+          if (extra != null) ...[
+            const SizedBox(height: 6),
+            EcoChip(label: extra!, tone: ChipTone.violet),
+          ],
         ],
       ),
     );

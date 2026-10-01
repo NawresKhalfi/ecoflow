@@ -54,7 +54,9 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
     final mine = ref.watch(myListingsProvider).value ?? const <Listing>[];
     final deals = ref.watch(myDealsProvider).value ?? const <Deal>[];
     final orders = ref.watch(myOrdersProvider).value ?? const <MarketOrder>[];
-    final active = orders.where((o) => o.status != OrderStatus.completed && o.status != OrderStatus.cancelled).length;
+    final active = orders
+        .where((o) => o.status != OrderStatus.completed && o.status != OrderStatus.cancelled)
+        .length;
 
     Widget card(Listing x, {String? extra}) =>
         ListingCard(listing: x, extra: extra, onTap: () => context.go(Routes.listing(x.id)));
@@ -95,7 +97,12 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
               (_Tab.mine, l.marketMine),
               (_Tab.deals, '${l.marketDeals} (${deals.length})'),
             ])
-              EcoChip(label: label, tone: ChipTone.violet, selected: _tab == t, onTap: () => setState(() => _tab = t)),
+              EcoChip(
+                label: label,
+                tone: ChipTone.violet,
+                selected: _tab == t,
+                onTap: () => setState(() => _tab = t),
+              ),
           ],
         ),
         if (_tab == _Tab.browse) ...[
@@ -107,7 +114,11 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    EcoChip(label: l.rewardsAll, selected: f.type == null, onTap: () => setF(f.copyWith(type: () => null))),
+                    EcoChip(
+                      label: l.rewardsAll,
+                      selected: f.type == null,
+                      onTap: () => setF(f.copyWith(type: () => null)),
+                    ),
                     EcoChip(
                       label: '🔎 ${l.listingBuy}',
                       selected: f.type == ListingType.buy,
@@ -128,7 +139,10 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                   items: [
                     DropdownMenuItem(value: null, child: Text(l.dashAllMaterials)),
                     for (final m in RecyclableMaterial.values)
-                      DropdownMenuItem(value: m, child: Text('${materialEmoji(m)} ${materialLabel(l, m)}')),
+                      DropdownMenuItem(
+                        value: m,
+                        child: Text('${materialEmoji(m)} ${materialLabel(l, m)}'),
+                      ),
                   ],
                   onChanged: (v) => setF(f.copyWith(material: () => v)),
                 ),
@@ -162,8 +176,12 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                       EcoChip(
                         tone: ChipTone.sun,
                         label: d == null ? l.marketAnyDate : l.marketWithinDays(d),
-                        selected: d == null ? f.before == null : f.before?.difference(now).inDays == d,
-                        onTap: () => setF(f.copyWith(before: () => d == null ? null : now.add(Duration(days: d)))),
+                        selected: d == null
+                            ? f.before == null
+                            : f.before?.difference(now).inDays == d,
+                        onTap: () => setF(
+                          f.copyWith(before: () => d == null ? null : now.add(Duration(days: d))),
+                        ),
                       ),
                   ],
                 ),
@@ -202,7 +220,9 @@ class _MarketScreenState extends ConsumerState<MarketScreen> {
                     children: [
                       for (final (i, d) in deals.indexed)
                         EcoListTile(
-                          leading: EcoAvatar(text: d.otherName(uid ?? '').isEmpty ? '?' : d.otherName(uid ?? '')[0]),
+                          leading: EcoAvatar(
+                            text: d.otherName(uid ?? '').isEmpty ? '?' : d.otherName(uid ?? '')[0],
+                          ),
                           title: '${d.otherName(uid ?? '')} · ${d.listingTitle}',
                           subtitle: d.lastMessage.isEmpty ? l.chatEmpty : d.lastMessage,
                           onTap: () => context.go(Routes.deal(d.id)),

@@ -22,6 +22,7 @@ import '../../../wallet/domain/wallet.dart';
 import '../../../wallet/presentation/widgets/wallet_labels.dart';
 import '../../../missions/application/missions_providers.dart';
 import '../../../forecast/application/forecast_providers.dart';
+import '../../../market/application/market_providers.dart';
 import '../../../missions/domain/deposit.dart';
 
 /// Accueil de l'espace du rôle. Écran de transition minimal en attendant
@@ -304,6 +305,12 @@ class _AdminWalletCard extends ConsumerWidget {
               ref.watch(forecastRunsProvider).value?.firstOrNull?.alerts.length ?? 0,
             ),
             onTap: () => context.go(Routes.forecastAdmin),
+          ),
+          EcoListTile(
+            leading: const EcoAvatar(text: '🧹', gradient: EcoGradients.coral),
+            title: l.modTitle,
+            subtitle: l.modReports(ref.watch(reportsProvider).value?.length ?? 0),
+            onTap: () => context.go(Routes.moderation),
           ),
           EcoListTile(
             leading: const EcoAvatar(text: '🛡️', gradient: EcoGradients.coral),

@@ -92,6 +92,7 @@ String navLabel(AppLocalizations l, NavDestination d) => switch (d) {
   NavDestination.receptions => l.navReceptions,
   NavDestination.dashboard => l.navDashboard,
   NavDestination.stock => l.navStock,
+  NavDestination.market => l.navMarket,
   NavDestination.pricing => l.navPricing,
   NavDestination.catalog => l.navCatalog,
   NavDestination.model => l.navModel,

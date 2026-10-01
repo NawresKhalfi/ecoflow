@@ -21,6 +21,9 @@ typedef ListingReport = ({
   DateTime? at,
 });
 
+/// Nombre sans décimales inutiles (« 500 », « 1.15 »), pour l'aperçu du fil.
+String _num(double v) => v == v.roundToDouble() ? v.round().toString() : v.toString();
+
 /// Marketplace B2B : annonces, négociations, commandes, notes, signalements.
 class MarketRepository {
   MarketRepository(this._db);
@@ -44,10 +47,10 @@ class MarketRepository {
       .where('ownerUid', isEqualTo: uid)
       .snapshots()
       .map(
-        (s) =>
-            s.docs.map(_listing).toList()..sort(
-              (a, b) => (b.createdAt ?? DateTime(3000)).compareTo(a.createdAt ?? DateTime(3000)),
-            ),
+        (s) => s.docs.map(_listing).toList()
+          ..sort(
+            (a, b) => (b.createdAt ?? DateTime(3000)).compareTo(a.createdAt ?? DateTime(3000)),
+          ),
       );
 
   Stream<Listing?> watchListing(String id) =>
@@ -103,10 +106,10 @@ class MarketRepository {
       .where('members', arrayContains: uid)
       .snapshots()
       .map(
-        (s) =>
-            s.docs.map(_deal).toList()..sort(
-              (a, b) => (b.updatedAt ?? DateTime(3000)).compareTo(a.updatedAt ?? DateTime(3000)),
-            ),
+        (s) => s.docs.map(_deal).toList()
+          ..sort(
+            (a, b) => (b.updatedAt ?? DateTime(3000)).compareTo(a.updatedAt ?? DateTime(3000)),
+          ),
       );
 
   Stream<Deal?> watchDeal(String id) =>
@@ -165,7 +168,7 @@ class MarketRepository {
         'at': FieldValue.serverTimestamp(),
       })
       ..update(_deals.doc(dealId), {
-        'lastMessage': proposal ? '💼 $price DT/kg × $quantity kg' : clean,
+        'lastMessage': proposal ? '💼 ${_num(price)} DT/kg × ${_num(quantity!)} kg' : clean,
         'updatedAt': FieldValue.serverTimestamp(),
       });
     await batch.commit();
@@ -174,7 +177,13 @@ class MarketRepository {
 
   /// Réponse à une proposition. Acceptée : la commande est créée dans le
   /// même batch (identifiant = celui de la proposition, US-099).
-  Future<String?> answer(Deal deal, Listing l, MarketMessage p, {required bool accept, required DateTime now}) async {
+  Future<String?> answer(
+    Deal deal,
+    Listing l,
+    MarketMessage p, {
+    required bool accept,
+    required DateTime now,
+  }) async {
     final msg = _deals.doc(deal.id).collection('messages').doc(p.id);
     if (!accept) {
       await msg.update({'status': ProposalStatus.declined.name});
@@ -262,10 +271,10 @@ class MarketRepository {
       .where('parties', arrayContains: uid)
       .snapshots()
       .map(
-        (s) =>
-            s.docs.map(_order).toList()..sort(
-              (a, b) => (b.createdAt ?? DateTime(3000)).compareTo(a.createdAt ?? DateTime(3000)),
-            ),
+        (s) => s.docs.map(_order).toList()
+          ..sort(
+            (a, b) => (b.createdAt ?? DateTime(3000)).compareTo(a.createdAt ?? DateTime(3000)),
+          ),
       );
 
   Stream<MarketOrder?> watchOrder(String id) =>
@@ -341,7 +350,8 @@ class MarketRepository {
         ],
       );
 
-  Stream<List<Listing>> watchAll() => _listings.snapshots().map((s) => s.docs.map(_listing).toList());
+  Stream<List<Listing>> watchAll() =>
+      _listings.snapshots().map((s) => s.docs.map(_listing).toList());
 
   Future<void> resolveReport(String id) =>
       _db.collection('listingReports').doc(id).update({'resolved': true});
