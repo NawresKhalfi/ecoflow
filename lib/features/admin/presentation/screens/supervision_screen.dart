@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/firebase/crash_reporting.dart';
 import '../../../../core/localization/l10n.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -248,6 +249,27 @@ class SupervisionScreen extends ConsumerWidget {
             ],
           ),
         ),
+        // Outil de développement (non traduit) : absent des builds de production.
+        if (ref.watch(crashlyticsProvider) case final c? when crashlyticsTestTools)
+          EcoCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('🧪 Test Crashlytics', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 10),
+                EcoButton(
+                  label: 'Envoyer une erreur non fatale',
+                  style: EcoButtonStyle.ghost,
+                  onPressed: () async {
+                    await sendTestReport(c);
+                    if (context.mounted) showEcoToast(context, 'Rapport envoyé');
+                  },
+                ),
+                const SizedBox(height: 8),
+                EcoButton(label: 'Provoquer un plantage', onPressed: c.crash),
+              ],
+            ),
+          ),
       ],
     );
   }

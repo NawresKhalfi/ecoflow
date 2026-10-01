@@ -40,3 +40,18 @@ final crashContextProvider = Provider<void>((ref) {
 final crashlyticsProvider = Provider<FirebaseCrashlytics?>(
   (_) => Firebase.apps.isEmpty ? null : FirebaseCrashlytics.instance,
 );
+
+/// Outil de vérification de la chaîne de rapports, visible seulement si
+/// l'app est lancée avec `CRASHLYTICS_IN_DEBUG` (jamais en production).
+const crashlyticsTestTools = _inDebug;
+
+/// Erreur non fatale de test, envoyée immédiatement.
+Future<void> sendTestReport(FirebaseCrashlytics crashlytics) async {
+  await crashlytics.log('EcoFlow : rapport de test déclenché depuis la supervision');
+  await crashlytics.recordError(
+    StateError('Test Crashlytics EcoFlow (non fatal)'),
+    StackTrace.current,
+    reason: 'vérification de la chaîne de rapports',
+  );
+  await crashlytics.sendUnsentReports();
+}
