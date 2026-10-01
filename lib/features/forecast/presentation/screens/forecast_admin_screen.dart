@@ -44,7 +44,7 @@ class ForecastAdminScreen extends ConsumerWidget {
               ),
               if (last != null)
                 Text(
-                  '${l.forecastRunRecords(last.records)} · ${last.trigger == 'auto' ? l.forecastAuto : l.forecastManual}',
+                  '${l.forecastRunRecords(last.records)} · ${triggerLabel(l, last.trigger)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               const SizedBox(height: 6),
@@ -136,7 +136,13 @@ class ForecastAdminScreen extends ConsumerWidget {
               children: [
                 for (final (i, r) in runs.take(10).indexed)
                   EcoListTile(
-                    leading: EcoAvatar(text: r.trigger == 'auto' ? '⏱️' : '🔁'),
+                    leading: EcoAvatar(
+                      text: switch (r.trigger) {
+                        'auto' => '⏱️',
+                        'scheduled' => '🌙',
+                        _ => '🔁',
+                      },
+                    ),
                     title: r.at == null ? '—' : fmtDate(context, r.at!),
                     subtitle:
                         '${l.forecastRunRecords(r.records)} · MAPE ${r.mape == null ? '—' : pct(r.mape!)}',
@@ -151,3 +157,9 @@ class ForecastAdminScreen extends ConsumerWidget {
     );
   }
 }
+
+String triggerLabel(AppLocalizations l, String trigger) => switch (trigger) {
+  'auto' => l.forecastAuto,
+  'scheduled' => l.forecastScheduled,
+  _ => l.forecastManual,
+};

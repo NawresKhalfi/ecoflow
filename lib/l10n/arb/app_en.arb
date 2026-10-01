@@ -1208,6 +1208,7 @@
   "challengeDuration": "Duration",
   "challengePublish": "Launch the challenge",
   "challengeInvalid": "Check the name, the goal (kg) and the points (0 to 1,000).",
+  "forecastScheduled": "scheduled (overnight)",
   "syncOffline": "Offline: your actions are saved on the phone and will be sent when the network is back.",
   "syncConflict": "An action made offline was refused: the mission changed in the meantime. The screen shows its real state.",
   "dataExportMenu": "Download my data",

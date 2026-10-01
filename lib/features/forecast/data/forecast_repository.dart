@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide GeoPoint;
 
-import '../../collection/domain/geo.dart';
 import '../../collection/domain/service_zone.dart';
-import '../../recycler/domain/reception.dart';
 import '../../scan/domain/waste_category.dart';
+import '../domain/training_data.dart';
 import '../domain/zone_forecast.dart';
 
 DateTime? _date(Object? v) => v is Timestamp ? v.toDate() : (v is DateTime ? v : null);
@@ -61,33 +60,8 @@ class ForecastRepository {
         estimates[d.id] = d.data();
       }
     }
-    final out = <VolumeRecord>[];
-    for (final d in done.docs) {
-      final m = d.data();
-      final est = estimates[m['estimateCode']];
-      final place = m['place'] as Map?;
-      final point = GeoPoint.fromMap(place?['point']);
-      final day = _date(m['completedAt']) ?? _date(est?['weighedAt']) ?? _slotDay(m['slotId']);
-      if (est == null || point == null || day == null) continue;
-      final byGroup = <MaterialGroup, double>{};
-      for (final e in (est['actualKg'] as Map? ?? const {}).entries) {
-        final g = groupFor(materialForCategory('${e.key}', catalog));
-        byGroup[g] = (byGroup[g] ?? 0) + (e.value as num).toDouble();
-      }
-      out.add(
-        VolumeRecord(
-          zoneId: place?['zoneId'] as String? ?? '',
-          day: day,
-          point: point,
-          kgByGroup: byGroup,
-        ),
-      );
-    }
-    return out;
+    return volumeRecordsFrom([for (final d in done.docs) d.data()], estimates, catalog, _date);
   }
-
-  static DateTime? _slotDay(Object? slotId) =>
-      slotId is String && slotId.length >= 10 ? DateTime.tryParse(slotId.substring(0, 10)) : null;
 
   /// Offre de collecte par zone (US-091) : capacité hebdomadaire des
   /// collecteurs actifs dans la zone sur 30 jours (capacité du véhicule ×
@@ -98,33 +72,13 @@ class ForecastRepository {
         .collection('collections')
         .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(since))
         .get();
-    final collectors = <String, Set<String>>{};
-    final requests = <String, int>{};
-    final unmatched = <String, int>{};
-    final two = now.subtract(const Duration(days: 14));
-    for (final d in recent.docs) {
-      final m = d.data();
-      final zone = (m['place'] as Map?)?['zoneId'] as String? ?? '';
-      if (m['collectorUid'] case final String c) collectors.putIfAbsent(zone, () => {}).add(c);
-      if ((_date(m['createdAt']) ?? now).isBefore(two)) continue;
-      requests[zone] = (requests[zone] ?? 0) + 1;
-      if (m['status'] == 'noCollector' || m['cancelReason'] == 'noCollector') {
-        unmatched[zone] = (unmatched[zone] ?? 0) + 1;
-      }
-    }
+    final rows = [for (final d in recent.docs) d.data()];
     final capacity = <String, double>{};
-    for (final uid in {for (final s in collectors.values) ...s}) {
+    for (final uid in {for (final c in activeCollectors(rows).values) ...c}) {
       final p = (await _db.collection('collectorPresence').doc(uid).get()).data();
       capacity[uid] = (p?['capacityKg'] as num?)?.toDouble() ?? 200;
     }
-    return {
-      for (final z in zones)
-        z.id: (
-          capacity7Kg: (collectors[z.id] ?? const {}).fold(0.0, (s, c) => s + capacity[c]! * 5),
-          requests: requests[z.id] ?? 0,
-          unmatched: unmatched[z.id] ?? 0,
-        ),
-    };
+    return supplyFrom(rows, capacity, zones, now, _date);
   }
 
   /// Publie les prévisions et l'entraînement en un seul batch.
@@ -144,24 +98,13 @@ class ForecastRepository {
     }
     batch.set(_db.collection('forecastRuns').doc(), {
       'at': FieldValue.serverTimestamp(),
-      'by': adminUid,
-      'trigger': trigger,
-      'records': records,
-      'zones': {
-        for (final f in forecasts.values)
-          f.zoneId: {'mape': f.mape, 'wape': f.wape, 'samples': f.samples},
-      },
-      'alerts': [
-        for (final a in alerts)
-          {
-            'zoneId': a.zoneId,
-            'zoneName': a.zoneName,
-            'kind': a.kind.name,
-            'forecastKg': a.forecastKg,
-            'capacityKg': a.capacityKg,
-            'unmatchedRatio': a.unmatchedRatio,
-          },
-      ],
+      ...runDocument(
+        forecasts: forecasts,
+        alerts: alerts,
+        records: records,
+        adminUid: adminUid,
+        trigger: trigger,
+      ),
     });
     await batch.commit();
   }

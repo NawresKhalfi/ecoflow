@@ -1208,6 +1208,7 @@
   "challengeDuration": "Durée",
   "challengePublish": "Lancer le défi",
   "challengeInvalid": "Vérifie le nom, l’objectif (kg) et les points (0 à 1 000).",
+  "forecastScheduled": "planifié (nuit)",
   "syncOffline": "Hors ligne : tes actions sont enregistrées sur le téléphone et seront envoyées au retour du réseau.",
   "syncConflict": "Une action faite hors ligne a été refusée : la mission a changé entre-temps. L’écran affiche son état réel.",
   "dataExportMenu": "Télécharger mes données",

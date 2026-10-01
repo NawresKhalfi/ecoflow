@@ -94,6 +94,8 @@ Après la sauvegarde, la même tâche planifiée lance `tool/maintenance.py` :
 - **purge des photos de scan expirées** (90 jours, US-021) ;
 - **expiration des EcoPoints** en FIFO pour tous les wallets (US-078), avec
   un mouvement « Expiration automatique » dans l'historique du citoyen.
+- **réentraînement des prévisions** (US-093) : `dart run tool/retrain.dart`
+  (`--dry-run` pour simuler), mêmes fonctions de calcul que l'app.
 
 Simulation sans écriture : `python3 tool/maintenance.py --dry-run`. Le script
 est testé à chaque commit contre l'émulateur (`tool/maintenance_test.py`).
