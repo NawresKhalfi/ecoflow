@@ -305,6 +305,62 @@ check('admin broadcasts to collectors', sup, [create(f'announcements/n{code}', {
 check('admin notifies a reviewed applicant', sup, [create(f'notifications/rv{code}', {'toUid':kuid,'fromUid':suid,'type':'accountReview','collectionId':kuid,'address':'','preview':'approved','read':False,'createdAt':now})], True)
 check('delegated admin resolves a dispute', dlg, [upd(f'tickets/t{code2}', {'status':'resolved','resolution':'OK','resolvedBy':duid})], True)
 
+# --- Epic 13 : défis communautaires (US-121) ---------------------------------
+cha, chuid = login('probe-challenger@ecoflow.test')
+owner_set(f'users/{chuid}', {'displayName':'Challenger','role':'citizen','status':'active','verificationStatus':'notRequired'})
+owner_set(f'users/{c2uid}', {'displayName':'Citizen Two','role':'citizen','status':'active','verificationStatus':'notRequired'})
+def wallet(kg, earned=0):
+    owner_set(f'wallets/{chuid}', {'earned':earned,'spent':0,'expired':0,'held':0,'collections':2,'kg':kg,'dayCount':0,
+                                   'lastEntryId':None,'lastRedemptionId':None,'referredBy':None,'referralCode':None,
+                                   'frozen':False,'frozenReason':None})
+wallet(12.5)
+day=datetime.timedelta(days=1)
+def challenge(cid, start, end, total=0.0, members=0, goal=10.0):
+    owner_set(f'challenges/{cid}', {'title':'Probe','description':'','zoneId':None,'goalKg':goal,'rewardPoints':30,
+                                    'startAt':start,'endAt':end,'totalKg':total,'participants':members,'lastParticipant':None})
+ch=f'chp{code}'; chd=f'chd{code}'; chu=f'chu{code}'
+challenge(ch, now-day, now+5*day)
+part=f'challenges/{ch}/participants/{chuid}'
+def joining(base):
+    return [stamp(create(part, {'uid':chuid,'name':'Challenger','zoneId':None,'baseKg':base,'kg':0.0}),'joinedAt'),
+            upd(f'challenges/{ch}', {'participants':1,'lastParticipant':chuid})]
+check('join with a forged base', cha, joining(5.0), False)
+check('join without counting the participant', cha, joining(12.5)[:1], False)
+check('admin cannot join as a citizen', sup, [stamp(create(f'challenges/{ch}/participants/{suid}', {'uid':suid,'name':'S','zoneId':None,'baseKg':0,'kg':0.0}),'joinedAt'), upd(f'challenges/{ch}', {'participants':1,'lastParticipant':suid})], False)
+check('citizen joins with the wallet base', cha, joining(12.5), True)
+wallet(20.5)  # une pesée validée : +8 kg
+def syncing(kg, total):
+    return [upd(part, {'kg':kg}), upd(f'challenges/{ch}', {'totalKg':total,'lastParticipant':chuid})]
+check('inflated progress', cha, syncing(9.0, 9.0), False)
+check('challenge total out of step', cha, syncing(8.0, 50.0), False)
+check('progress without the challenge total', cha, syncing(8.0, 8.0)[:1], False)
+check('honest progress from the wallet', cha, syncing(8.0, 8.0), True)
+check('outsider bumps the total', cit2, [upd(f'challenges/{ch}', {'totalKg':100.0,'lastParticipant':c2uid})], False)
+def claim(cid, pts=30, earned=30):
+    eid=f'ch_{cid}_{chuid}'
+    return [create(f'pointEntries/{eid}', {'uid':chuid,'type':'challenge','points':pts,'status':'credited','collectionId':None,
+                                           'redemptionId':None,'challengeId':cid,'kg':0.0,'byCategory':{},'flags':[],'label':'Probe','createdAt':now}),
+            upd(f'wallets/{chuid}', {'earned':earned,'lastEntryId':eid})]
+check('reward claimed before the end', cha, claim(ch), False)
+challenge(chd, now-10*day, now-day, total=15.0, members=1)
+owner_set(f'challenges/{chd}/participants/{chuid}', {'uid':chuid,'name':'Challenger','zoneId':None,'baseKg':0.0,'kg':6.0})
+check('join after the end', cit2, [stamp(create(f'challenges/{chd}/participants/{c2uid}', {'uid':c2uid,'name':'C','zoneId':None,'baseKg':0,'kg':0.0}),'joinedAt'), upd(f'challenges/{chd}', {'participants':2,'lastParticipant':c2uid})], False)
+check('progress after the end', cha, [upd(f'challenges/{chd}/participants/{chuid}', {'kg':20.5}), upd(f'challenges/{chd}', {'totalKg':29.5,'lastParticipant':chuid})], False)
+check('inflated reward', cha, claim(chd, pts=300, earned=300), False)
+check('reward of a successful challenge', cha, claim(chd), True)
+check('reward claimed twice', cha, claim(chd, earned=60), False)
+challenge(chu, now-10*day, now-day, total=5.0, members=1)
+owner_set(f'challenges/{chu}/participants/{chuid}', {'uid':chuid,'name':'Challenger','zoneId':None,'baseKg':0.0,'kg':5.0})
+check('reward of a missed challenge', cha, claim(chu, earned=60), False)
+def launch(token, uid, cid, reward=50):
+    return [stamp(create(f'challenges/{cid}', {'title':'Octobre propre','description':'','zoneId':None,'goalKg':500.0,'rewardPoints':reward,
+                                           'startAt':now,'endAt':now+30*day,'totalKg':0.0,'participants':0,'lastParticipant':None,
+                                           'createdBy':uid}),'createdAt')]
+check('citizen cannot launch a challenge', cha, launch(cha, chuid, f'chx{code}'), False)
+check('admin reward above the cap', sup, launch(sup, suid, f'chy{code}', reward=5000), False)
+check('admin launches a challenge', sup, launch(sup, suid, f'chz{code}'), True)
+check('delegated admin without broadcast cannot delete it', dlg, [{'delete':f'{ROOT}/challenges/chz{code}'}], False)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
@@ -322,7 +378,10 @@ for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'
              f'deals/li{code}_{r2uid}/messages/pr{code}', f'orders/pr{code}', f'companyStats/{ruid}',
              f'listingReports/rp{code}', f'notifications/o{code}', f'companies/{r2uid}',
              f'auditLog/ablock{code}', f'auditLog/apromote{code}', f'announcements/n{code}',
-             f'notifications/rv{code}', f'users/{vuid}']:
+             f'notifications/rv{code}', f'users/{vuid}', f'challenges/{ch}/participants/{chuid}',
+             f'challenges/{ch}', f'challenges/{chd}/participants/{chuid}', f'challenges/{chd}',
+             f'challenges/{chu}/participants/{chuid}', f'challenges/{chu}', f'challenges/chz{code}',
+             f'pointEntries/ch_{chd}_{chuid}', f'wallets/{chuid}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

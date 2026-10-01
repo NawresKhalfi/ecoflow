@@ -111,12 +111,13 @@ class Wallet {
   );
 }
 
-enum EntryType { earn, redeem, referral, expire, adjust }
+enum EntryType { earn, redeem, referral, expire, adjust, challenge }
 
 enum EntryStatus { credited, held, rejected }
 
 /// Mouvement de points : `pointEntries/{id}`.
-/// Identifiants : `c_{collecte}`, `r_{échange}`, `ref_{filleul}`, `x_…`.
+/// Identifiants : `c_{collecte}`, `r_{échange}`, `ref_{filleul}`,
+/// `ch_{défi}_{uid}`, `x_…`.
 class LedgerEntry {
   const LedgerEntry({
     required this.id,
@@ -126,6 +127,7 @@ class LedgerEntry {
     this.status = EntryStatus.credited,
     this.collectionId,
     this.redemptionId,
+    this.challengeId,
     this.kg = 0,
     this.byCategory = const {},
     this.flags = const [],
@@ -142,6 +144,9 @@ class LedgerEntry {
   final EntryStatus status;
   final String? collectionId;
   final String? redemptionId;
+
+  /// Défi communautaire récompensé (US-121).
+  final String? challengeId;
   final double kg;
   final Map<String, double> byCategory;
   final List<FraudFlag> flags;
@@ -161,6 +166,7 @@ class LedgerEntry {
     'status': status.name,
     'collectionId': collectionId,
     'redemptionId': redemptionId,
+    if (challengeId != null) 'challengeId': challengeId,
     'kg': kg,
     'byCategory': byCategory,
     'flags': [for (final f in flags) f.name],
@@ -176,6 +182,7 @@ class LedgerEntry {
         EntryStatus.values.where((s) => s.name == m['status']).firstOrNull ?? EntryStatus.credited,
     collectionId: m['collectionId'] as String?,
     redemptionId: m['redemptionId'] as String?,
+    challengeId: m['challengeId'] as String?,
     kg: (m['kg'] as num?)?.toDouble() ?? 0,
     byCategory: {
       for (final e in (m['byCategory'] as Map? ?? const {}).entries)

@@ -22,6 +22,8 @@ String auditLabel(AppLocalizations l, String action) => switch (action) {
   AuditAction.dispute => l.auditDispute,
   AuditAction.broadcast => l.auditBroadcast,
   AuditAction.zones => l.auditZones,
+  AuditAction.challengeCreate => l.auditChallengeCreate,
+  AuditAction.challengeDelete => l.auditChallengeDelete,
   _ => action,
 };
 

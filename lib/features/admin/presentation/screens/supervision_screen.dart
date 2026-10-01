@@ -200,6 +200,13 @@ class SupervisionScreen extends ConsumerWidget {
                 show: can(AdminPermission.broadcast),
               ),
               tool(
+                '🏆',
+                l.challengesTitle,
+                l.challengesAdminSubtitle,
+                Routes.challenges,
+                show: can(AdminPermission.broadcast),
+              ),
+              tool(
                 '📍',
                 l.zonesTitle,
                 l.zonesSubtitle,

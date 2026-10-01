@@ -546,12 +546,23 @@ service cloud.firestore {
           && e().points == pointsRules().referralBonus
           && walletAfter(e().uid).lastEntryId == eid;
       }
+      // Récompense d'un défi réussi (US-121) : une seule fois par défi.
+      function challengeEntry() {
+        let ch = get(doc('challenges/' + e().challengeId)).data;
+        let me = get(doc('challenges/' + e().challengeId + '/participants/' + request.auth.uid)).data;
+        return eid == 'ch_' + e().challengeId + '_' + request.auth.uid
+          && e().status == 'credited' && e().kg == 0
+          && request.time > ch.endAt && ch.totalKg >= ch.goalKg
+          && me.kg > 0 && ch.rewardPoints > 0 && e().points == ch.rewardPoints
+          && walletAfter(request.auth.uid).lastEntryId == eid;
+      }
       function ownEntry() {
         return e().type == 'referral' ? referralEntry()
           : e().uid == request.auth.uid && (
               e().type == 'earn' ? earnEntry()
               : e().type == 'redeem' ? redeemEntry()
               : e().type == 'expire' ? expireEntry()
+              : e().type == 'challenge' ? challengeEntry()
               : false);
       }
       allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isAdmin());
@@ -614,6 +625,12 @@ service cloud.firestore {
           && same('spent', 0) && same('expired', 0) && same('lastRedemptionId', null)
           && earnSide() && fixed();
       }
+      function challengeCredit() {
+        return isSelf(uid) && en().uid == uid
+          && a().earned == b('earned', 0) + en().points
+          && same('spent', 0) && same('expired', 0) && same('lastRedemptionId', null)
+          && earnSide() && fixed();
+      }
       function counters() {
         return same('earned', 0) && same('spent', 0) && same('expired', 0)
           && same('lastRedemptionId', null) && earnSide();
@@ -638,6 +655,7 @@ service cloud.firestore {
                 : en().type == 'redeem' ? redeemUpdate()
                 : en().type == 'expire' ? expireUpdate()
                 : en().type == 'referral' ? referralCredit()
+                : en().type == 'challenge' ? challengeCredit()
                 : false));
       }
       allow read: if isSelf(uid) || isAdmin();
@@ -905,6 +923,68 @@ service cloud.firestore {
         && request.resource.data.at == request.time
         && request.resource.data.action is string;
       allow update, delete: if false;
+    }
+    // --- Epic 13 : défis communautaires (US-121) -------------------------
+    // La progression d'un participant est la variation de son compteur
+    // wallets/{uid}.kg (vérifié par les règles du wallet) depuis son
+    // inscription ; le total du défi suit dans la même écriture.
+    match /challenges/{cid} {
+      function c() { return request.resource.data; }
+      function o() { return resource.data; }
+      function mine() {
+        return /databases/$(database)/documents/challenges/$(cid)/participants/$(request.auth.uid);
+      }
+      function joined() {
+        return changed().hasOnly(['participants', 'lastParticipant'])
+          && c().participants == o().participants + 1
+          && !exists(mine()) && existsAfter(mine());
+      }
+      function progressed() {
+        return changed().hasOnly(['totalKg', 'lastParticipant'])
+          && exists(mine())
+          && math.abs(c().totalKg - (o().totalKg + getAfter(mine()).data.kg - get(mine()).data.kg)) < 0.000001;
+      }
+      allow read: if signedIn();
+      allow create: if can('broadcast')
+        && c().keys().hasOnly(['title', 'description', 'zoneId', 'goalKg', 'rewardPoints', 'startAt',
+                               'endAt', 'totalKg', 'participants', 'lastParticipant', 'createdBy', 'createdAt'])
+        && c().totalKg == 0 && c().participants == 0 && c().lastParticipant == null
+        && c().createdBy == request.auth.uid && c().createdAt == request.time
+        && c().title is string && c().title.size() > 0 && c().title.size() <= 80
+        && c().description is string && c().description.size() <= 300
+        && (c().zoneId == null || c().zoneId is string)
+        && c().goalKg is number && c().goalKg > 0
+        && c().rewardPoints is int && c().rewardPoints >= 0 && c().rewardPoints <= 1000
+        && c().startAt is timestamp && c().endAt is timestamp && c().endAt > c().startAt
+        && c().endAt < c().startAt + duration.value(93, 'd');
+      allow update: if signedIn() && notBlocked()
+        && request.time >= o().startAt && request.time <= o().endAt
+        && c().lastParticipant == request.auth.uid
+        && (joined() || progressed());
+      allow delete: if can('broadcast');
+
+      match /participants/{uid} {
+        function p() { return request.resource.data; }
+        function ch() { return get(/databases/$(database)/documents/challenges/$(cid)).data; }
+        function chAfter() { return getAfter(/databases/$(database)/documents/challenges/$(cid)).data; }
+        function walletKg() {
+          let w = /databases/$(database)/documents/wallets/$(uid);
+          return exists(w) ? get(w).data.get('kg', 0) : 0;
+        }
+        allow read: if signedIn();
+        allow create: if isSelf(uid) && notBlocked() && userDoc().role == 'citizen'
+          && request.time >= ch().startAt && request.time <= ch().endAt
+          && p().keys().hasOnly(['uid', 'name', 'zoneId', 'baseKg', 'kg', 'joinedAt'])
+          && p().uid == uid && p().kg == 0 && p().baseKg == walletKg() && p().joinedAt == request.time
+          && p().name is string && p().name.size() <= 60
+          && (p().zoneId == null || p().zoneId is string)
+          && chAfter().participants == ch().participants + 1;
+        allow update: if isSelf(uid) && changed().hasOnly(['kg'])
+          && request.time <= ch().endAt
+          && p().kg == walletKg() - resource.data.baseKg && p().kg > resource.data.kg
+          && math.abs(chAfter().totalKg - (ch().totalKg + p().kg - resource.data.kg)) < 0.000001;
+        allow delete: if isAdmin();
+      }
     }
     // Annonces à un segment d'utilisateurs (US-116).
     match /announcements/{id} {

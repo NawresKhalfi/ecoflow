@@ -68,6 +68,10 @@ import '../../features/wallet/presentation/screens/rewards_admin_screen.dart';
 import '../../features/wallet/presentation/screens/rewards_screen.dart';
 import '../../features/wallet/presentation/screens/wallet_screen.dart';
 import '../../features/vision_admin/presentation/screens/model_screen.dart';
+import '../../features/impact/presentation/screens/challenge_detail_screen.dart';
+import '../../features/impact/presentation/screens/challenges_screen.dart';
+import '../../features/impact/presentation/screens/impact_screen.dart';
+import '../../features/impact/presentation/screens/tips_screen.dart';
 import '../../features/shell/presentation/screens/splash_screen.dart';
 import '../../features/shell/presentation/widgets/role_shell.dart';
 import 'route_guard.dart';
@@ -198,6 +202,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                   _tab('audit', (_) => const AuditScreen()),
                   _tab('broadcast', (_) => const BroadcastScreen()),
                   _tab('zones', (_) => const ZonesScreen()),
+                ],
+              ),
+              _tab('impact', (_) => const ImpactScreen()),
+              _tab(
+                'tips',
+                (_) => const TipsScreen(),
+                routes: [
+                  _tab(':sheet', (s) => TipSheetScreen(sheetName: s.pathParameters['sheet']!)),
+                ],
+              ),
+              _tab(
+                'challenges',
+                (_) => const ChallengesScreen(),
+                routes: [
+                  _tab(':id', (s) => ChallengeDetailScreen(challengeId: s.pathParameters['id']!)),
                 ],
               ),
               _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),

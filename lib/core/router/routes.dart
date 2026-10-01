@@ -69,6 +69,11 @@ abstract final class Routes {
   static const audit = '/app/admin/audit';
   static const broadcast = '/app/admin/broadcast';
   static const zones = '/app/admin/zones';
+  static const impact = '/app/impact';
+  static const tips = '/app/tips';
+  static String tipSheet(String sheet) => '/app/tips/$sheet';
+  static const challenges = '/app/challenges';
+  static String challenge(String id) => '/app/challenges/$id';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

@@ -109,8 +109,6 @@
   "homeCollectorSubtitle": "Tes missions de collecte t’attendent bientôt ici.",
   "homeRecyclerSubtitle": "Pilote tes approvisionnements en matières recyclées.",
   "homeAdminSubtitle": "Vue globale de la plateforme EcoFlow.",
-  "homeComingTitle": "Bientôt disponible 🌱",
-  "homeComingBody": "Tableau de bord d’impact personnel, CO₂ évité, conseils de tri et défis communautaires arrivent dans la prochaine version.",
   "statKg": "kg recyclés",
   "statCollections": "collectes",
   "statPoints": "EcoPoints",
@@ -1085,6 +1083,131 @@
   "zonesAdd": "Ajouter une zone",
   "zonesName": "Nom de la zone",
   "zonesDelete": "Supprimer la zone",
+  "auditChallengeCreate": "Défi créé",
+  "auditChallengeDelete": "Défi supprimé",
+  "impactTitle": "Mon impact",
+  "impactSubtitle": "Ta contribution au recyclage, mois après mois.",
+  "impactEmptyTitle": "Ton impact commence ici",
+  "impactEmptyBody": "Scanne tes déchets et demande une collecte : dès la première pesée, tes kilos, ta valeur recyclée et ton CO₂ évité s’affichent ici.",
+  "impactValue": "DT de matières recyclées",
+  "impactPointsEarned": "EcoPoints gagnés",
+  "impactThisMonth": "Ce mois-ci",
+  "impactFirstMonth": "Premier mois actif 🎉",
+  "impactNoPrevious": "Pas de comparaison possible",
+  "impactHomeEmpty": "Tes kilos recyclés et ton CO₂ évité",
+  "co2Title": "CO₂ évité",
+  "co2Subtitle": "Émissions évitées par rapport à des matières neuves, estimées par matière.",
+  "co2ByMaterial": "Par matière",
+  "co2Method": "Facteurs indicatifs par matière (ADEME, EPA WARM) appliqués aux poids pesés par le collecteur. Équivalences : 0,19 kg CO₂e par km en voiture, 25 kg absorbés par arbre et par an, 8 g par recharge de smartphone.",
+  "shareCta": "Partager mon impact",
+  "sharePreview": "Ta carte à partager",
+  "shareNow": "Partager",
+  "shareFailed": "Partage impossible pour le moment.",
+  "shareCardJoin": "Je recycle avec EcoFlow. Et toi ?",
+  "tipsTitle": "Conseils de tri",
+  "tipsShort": "Bien trier",
+  "tipsSubtitle": "Fiches par matière et gestes pour réduire ses déchets.",
+  "tipsHome": "Fiches par matière",
+  "tipsOffline": "Disponible hors ligne",
+  "tipsYes": "Ce qui se recycle",
+  "tipsNo": "À éviter",
+  "tipsPrepare": "Bien préparer",
+  "tipsReduce": "Réduire à la source",
+  "tipsFact": "Le savais-tu ?",
+  "tipsReduceTitle": "Réduire mes déchets",
+  "tipsReduceItems": "Emporte un sac et une gourde réutilisables.|Achète en vrac ou en grand format plutôt qu’en portions individuelles.|Refuse les prospectus : un autocollant « Stop pub » sur la boîte aux lettres suffit.|Répare, donne ou revends avant de jeter.|Composte les épluchures si tu as un balcon ou un jardin.|Regroupe tes déchets recyclables pour une seule collecte bien remplie.",
+  "tipPlasticTitle": "Plastique",
+  "tipPlasticBin": "Bouteilles et flacons",
+  "tipPlasticYes": "Bouteilles d’eau et de soda (PET)|Flacons de lessive, shampoing, gel douche|Bidons d’huile vidés|Pots de yaourt et barquettes rigides (PP)",
+  "tipPlasticNo": "Sacs et films souillés|Emballages contenant encore des restes|Jouets et objets en plastique dur mélangé|Polystyrène alimentaire sale",
+  "tipPlasticPrepare": "Vide bien la bouteille, inutile de la laver.|Écrase-la dans le sens de la longueur pour gagner de la place.|Remets le bouchon : il se recycle avec la bouteille.",
+  "tipPlasticReduce": "Une gourde remplie au robinet ou à la fontaine remplace plusieurs centaines de bouteilles par an.",
+  "tipPlasticFact": "Le PET recyclé redevient bouteille, fibre textile ou barquette : 27 bouteilles suffisent pour un pull polaire.",
+  "tipMetalTitle": "Canettes et métal",
+  "tipMetalBin": "Aluminium et acier",
+  "tipMetalYes": "Canettes de boisson|Boîtes de conserve|Aérosols vides (déodorant, mousse)|Barquettes et papier aluminium propres",
+  "tipMetalNo": "Bouteilles de gaz|Pots de peinture ou de solvant|Objets métalliques volumineux (à déposer en déchèterie)",
+  "tipMetalPrepare": "Vide et égoutte la boîte.|Ne sépare pas le couvercle des boîtes de conserve : glisse-le à l’intérieur.|N’écrase pas les aérosols.",
+  "tipMetalReduce": "Préfère les grands formats et les boissons en fontaine pour limiter le nombre de canettes.",
+  "tipMetalFact": "L’aluminium se recycle à l’infini ; le recycler demande 95 % d’énergie en moins que de le produire.",
+  "tipCardboardTitle": "Carton",
+  "tipCardboardBin": "Cartons et emballages",
+  "tipCardboardYes": "Cartons de livraison|Boîtes de céréales et de biscuits|Rouleaux d’essuie-tout|Briques de lait et de jus",
+  "tipCardboardNo": "Cartons de pizza gras|Carton mouillé ou moisi|Emballages plastifiés ou métallisés",
+  "tipCardboardPrepare": "Retire le scotch et les films plastiques.|Aplatis les cartons pour qu’ils prennent moins de place.|Garde-les au sec jusqu’à la collecte.",
+  "tipCardboardReduce": "Réutilise les cartons de livraison pour ranger ou expédier, et regroupe tes commandes en ligne.",
+  "tipCardboardFact": "Une fibre de carton peut être recyclée 5 à 7 fois avant d’être trop courte.",
+  "tipPaperTitle": "Papier",
+  "tipPaperBin": "Journaux, cahiers, courrier",
+  "tipPaperYes": "Journaux et magazines|Cahiers, feuilles et enveloppes|Prospectus et catalogues",
+  "tipPaperNo": "Mouchoirs et serviettes en papier usagés|Papier photo, papier peint|Tickets de caisse thermiques",
+  "tipPaperPrepare": "Inutile d’enlever les agrafes ou les fenêtres d’enveloppe.|Ne froisse pas le papier : laisse-le à plat.|Retire les films plastiques des magazines.",
+  "tipPaperReduce": "Imprime recto-verso, passe aux factures en ligne et réutilise le verso des feuilles comme brouillon.",
+  "tipPaperFact": "Une tonne de papier recyclé évite d’abattre environ 17 arbres.",
+  "tipGlassTitle": "Verre",
+  "tipGlassBin": "Bouteilles, pots, bocaux",
+  "tipGlassYes": "Bouteilles en verre|Pots de confiture et bocaux|Flacons de parfum vides",
+  "tipGlassNo": "Vaisselle, verres à boire, porcelaine|Miroirs et vitres|Ampoules",
+  "tipGlassPrepare": "Vide bien les contenants.|Retire bouchons et couvercles (ils se recyclent à part).|Emballe le verre cassé pour la sécurité du collecteur.",
+  "tipGlassReduce": "Réutilise les bocaux pour conserver, et privilégie les bouteilles consignées quand elles existent.",
+  "tipGlassFact": "Le verre se recycle à 100 % et à l’infini, sans perte de qualité.",
+  "tipEWasteTitle": "Électronique",
+  "tipEWasteBin": "Appareils et câbles",
+  "tipEWasteYes": "Téléphones, chargeurs et câbles|Petits appareils (sèche-cheveux, mixeur)|Claviers, souris, écouteurs",
+  "tipEWasteNo": "Piles et batteries gonflées en vrac (à isoler)|Appareils contenant encore des liquides|Gros électroménager sans prise en charge prévue",
+  "tipEWastePrepare": "Efface tes données personnelles et retire la carte SIM.|Retire les piles et place-les dans un sac à part.|Enroule les câbles pour éviter les nœuds.",
+  "tipEWasteReduce": "Fais réparer avant de remplacer, et donne les appareils qui fonctionnent encore.",
+  "tipEWasteFact": "Un smartphone contient une quarantaine de métaux, dont de l’or, de l’argent et du cuivre récupérables.",
+  "tipOrganicTitle": "Biodéchets",
+  "tipOrganicBin": "Épluchures et restes",
+  "tipOrganicYes": "Épluchures de fruits et légumes|Marc de café et sachets de thé|Coquilles d’œufs|Fleurs fanées",
+  "tipOrganicNo": "Viande, poisson et produits laitiers en grande quantité|Litière d’animaux|Sacs plastiques « biodégradables » non compostables",
+  "tipOrganicPrepare": "Coupe les gros morceaux.|Égoutte les restes humides.|Garde un bac fermé à l’abri de la chaleur.",
+  "tipOrganicReduce": "Planifie tes courses et cuisine les restes : un tiers des aliments achetés finit à la poubelle.",
+  "tipOrganicFact": "En Tunisie, les biodéchets représentent environ les deux tiers de la poubelle ménagère.",
+  "tipHazardTitle": "Médicaments et dangereux",
+  "tipHazardBin": "Ne pas mélanger",
+  "tipHazardYes": "Médicaments périmés : à rapporter en pharmacie|Piles : bornes de collecte en magasin|Ampoules basse consommation : points de collecte dédiés",
+  "tipHazardNo": "Seringues et aiguilles dans la collecte|Produits chimiques dans l’évier|Médicaments dans la poubelle ou les toilettes",
+  "tipHazardPrepare": "Garde les produits dans leur emballage d’origine.|Mets les aiguilles dans une boîte rigide fermée, remise en pharmacie.|Ne mélange jamais deux produits chimiques.",
+  "tipHazardReduce": "Préfère les piles rechargeables et les produits ménagers simples (vinaigre blanc, savon noir).",
+  "tipHazardFact": "EcoFlow n’accepte pas les déchets médicaux : ils sont exclus des points et du calcul de CO₂.",
+  "challengesTitle": "Défis communautaires",
+  "challengesShort": "Défis",
+  "challengesSubtitle": "Recyclons ensemble, par quartier et par ville.",
+  "challengesAdminSubtitle": "Objectifs collectifs, classements et récompenses.",
+  "challengesHomeNone": "Aucun défi en cours",
+  "challengesActive": "En cours",
+  "challengesUpcoming": "À venir",
+  "challengesEnded": "Terminés",
+  "challengesEmpty": "Aucun défi pour le moment. Les prochains défis de ton quartier apparaîtront ici.",
+  "challengeNational": "National",
+  "challengeNoZone": "Zone non renseignée",
+  "challengeAchieved": "Objectif atteint",
+  "challengeMissed": "Objectif non atteint",
+  "challengeJoined": "Inscrit",
+  "challengeJoinTitle": "Rejoins le défi",
+  "challengeJoinBody": "Les kilos de tes prochaines collectes pesées compteront pour l’objectif collectif, jusqu’à la fin du défi.",
+  "challengeJoin": "Je participe",
+  "challengeWelcome": "Bienvenue dans le défi !",
+  "challengeClosed": "Inscriptions fermées",
+  "challengeMine": "Ma contribution",
+  "challengeHowItCounts": "Chaque pesée validée après ton inscription s’ajoute automatiquement.",
+  "challengeRewardReceived": "Récompense reçue",
+  "challengeLeaderboard": "Classement",
+  "challengeZones": "Classement des quartiers",
+  "challengeNobody": "Sois le premier à relever ce défi !",
+  "challengeYou": "toi",
+  "challengeDelete": "Supprimer le défi",
+  "challengeCreate": "Créer un défi",
+  "challengeName": "Nom du défi",
+  "challengeDescription": "Description",
+  "challengeGoal": "Objectif (kg)",
+  "challengeReward": "Points par participant",
+  "challengeZone": "Zone",
+  "challengeDuration": "Durée",
+  "challengePublish": "Lancer le défi",
+  "challengeInvalid": "Vérifie le nom, l’objectif (kg) et les points (0 à 1 000).",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -2184,6 +2307,205 @@
   "@zonesRadius": {
     "placeholders": {
       "km": {
+        "type": "int"
+      }
+    }
+  },
+  "entryChallenge": "Défi réussi : {title}",
+  "@entryChallenge": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "impactTrendUp": "+{pct} % vs mois dernier",
+  "@impactTrendUp": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "impactTrendDown": "−{pct} % vs mois dernier",
+  "@impactTrendDown": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "impactMonthDetail": "{count, plural, =0{Aucune collecte} =1{1 collecte} other{{count} collectes}} · {value} · {co2} kg CO₂e évités",
+  "@impactMonthDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "value": {
+        "type": "String"
+      },
+      "co2": {
+        "type": "String"
+      }
+    }
+  },
+  "impactHomeSummary": "{co2} kg de CO₂ évités grâce à toi",
+  "@impactHomeSummary": {
+    "placeholders": {
+      "co2": {
+        "type": "String"
+      }
+    }
+  },
+  "co2Kg": "{value} kg CO₂e",
+  "@co2Kg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "co2Avoided": "{value} kg de CO₂ évités",
+  "@co2Avoided": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "eqCarKm": "{km} km en voiture évités",
+  "@eqCarKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "eqTrees": "{years} années d’absorption d’un arbre",
+  "@eqTrees": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "eqPhone": "{count} recharges de smartphone",
+  "@eqPhone": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "shareText": "J’ai recyclé {kg} kg et évité {co2} kg de CO₂ avec EcoFlow ♻️ Rejoins le mouvement !",
+  "@shareText": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      },
+      "co2": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCardHeadline": "{name} a recyclé",
+  "@shareCardHeadline": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCardRecycled": "{count, plural, =1{en 1 collecte} other{en {count} collectes}}",
+  "@shareCardRecycled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "challengesHomeActive": "{count, plural, =1{1 défi en cours} other{{count} défis en cours}}",
+  "@challengesHomeActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeMembers": "{count, plural, =0{Aucun participant} =1{1 participant} other{{count} participants}}",
+  "@challengeMembers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeProgress": "{done} kg sur {goal} kg",
+  "@challengeProgress": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeDaysLeft": "{days, plural, =0{Dernier jour} =1{1 jour restant} other{{days} jours restants}}",
+  "@challengeDaysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeStarts": "Début le {date}",
+  "@challengeStarts": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeRewardChip": "{points} pts",
+  "@challengeRewardChip": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeRank": "{rank}ᵉ sur {total}",
+  "@challengeRank": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeClaim": "Récupérer {points} EcoPoints",
+  "@challengeClaim": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeClaimed": "{points} EcoPoints ajoutés à ton wallet",
+  "@challengeClaimed": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeDays": "{days} jours",
+  "@challengeDays": {
+    "placeholders": {
+      "days": {
         "type": "int"
       }
     }

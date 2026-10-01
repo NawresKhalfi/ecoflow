@@ -50,6 +50,8 @@ abstract final class AuditAction {
   static const dispute = 'dispute.resolve';
   static const broadcast = 'announcement.send';
   static const zones = 'zones.update';
+  static const challengeCreate = 'challenge.create';
+  static const challengeDelete = 'challenge.delete';
 }
 
 /// Segment visé par une annonce (US-116).

@@ -20,7 +20,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E10 | Prédiction IA des volumes | V2 | 5/6 | 🟨 |
 | E11 | Marketplace circulaire B2B | V2 | 11/12 | 🟨 |
 | E12 | Administration & supervision | MVP | 12/12 | ✅ |
-| E13 | Statistiques & impact citoyen | V1 | 0/5 | ⬜ |
+| E13 | Statistiques & impact citoyen | V1 | 5/5 | ✅ |
 | E14 | Exigences transverses & qualité | MVP | 0/10 | ⬜ |
 
 ## E01 — Authentification & profils
@@ -230,11 +230,11 @@ _Tableau de bord personnel, CO₂ évité, conseils de tri, défis et partage._
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-118 | Citoyen | En tant que citoyen, je veux consulter mon tableau de bord personnel (kg recyclés, nombre de collectes, valeur cumulée) afin de voir ma contribution. | Should | V1 | ⬜ |  |
-| US-119 | Citoyen | En tant que citoyen, je veux voir le CO₂ que j'ai évité grâce à mon recyclage afin de mesurer mon impact. | Should | V1 | ⬜ |  |
-| US-120 | Citoyen | En tant que citoyen, je veux consulter des conseils de tri et de réduction des déchets afin de mieux recycler. | Should | V1 | ⬜ |  |
-| US-121 | Citoyen | En tant que citoyen, je veux participer à des défis communautaires (quartier, ville) afin de m'engager collectivement. | Could | V2 | ⬜ |  |
-| US-122 | Citoyen | En tant que citoyen, je veux partager mes résultats sur les réseaux sociaux afin de sensibiliser mon entourage. | Could | V2 | ⬜ |  |
+| US-118 | Citoyen | En tant que citoyen, je veux consulter mon tableau de bord personnel (kg recyclés, nombre de collectes, valeur cumulée) afin de voir ma contribution. | Should | V1 | ✅ | Écran « Mon impact » : kilos, collectes, valeur recyclée (DT), EcoPoints gagnés ; barres des 6 derniers mois (valeur au toucher) et comparaison avec le mois précédent (+/- %). |
+| US-119 | Citoyen | En tant que citoyen, je veux voir le CO₂ que j'ai évité grâce à mon recyclage afin de mesurer mon impact. | Should | V1 | ✅ | CO₂e évité calculé sur les poids pesés avec un facteur par matière (déchets médicaux exclus), répartition par matière et équivalences : km en voiture, années d’absorption d’un arbre, recharges de smartphone. Méthode affichée. |
+| US-120 | Citoyen | En tant que citoyen, je veux consulter des conseils de tri et de réduction des déchets afin de mieux recycler. | Should | V1 | ✅ | 8 fiches illustrées (plastique, métal, carton, papier, verre, électronique, biodéchets, médicaments/dangereux) : ce qui se recycle, à éviter, préparation, réduction, anecdote ; ordre personnalisé selon les matières recyclées ; contenu embarqué en fr/en/ar, donc consultable hors ligne. Gestes généraux de réduction. |
+| US-121 | Citoyen | En tant que citoyen, je veux participer à des défis communautaires (quartier, ville) afin de m'engager collectivement. | Could | V2 | ✅ | Défis créés par l’administration (zone ou national, objectif en kg, points, durée) ; inscription du citoyen, progression = kilos pesés depuis l’inscription (compteur du wallet vérifié par les règles), mise à jour automatique à chaque gain ; classement individuel et par quartier ; récompense en EcoPoints réclamable une fois le défi réussi et terminé (un seul crédit, vérifié par les règles). |
+| US-122 | Citoyen | En tant que citoyen, je veux partager mes résultats sur les réseaux sociaux afin de sensibiliser mon entourage. | Could | V2 | ✅ | Carte visuelle 4:5 générée dans l’app (kilos, collectes, CO₂, équivalences, niveau) rendue en PNG et partagée via la feuille de partage native avec un texte. |
 
 ## E14 — Exigences transverses & qualité
 
@@ -260,5 +260,5 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 - US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
 - US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
 - US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
-- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 147 scénarios réels (citoyen / collecteur / recycleur / administrateurs) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
+- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 167 scénarios réels (citoyen / collecteur / recycleur / administrateurs) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
 - Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.

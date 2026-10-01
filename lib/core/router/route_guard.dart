@@ -32,6 +32,7 @@ const _roleOnly = {
   Routes.market: UserRole.recycler,
   Routes.moderation: UserRole.admin,
   Routes.supervision: UserRole.admin,
+  Routes.impact: UserRole.citizen,
 };
 
 /// Redirection de navigation, fonction pure testée unitairement.

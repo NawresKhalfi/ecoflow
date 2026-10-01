@@ -10,6 +10,7 @@ import '../../../auth/application/auth_providers.dart';
 import '../../../auth/domain/user_role.dart';
 import '../../../collection/application/proposal_watcher.dart';
 import '../../../forecast/application/forecast_providers.dart';
+import '../../../impact/application/impact_providers.dart';
 import '../../../missions/application/collector_controllers.dart';
 import '../../../routing/presentation/widgets/tour_entry_cards.dart';
 import '../../../tracking/application/tracking_providers.dart';
@@ -39,6 +40,7 @@ class RoleShell extends ConsumerWidget {
     listenNotifications(context, ref);
     ref.watch(pushRegistrationProvider);
     if (role == UserRole.citizen) ref.watch(proposalWatcherProvider);
+    if (role == UserRole.citizen) ref.watch(challengeSyncProvider);
     if (role == UserRole.admin) ref.watch(autoRetrainProvider);
     if (role == UserRole.collector) {
       ref.watch(earningsSyncProvider);

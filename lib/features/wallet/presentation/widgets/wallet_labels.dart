@@ -37,6 +37,7 @@ String entryTitle(AppLocalizations l, LedgerEntry e) => switch (e.type) {
   EntryType.redeem => e.label ?? l.entryRedeem,
   EntryType.expire => l.entryExpire,
   EntryType.adjust => l.entryAdjust,
+  EntryType.challenge => l.entryChallenge(e.label ?? ''),
 };
 
 String entryEmoji(LedgerEntry e) => switch (e.type) {
@@ -45,6 +46,7 @@ String entryEmoji(LedgerEntry e) => switch (e.type) {
   EntryType.redeem => '🎁',
   EntryType.expire => '⌛',
   EntryType.adjust => '🛠️',
+  EntryType.challenge => '🏆',
 };
 
 String flagLabel(AppLocalizations l, FraudFlag f) => switch (f) {

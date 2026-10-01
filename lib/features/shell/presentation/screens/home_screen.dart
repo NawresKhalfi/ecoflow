@@ -24,6 +24,7 @@ import '../../../missions/application/missions_providers.dart';
 import '../../../forecast/application/forecast_providers.dart';
 import '../../../market/application/market_providers.dart';
 import '../../../missions/domain/deposit.dart';
+import '../../../impact/presentation/widgets/home_impact_cards.dart';
 
 /// Accueil de l'espace du rôle. Écran de transition minimal en attendant
 /// les epics métier (scan, missions, stocks, pilotage).
@@ -197,6 +198,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
+        if (role == UserRole.citizen) const HomeImpactCards(),
         if (role == UserRole.citizen)
           EcoCard(
             onTap: () => context.go(Routes.estimates),
@@ -228,21 +230,6 @@ class HomeScreen extends ConsumerWidget {
         ),
         ResponsiveGrid(
           children: [
-            EcoCard(
-              gradient: EcoGradients.coral,
-              decorated: true,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l.homeComingTitle, style: AppTheme.weighted(20, 800, color: Colors.white)),
-                  const SizedBox(height: 8),
-                  Text(
-                    l.homeComingBody,
-                    style: AppTheme.weighted(15, 500, color: Colors.white.withValues(alpha: .92)),
-                  ),
-                ],
-              ),
-            ),
             EcoCard(
               onTap: () => context.go(Routes.profile),
               child: Row(
