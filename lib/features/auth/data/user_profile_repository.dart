@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../profile/domain/notification_preferences.dart';
@@ -53,7 +52,7 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
 
   @override
   Stream<AppUser?> watch(String uid) =>
-      _doc(uid).snapshots().map((s) { debugPrint('DBGPROFILE $uid exists=${s.exists} cache=${s.metadata.isFromCache} data=${s.data()}'); return fromSnapshot(uid, s.data()); }).handleError((Object e) { debugPrint('DBGPROFILE error $e'); throw e; });
+      _doc(uid).snapshots().map((s) => fromSnapshot(uid, s.data()));
 
   @override
   Future<void> create(AppUser u) {

@@ -72,6 +72,7 @@ s,q=http(B+':runQuery', {'structuredQuery':{'from':[{'collectionId':'collections
 results.append(s==200); print('PASS' if s==200 else 'FAIL', 'collector lists open missions →', s)
 check('citizen cannot assign a collector', leila, [upd(f'collections/{cid}', {'collectorUid':luid})], False)
 check('collector accepts (locked)', karim, [upd(f'collections/{cid}', {'status':'accepted','collectorUid':kuid,'proposedCollectorUid':None,'acceptedAt':now,'updatedAt':now})], True)
+check('citizen matching cannot reset an accepted request', leila, [upd(f'collections/{cid}', {'status':'noCollector'})], False)
 check('collector cannot skip to arrived', karim, [upd(f'collections/{cid}', {'status':'arrived'})], False)
 for st in ['onTheWay','arrived','inProgress']:
     check(f'collector → {st}', karim, [upd(f'collections/{cid}', {'status':st, st+'At':now, 'updatedAt':now})], True)

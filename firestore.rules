@@ -222,6 +222,10 @@ service cloud.firestore {
             && !changed().hasAny(['citizenUid', 'estimateCode', 'collectorUid', 'createdAt'])
             && request.resource.data.instructions.size() <= 300
             && request.resource.data.status in ['searching', 'noCollector', 'proposed', 'cancelled', 'completed', resource.data.status]
+            // Recherche automatique : jamais sur une demande déjà prise en charge
+            // (course entre le matching du citoyen et l'acceptation d'un collecteur).
+            && (!(request.resource.data.status in ['searching', 'noCollector', 'proposed'])
+                || resource.data.get('collectorUid', null) == null)
             && (request.resource.data.status != 'completed' || resource.data.status in ['handedOver', 'completed'])
             // Une collecte terminée n'accepte plus que la marque « notée ».
             && (resource.data.status != 'completed' || changed().hasOnly(['rated'])))

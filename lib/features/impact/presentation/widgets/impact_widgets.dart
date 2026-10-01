@@ -32,6 +32,7 @@ class LinkCard extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     this.gradient,
+    this.compact = false,
   });
 
   final String emoji;
@@ -40,9 +41,29 @@ class LinkCard extends StatelessWidget {
   final VoidCallback onTap;
   final Gradient? gradient;
 
+  /// Tuile étroite (grille) : emoji au-dessus du texte, sans chevron.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final onGradient = gradient != null;
+    if (compact) {
+      return EcoCard(
+        gradient: gradient,
+        onTap: onTap,
+        semanticLabel: title,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            EcoAvatar(text: emoji),
+            const SizedBox(height: 10),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      );
+    }
     return EcoCard(
       gradient: gradient,
       decorated: onGradient,
