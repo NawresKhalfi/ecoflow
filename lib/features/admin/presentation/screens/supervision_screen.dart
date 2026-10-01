@@ -10,6 +10,7 @@ import '../../../auth/application/auth_providers.dart';
 import '../../../estimation/presentation/widgets/estimation_format.dart';
 import '../../../profile/presentation/screens/company_screen.dart';
 import '../../../recycler/domain/analytics.dart';
+import '../../../recycler/domain/stock.dart';
 import '../../../recycler/presentation/widgets/recycler_labels.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
 import '../../application/admin_providers.dart';
@@ -36,8 +37,14 @@ class SupervisionScreen extends ConsumerWidget {
     final state = ref.watch(adminControllerProvider);
     bool can(String p) => me?.can(p) ?? false;
 
-    Widget tool(String emoji, String title, String subtitle, String route, {int badge = 0, bool show = true}) =>
-        show
+    Widget tool(
+      String emoji,
+      String title,
+      String subtitle,
+      String route, {
+      int badge = 0,
+      bool show = true,
+    }) => show
         ? EcoListTile(
             leading: EcoAvatar(text: emoji),
             title: title,
@@ -73,7 +80,12 @@ class SupervisionScreen extends ConsumerWidget {
           ResponsiveGrid(
             children: [
               StatTile(emoji: '⚖️', value: fmtKg(context, stats.tonnes), label: l.statTonnes),
-              StatTile(emoji: '🚚', value: '${stats.completed}', label: l.statCompleted, gradient: EcoGradients.sky),
+              StatTile(
+                emoji: '🚚',
+                value: '${stats.completed}',
+                label: l.statCompleted,
+                gradient: EcoGradients.sky,
+              ),
               StatTile(
                 emoji: '🌍',
                 value: l.kg(fmtKg(context, stats.co2Kg)),
@@ -94,12 +106,15 @@ class SupervisionScreen extends ConsumerWidget {
                 ? Text(l.dashEmpty)
                 : Column(
                     children: [
-                      for (final e in (stats.kgByMaterial.entries.toList()
-                        ..sort((a, b) => b.value.compareTo(a.value))))
+                      for (final e
+                          in (stats.kgByMaterial.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value))))
                         ShareBar(
                           label: '${materialEmoji(e.key)} ${materialLabel(l, e.key)}',
-                          value: '${l.kg(fmtKg(context, e.value))} · ${(e.value / stats.totalKg * 100).round()} %',
-                          fraction: e.value / stats.kgByMaterial.values.reduce((a, b) => a > b ? a : b),
+                          value:
+                              '${l.kg(fmtKg(context, e.value))} · ${(e.value / stats.totalKg * 100).round()} %',
+                          fraction:
+                              e.value / stats.kgByMaterial.values.reduce((a, b) => a > b ? a : b),
                           color: materialColor(e.key),
                         ),
                     ],
@@ -146,17 +161,65 @@ class SupervisionScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
           child: Column(
             children: [
-              tool('👥', l.usersTitle, l.usersSubtitle, Routes.adminUsers, show: can(AdminPermission.users)),
-              tool('🪪', l.verifTitle, l.verifSubtitle, Routes.verifications,
-                  badge: pending, show: can(AdminPermission.verifications)),
+              tool(
+                '👥',
+                l.usersTitle,
+                l.usersSubtitle,
+                Routes.adminUsers,
+                show: can(AdminPermission.users),
+              ),
+              tool(
+                '🪪',
+                l.verifTitle,
+                l.verifSubtitle,
+                Routes.verifications,
+                badge: pending,
+                show: can(AdminPermission.verifications),
+              ),
               tool('🗺️', l.liveMapTitle, l.liveMapSubtitle, Routes.liveMap),
-              tool('⚖️', l.disputesTitle, l.disputesSubtitle, Routes.disputes,
-                  badge: disputes, show: can(AdminPermission.disputes)),
-              tool('🧹', l.modTitle, l.modSubtitle, Routes.moderation, show: can(AdminPermission.market)),
-              tool('📣', l.broadcastTitle, l.broadcastSubtitle, Routes.broadcast, show: can(AdminPermission.broadcast)),
-              tool('📍', l.zonesTitle, l.zonesSubtitle, Routes.zones, show: can(AdminPermission.zones)),
-              tool('🔐', l.adminsTitle, l.adminsSubtitle, Routes.admins, show: me?.isSuperAdmin ?? false),
-              tool('📜', l.auditTitle, l.auditSubtitle, Routes.audit, show: can(AdminPermission.audit)),
+              tool(
+                '⚖️',
+                l.disputesTitle,
+                l.disputesSubtitle,
+                Routes.disputes,
+                badge: disputes,
+                show: can(AdminPermission.disputes),
+              ),
+              tool(
+                '🧹',
+                l.modTitle,
+                l.modSubtitle,
+                Routes.moderation,
+                show: can(AdminPermission.market),
+              ),
+              tool(
+                '📣',
+                l.broadcastTitle,
+                l.broadcastSubtitle,
+                Routes.broadcast,
+                show: can(AdminPermission.broadcast),
+              ),
+              tool(
+                '📍',
+                l.zonesTitle,
+                l.zonesSubtitle,
+                Routes.zones,
+                show: can(AdminPermission.zones),
+              ),
+              tool(
+                '🔐',
+                l.adminsTitle,
+                l.adminsSubtitle,
+                Routes.admins,
+                show: me?.isSuperAdmin ?? false,
+              ),
+              tool(
+                '📜',
+                l.auditTitle,
+                l.auditSubtitle,
+                Routes.audit,
+                show: can(AdminPermission.audit),
+              ),
               tool('🧠', l.navModel, l.forecastAdminSubtitle, Routes.model),
             ],
           ),

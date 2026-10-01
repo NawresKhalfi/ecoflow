@@ -110,7 +110,7 @@
   "homeRecyclerSubtitle": "Pilote tes approvisionnements en matières recyclées.",
   "homeAdminSubtitle": "Vue globale de la plateforme EcoFlow.",
   "homeComingTitle": "Bientôt disponible 🌱",
-  "homeComingBody": "Espace recycleur, marketplace circulaire et statistiques d’impact arrivent dans les prochaines versions.",
+  "homeComingBody": "Tableau de bord d’impact personnel, CO₂ évité, conseils de tri et défis communautaires arrivent dans la prochaine version.",
   "statKg": "kg recyclés",
   "statCollections": "collectes",
   "statPoints": "EcoPoints",
@@ -988,6 +988,103 @@
   "modRemove": "Retirer",
   "modRestore": "Rétablir",
   "modResolve": "Traité",
+  "navSupervision": "Supervision",
+  "ntAccountReview": "Ton dossier a été examiné",
+  "ntDisputeUpdate": "Ton signalement a été traité",
+  "blockedTitle": "Compte suspendu",
+  "blockedBody": "Ton compte a été suspendu par l’administration. Contacte le support EcoFlow pour plus d’informations.",
+  "blockedReason": "Motif",
+  "supervisionTitle": "Supervision",
+  "supervisionSubtitle": "Activité, impact et performance de la plateforme.",
+  "statTonnes": "tonnes recyclées",
+  "statCompleted": "collectes terminées",
+  "statCo2": "CO₂ évité (estimation)",
+  "statActiveUsers": "utilisateurs actifs",
+  "perfTitle": "Performance du service",
+  "perfMatching": "Taux de matching (demandes avec collecteur)",
+  "perfAcceptDelay": "Délai moyen avant acceptation",
+  "perfCompletion": "Délai moyen jusqu’à la fin de la collecte",
+  "perfAi": "Précision de l’estimation IA (vs pesée)",
+  "perfCancel": "Taux d’annulation",
+  "perfRequests": "Demandes sur la période",
+  "platformReportTitle": "Rapport d’impact EcoFlow",
+  "adminTools": "Outils d’administration",
+  "usersTitle": "Comptes",
+  "usersSubtitle": "Recherche, blocage et réactivation.",
+  "auditSearch": "Rechercher (action, auteur, cible)",
+  "usersSearch": "Rechercher (nom, e-mail, téléphone)",
+  "usersBlocked": "Bloqués",
+  "usersBlock": "Bloquer le compte",
+  "usersUnblock": "Réactiver le compte",
+  "usersBlockReason": "Motif (affiché à l’utilisateur)",
+  "adminsTitle": "Administrateurs",
+  "adminsSubtitle": "Rôles et permissions.",
+  "adminSuper": "Super-administrateur (tous les droits)",
+  "adminsPromote": "Nommer administrateur",
+  "adminsSave": "Enregistrer les permissions",
+  "adminsDemote": "Retirer le rôle administrateur",
+  "permUsers": "Comptes",
+  "permVerifications": "Validations",
+  "permDisputes": "Litiges",
+  "permBroadcast": "Annonces",
+  "permZones": "Zones",
+  "permAudit": "Journal d’audit",
+  "permMarket": "Marketplace",
+  "verifSubtitle": "Dossiers collecteurs et recycleurs en attente.",
+  "verifNone": "Aucun dossier en attente.",
+  "verifNoDocs": "Aucune pièce fournie.",
+  "verifReasonField": "Motif du refus",
+  "verifReasonHelp": "Obligatoire en cas de refus, visible par le demandeur.",
+  "verifReasonRequired": "Indique le motif du refus.",
+  "verifApprove": "Valider",
+  "verifNotImage": "Aperçu indisponible (format non image).",
+  "liveMapTitle": "Carte des collectes",
+  "liveMapSubtitle": "Collectes en cours et planifiées, en temps réel.",
+  "liveWaiting": "En attente",
+  "liveAssigned": "Collecteur assigné",
+  "liveOnSite": "En route / sur place",
+  "liveMapHelp": "Points : collectes non terminées (couleur selon l’avancement). 🚚 : collecteurs en ligne. Cercles : zones desservies.",
+  "disputesTitle": "Litiges",
+  "disputesSubtitle": "Signalements des collectes à arbitrer.",
+  "disputesOpen": "À traiter",
+  "disputesClosed": "Traités",
+  "disputesNone": "Aucun litige.",
+  "disputeByCitizen": "signalé par le citoyen",
+  "disputeByCollector": "signalé par le collecteur",
+  "disputeDecision": "Décision (envoyée au signalant)",
+  "disputeUphold": "Fondé",
+  "disputeReject": "Non fondé",
+  "disputeDone": "Litige traité ✅",
+  "disputeDecisionRequired": "Rédige la décision avant de clore.",
+  "auditTitle": "Journal d’audit",
+  "auditSubtitle": "Actions sensibles de l’administration.",
+  "auditEmpty": "Aucune action enregistrée.",
+  "auditImmutable": "Journal en ajout seul : aucune entrée ne peut être modifiée ni supprimée.",
+  "auditBlock": "Compte bloqué",
+  "auditUnblock": "Compte réactivé",
+  "auditApprove": "Dossier validé",
+  "auditReject": "Dossier refusé",
+  "auditPermissions": "Permissions modifiées",
+  "auditPromote": "Administrateur nommé",
+  "auditDemote": "Rôle administrateur retiré",
+  "auditDispute": "Litige tranché",
+  "auditBroadcast": "Annonce envoyée",
+  "auditZones": "Zones modifiées",
+  "broadcastTitle": "Annonces",
+  "broadcastSubtitle": "Informer un segment d’utilisateurs.",
+  "broadcastTitleField": "Titre",
+  "broadcastBody": "Message",
+  "broadcastSegment": "Destinataires",
+  "broadcastEveryone": "Tout le monde",
+  "broadcastSend": "Envoyer l’annonce",
+  "broadcastSent": "Annonce envoyée 📣",
+  "broadcastInvalid": "Titre et message obligatoires",
+  "broadcastHistory": "Annonces envoyées",
+  "zonesTitle": "Zones desservies",
+  "zonesSubtitle": "Les demandes hors zone active sont refusées.",
+  "zonesAdd": "Ajouter une zone",
+  "zonesName": "Nom de la zone",
+  "zonesDelete": "Supprimer la zone",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -2031,6 +2128,62 @@
   "@modReports": {
     "placeholders": {
       "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutes": "{count} min",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{count} h",
+  "@hours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "usersCount": "{count, plural, =0{Aucun compte} =1{1 compte} other{{count} comptes}}",
+  "@usersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "liveCollectors": "{count, plural, =0{Aucun collecteur en ligne} =1{1 collecteur en ligne} other{{count} collecteurs en ligne}}",
+  "@liveCollectors": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "disputeAge": "ouvert depuis {days} j",
+  "@disputeAge": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "disputePhotos": "{count, plural, =1{Voir la photo} other{Voir les {count} photos}}",
+  "@disputePhotos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "zonesRadius": "Rayon : {km} km",
+  "@zonesRadius": {
+    "placeholders": {
+      "km": {
         "type": "int"
       }
     }

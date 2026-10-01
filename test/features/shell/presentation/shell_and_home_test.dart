@@ -40,8 +40,8 @@ void main() {
     );
     expect(destinationsFor(UserRole.admin), [
       NavDestination.home,
+      NavDestination.supervision,
       NavDestination.catalog,
-      NavDestination.model,
       NavDestination.pricing,
       NavDestination.profile,
     ]);

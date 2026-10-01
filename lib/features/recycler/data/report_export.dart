@@ -261,7 +261,10 @@ Uint8List buildSupplyXlsx(SupplyReport r, ReportLabels l) {
     [l.reference, l.date, l.material, l.grade, l.kg, l.collector, l.zones],
     ..._lotRows(r, l),
   ];
-  return buildXlsx([(l.byMaterial, summary, {1}), (l.lots, lots, {4})]);
+  return buildXlsx([
+    (l.byMaterial, summary, {1}),
+    (l.lots, lots, {4}),
+  ]);
 }
 
 /// Nom de fichier du rapport, sans caractère problématique.

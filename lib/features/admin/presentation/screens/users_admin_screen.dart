@@ -38,6 +38,8 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final me = ref.watch(sessionProvider).profile;
+    // Écouté : le contrôleur (auto-libéré) doit survivre à la feuille d'actions.
+    ref.watch(adminControllerProvider);
     final all = ref.watch(adminUsersProvider).value ?? const <AdminUserView>[];
     final shown = all
         .where(
@@ -55,21 +57,37 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
         gradient: EcoGradients.violet,
         leading: IconButton.filledTonal(
           tooltip: l.commonBack,
-          style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.white.withValues(alpha: .22),
+            foregroundColor: Colors.white,
+          ),
           onPressed: () => context.go(Routes.supervision),
           icon: const BackButtonIcon(),
         ),
       ),
       children: [
-        EcoTextField(label: l.usersSearch, controller: _q, emoji: '🔎', onChanged: (_) => setState(() {})),
+        EcoTextField(
+          label: l.usersSearch,
+          controller: _q,
+          emoji: '🔎',
+          onChanged: (_) => setState(() {}),
+        ),
         if (!widget.adminsOnly)
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              EcoChip(label: l.rewardsAll, selected: _role == null, onTap: () => setState(() => _role = null)),
+              EcoChip(
+                label: l.rewardsAll,
+                selected: _role == null,
+                onTap: () => setState(() => _role = null),
+              ),
               for (final r in UserRole.values)
-                EcoChip(label: roleLabel(l, r), selected: _role == r, onTap: () => setState(() => _role = r)),
+                EcoChip(
+                  label: roleLabel(l, r),
+                  selected: _role == r,
+                  onTap: () => setState(() => _role = r),
+                ),
               EcoChip(
                 label: '⛔ ${l.usersBlocked}',
                 tone: ChipTone.coral,
@@ -90,7 +108,8 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
                   subtitle: [
                     roleLabel(l, u.role),
                     ?u.email,
-                    if (u.role == UserRole.admin) u.isSuperAdmin ? l.adminSuper : (u.adminPermissions!.join(', ')),
+                    if (u.role == UserRole.admin)
+                      u.isSuperAdmin ? l.adminSuper : (u.adminPermissions!.join(', ')),
                     if (u.blocked) '⛔ ${u.blockedReason ?? ''}',
                   ].join(' · '),
                   onTap: u.uid == me?.uid ? null : () => _actions(context, u),
@@ -136,7 +155,8 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
                       label: u.blocked ? l.usersUnblock : l.usersBlock,
                       leading: u.blocked ? '✅' : '⛔',
                       style: u.blocked ? EcoButtonStyle.green : EcoButtonStyle.coral,
-                      onPressed: () => done(ctrl.setBlocked(u, blocked: !u.blocked, reason: reason.text)),
+                      onPressed: () =>
+                          done(ctrl.setBlocked(u, blocked: !u.blocked, reason: reason.text)),
                     ),
                   ],
                   if (me?.isSuperAdmin ?? false) ...[
@@ -157,7 +177,8 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
                             EcoChip(
                               label: permissionLabel(l, p),
                               selected: perms.contains(p),
-                              onTap: () => set(() => perms.contains(p) ? perms.remove(p) : perms.add(p)),
+                              onTap: () =>
+                                  set(() => perms.contains(p) ? perms.remove(p) : perms.add(p)),
                             ),
                         ],
                       ),
@@ -183,7 +204,7 @@ class _UsersAdminScreenState extends ConsumerState<UsersAdminScreen> {
         },
       ),
     );
-    reason.dispose();
+    disposeAfterSheet([reason]);
   }
 }
 

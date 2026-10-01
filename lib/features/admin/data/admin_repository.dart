@@ -53,18 +53,24 @@ class AdminRepository {
     'at': FieldValue.serverTimestamp(),
   });
 
-  void _notify(WriteBatch b, String actor, String to, NotificationType type, String id, String preview) =>
-      b.set(_db.collection('notifications').doc(), {
-        'toUid': to,
-        'fromUid': actor,
-        'type': type.name,
-        'collectionId': id,
-        'address': '',
-        'preview': preview,
-        'critical': false,
-        'read': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+  void _notify(
+    WriteBatch b,
+    String actor,
+    String to,
+    NotificationType type,
+    String id,
+    String preview,
+  ) => b.set(_db.collection('notifications').doc(), {
+    'toUid': to,
+    'fromUid': actor,
+    'type': type.name,
+    'collectionId': id,
+    'address': '',
+    'preview': preview,
+    'critical': false,
+    'read': false,
+    'createdAt': FieldValue.serverTimestamp(),
+  });
 
   // --- Comptes (US-106, US-113) --------------------------------------------
 
@@ -85,8 +91,9 @@ class AdminRepository {
       .collection('users')
       .snapshots()
       .map(
-        (s) => [for (final d in s.docs) _view(d.id, d.data())]
-          ..sort((a, b) => a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase())),
+        (s) =>
+            [for (final d in s.docs) _view(d.id, d.data())]
+              ..sort((a, b) => a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase())),
       );
 
   Future<void> setBlocked(
@@ -100,7 +107,14 @@ class AdminRepository {
         'status': blocked ? 'blocked' : 'active',
         'blockedReason': blocked ? reason.trim() : null,
       });
-    _audit(b, actor, blocked ? AuditAction.block : AuditAction.unblock, 'user', u.uid, reason.trim());
+    _audit(
+      b,
+      actor,
+      blocked ? AuditAction.block : AuditAction.unblock,
+      'user',
+      u.uid,
+      reason.trim(),
+    );
     await b.commit();
   }
 
@@ -128,7 +142,10 @@ class AdminRepository {
   // --- Validations (US-107) ------------------------------------------------
 
   Future<List<PendingReview>> pendingReviews() async {
-    final collectors = await _db.collection('users').where('verificationStatus', isEqualTo: 'pending').get();
+    final collectors = await _db
+        .collection('users')
+        .where('verificationStatus', isEqualTo: 'pending')
+        .get();
     final companies = await _db.collection('companies').where('status', isEqualTo: 'pending').get();
     final out = <PendingReview>[];
     for (final d in collectors.docs.where((d) => d.data()['role'] == 'collector')) {
@@ -190,14 +207,26 @@ class AdminRepository {
         'rejectionReason': approve ? null : reason.trim(),
       });
     }
-    _audit(b, actor, approve ? AuditAction.approve : AuditAction.reject, r.role.name, r.uid, reason.trim());
+    _audit(
+      b,
+      actor,
+      approve ? AuditAction.approve : AuditAction.reject,
+      r.role.name,
+      r.uid,
+      reason.trim(),
+    );
     _notify(b, actor.uid, r.uid, NotificationType.accountReview, r.uid, status);
     await b.commit();
   }
 
   // --- Supervision : collectes et indicateurs (US-108 à US-111) ------------
 
-  CollectionStat _stat(String id, Map<String, dynamic> m, Map<String, dynamic>? est, List<WasteCategory> catalog) {
+  CollectionStat _stat(
+    String id,
+    Map<String, dynamic> m,
+    Map<String, dynamic>? est,
+    List<WasteCategory> catalog,
+  ) {
     final kg = <RecyclableMaterial, double>{};
     for (final e in (est?['actualKg'] as Map? ?? const {}).entries) {
       final mat = materialForCategory('${e.key}', catalog);
@@ -214,7 +243,8 @@ class AdminRepository {
       point: GeoPoint.fromMap(place?['point']),
       acceptedAt: _date(m['acceptedAt']),
       completedAt: _date(m['completedAt']),
-      estimatedKg: (m['estimatedKg'] as num?)?.toDouble() ?? (est?['totalKg'] as num?)?.toDouble() ?? 0,
+      estimatedKg:
+          (m['estimatedKg'] as num?)?.toDouble() ?? (est?['totalKg'] as num?)?.toDouble() ?? 0,
       actualKg: kg,
       cancelledBy: m['cancelledBy'] as String?,
     );
@@ -250,7 +280,10 @@ class AdminRepository {
     for (var i = 0; i < codes.length; i += 30) {
       final q = await _db
           .collection('estimates')
-          .where(FieldPath.documentId, whereIn: codes.sublist(i, i + 30 > codes.length ? codes.length : i + 30))
+          .where(
+            FieldPath.documentId,
+            whereIn: codes.sublist(i, i + 30 > codes.length ? codes.length : i + 30),
+          )
           .get();
       for (final d in q.docs) {
         est[d.id] = d.data();
@@ -275,7 +308,8 @@ class AdminRepository {
     reason: m['reason'] as String? ?? '',
     description: m['description'] as String? ?? '',
     photoCount: (m['photoCount'] as num?)?.toInt() ?? 0,
-    status: DisputeStatus.values.where((s) => s.name == m['status']).firstOrNull ?? DisputeStatus.open,
+    status:
+        DisputeStatus.values.where((s) => s.name == m['status']).firstOrNull ?? DisputeStatus.open,
     resolution: m['resolution'] as String? ?? '',
     createdAt: _date(m['createdAt']),
     resolvedAt: _date(m['resolvedAt']),
@@ -285,8 +319,9 @@ class AdminRepository {
       .collection('tickets')
       .snapshots()
       .map(
-        (s) => [for (final d in s.docs) _dispute(d.id, d.data())]
-          ..sort((a, b) => (a.createdAt ?? DateTime(3000)).compareTo(b.createdAt ?? DateTime(3000))),
+        (s) => [
+          for (final d in s.docs) _dispute(d.id, d.data()),
+        ]..sort((a, b) => (a.createdAt ?? DateTime(3000)).compareTo(b.createdAt ?? DateTime(3000))),
       );
 
   Future<List<Uint8List>> disputePhotos(String id) async => [
@@ -308,7 +343,14 @@ class AdminRepository {
         'resolvedAt': FieldValue.serverTimestamp(),
       });
     _audit(b, actor, AuditAction.dispute, 'ticket', d.id, resolution.trim());
-    _notify(b, actor.uid, d.reporterUid, NotificationType.disputeUpdate, d.collectionId, resolution.trim());
+    _notify(
+      b,
+      actor.uid,
+      d.reporterUid,
+      NotificationType.disputeUpdate,
+      d.collectionId,
+      resolution.trim(),
+    );
     await b.commit();
   }
 
@@ -335,7 +377,12 @@ class AdminRepository {
         ],
       );
 
-  Future<void> announce(({String uid, String name}) actor, String title, String body, Segment s) async {
+  Future<void> announce(
+    ({String uid, String name}) actor,
+    String title,
+    String body,
+    Segment s,
+  ) async {
     final ref = _db.collection('announcements').doc();
     final b = _db.batch()
       ..set(ref, {
@@ -346,7 +393,14 @@ class AdminRepository {
         'by': actor.uid,
         'createdAt': FieldValue.serverTimestamp(),
       });
-    _audit(b, actor, AuditAction.broadcast, 'announcement', ref.id, '${s.role?.name ?? 'all'} · ${s.zoneId ?? 'all'}');
+    _audit(
+      b,
+      actor,
+      AuditAction.broadcast,
+      'announcement',
+      ref.id,
+      '${s.role?.name ?? 'all'} · ${s.zoneId ?? 'all'}',
+    );
     await b.commit();
   }
 

@@ -28,7 +28,10 @@ class VerificationsScreen extends ConsumerWidget {
         gradient: EcoGradients.sky,
         leading: IconButton.filledTonal(
           tooltip: l.commonBack,
-          style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: .22), foregroundColor: Colors.white),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.white.withValues(alpha: .22),
+            foregroundColor: Colors.white,
+          ),
           onPressed: () => context.go(Routes.supervision),
           icon: const BackButtonIcon(),
         ),
@@ -89,7 +92,12 @@ class _ReviewCardState extends ConsumerState<_ReviewCard> {
             ],
           ),
           const SizedBox(height: 10),
-          EcoTextField(label: l.verifReasonField, controller: _reason, maxLength: 300, helper: l.verifReasonHelp),
+          EcoTextField(
+            label: l.verifReasonField,
+            controller: _reason,
+            maxLength: 300,
+            helper: l.verifReasonHelp,
+          ),
           Row(
             children: [
               Expanded(
@@ -127,7 +135,11 @@ class _ReviewCardState extends ConsumerState<_ReviewCard> {
       useRootNavigator: true,
       builder: (c) => Dialog(
         child: InteractiveViewer(
-          child: Image.memory(bytes, errorBuilder: (_, _, _) => Padding(padding: const EdgeInsets.all(24), child: Text(context.l10n.verifNotImage))),
+          child: Image.memory(
+            bytes,
+            errorBuilder: (_, _, _) =>
+                Padding(padding: const EdgeInsets.all(24), child: Text(context.l10n.verifNotImage)),
+          ),
         ),
       ),
     );

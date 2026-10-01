@@ -23,7 +23,8 @@ class BlockedScreen extends ConsumerWidget {
       gradient: EcoGradients.coral,
       showBack: false,
       children: [
-        if (reason != null && reason.isNotEmpty) EcoCard(child: Text('${l.blockedReason} : $reason')),
+        if (reason != null && reason.isNotEmpty)
+          EcoCard(child: Text('${l.blockedReason} : $reason')),
         EcoButton(
           label: l.signOut,
           style: EcoButtonStyle.ghost,

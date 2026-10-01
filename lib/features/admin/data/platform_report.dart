@@ -45,7 +45,11 @@ List<List<String>> _rows(PlatformStats s, PlatformReportLabels l) => [
     ],
 ];
 
-Future<Uint8List> buildPlatformPdf(PlatformStats s, PlatformReportLabels l, {ByteData? font}) async {
+Future<Uint8List> buildPlatformPdf(
+  PlatformStats s,
+  PlatformReportLabels l, {
+  ByteData? font,
+}) async {
   final f = font == null ? null : pw.Font.ttf(font);
   final doc = pw.Document(
     theme: f == null ? null : pw.ThemeData.withFont(base: f, bold: f, italic: f, boldItalic: f),
@@ -56,7 +60,10 @@ Future<Uint8List> buildPlatformPdf(PlatformStats s, PlatformReportLabels l, {Byt
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       build: (_) => [
-        pw.Text(l.title, style: pw.TextStyle(fontSize: 22, color: _green, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          l.title,
+          style: pw.TextStyle(fontSize: 22, color: _green, fontWeight: pw.FontWeight.bold),
+        ),
         pw.Text(l.period),
         pw.Text(l.generatedOn, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
         pw.SizedBox(height: 14),
@@ -68,7 +75,10 @@ Future<Uint8List> buildPlatformPdf(PlatformStats s, PlatformReportLabels l, {Byt
               pw.Container(
                 width: 160,
                 padding: const pw.EdgeInsets.all(10),
-                decoration: pw.BoxDecoration(color: _paper, borderRadius: pw.BorderRadius.circular(8)),
+                decoration: pw.BoxDecoration(
+                  color: _paper,
+                  borderRadius: pw.BorderRadius.circular(8),
+                ),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [

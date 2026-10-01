@@ -121,3 +121,14 @@ void showEcoToast(BuildContext context, String message) {
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message), duration: const Duration(milliseconds: 2300)));
 }
+
+/// Libère les contrôleurs d'une feuille modale une fois son animation de
+/// fermeture terminée : les libérer dès le retour de `showModalBottomSheet`
+/// casse la feuille qui se referme encore à l'écran.
+void disposeAfterSheet(Iterable<ChangeNotifier> controllers) {
+  Future<void>.delayed(kThemeAnimationDuration * 3, () {
+    for (final c in controllers) {
+      c.dispose();
+    }
+  });
+}

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/eco_widgets.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../auth/domain/user_role.dart';
+import '../../../admin/application/admin_providers.dart';
 import '../../application/tracking_providers.dart';
 import '../widgets/notification_listener.dart';
 
@@ -22,6 +23,7 @@ class InboxScreen extends ConsumerWidget {
     final role = ref.watch(currentProfileProvider).value?.role ?? UserRole.citizen;
     final unread = ref.watch(unreadCountProvider);
     final fmt = DateFormat.MMMd(Localizations.localeOf(context).languageCode).add_Hm();
+    final news = ref.watch(myAnnouncementsProvider);
     return LayeredPage(
       header: HeroHeader(
         title: l.inboxTitle,
@@ -30,6 +32,27 @@ class InboxScreen extends ConsumerWidget {
         gradient: EcoGradients.sun,
       ),
       children: [
+        // Annonces de l'administration pour mon segment (US-116).
+        for (final a in news.take(3))
+          EcoCard(
+            gradient: EcoGradients.violet,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '📣 ${a.title}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 4),
+                Text(a.body, style: const TextStyle(color: Colors.white)),
+                if (a.createdAt != null)
+                  Text(
+                    fmt.format(a.createdAt!),
+                    style: TextStyle(color: Colors.white.withValues(alpha: .8), fontSize: 12),
+                  ),
+              ],
+            ),
+          ),
         EcoCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

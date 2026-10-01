@@ -177,6 +177,6 @@ class ListingDetailScreen extends ConsumerWidget {
         context.mounted) {
       showEcoToast(context, l.reportSent);
     }
-    text.dispose();
+    disposeAfterSheet([text]);
   }
 }

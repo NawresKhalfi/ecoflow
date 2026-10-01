@@ -154,9 +154,7 @@ class _DealScreenState extends ConsumerState<DealScreen> {
           );
       if (!sent && context.mounted) showEcoToast(context, l.dealInvalid);
     }
-    for (final c in [price, qty, days]) {
-      c.dispose();
-    }
+    disposeAfterSheet([price, qty, days]);
   }
 }
 

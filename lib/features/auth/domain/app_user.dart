@@ -53,7 +53,8 @@ class AppUser {
   bool get isSuperAdmin => role == UserRole.admin && adminPermissions == null;
 
   bool can(String permission) =>
-      role == UserRole.admin && (adminPermissions == null || adminPermissions!.contains(permission));
+      role == UserRole.admin &&
+      (adminPermissions == null || adminPermissions!.contains(permission));
 
   String get firstName => displayName.trim().split(RegExp(r'\s+')).first;
 

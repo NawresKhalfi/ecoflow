@@ -4,6 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/domain/user_role.dart';
+import '../../features/admin/presentation/screens/audit_screen.dart';
+import '../../features/admin/presentation/screens/broadcast_screen.dart';
+import '../../features/admin/presentation/screens/disputes_screen.dart';
+import '../../features/admin/presentation/screens/live_map_screen.dart';
+import '../../features/admin/presentation/screens/supervision_screen.dart';
+import '../../features/admin/presentation/screens/users_admin_screen.dart';
+import '../../features/admin/presentation/screens/verifications_screen.dart';
+import '../../features/admin/presentation/screens/zones_screen.dart';
 import '../../features/auth/presentation/screens/blocked_screen.dart';
 import '../../features/auth/presentation/screens/complete_profile_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
@@ -178,6 +186,20 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ],
               ),
               _tab('moderation', (_) => const ModerationScreen()),
+              _tab(
+                'admin',
+                (_) => const SupervisionScreen(),
+                routes: [
+                  _tab('users', (_) => const UsersAdminScreen()),
+                  _tab('admins', (_) => const UsersAdminScreen(adminsOnly: true)),
+                  _tab('verifications', (_) => const VerificationsScreen()),
+                  _tab('map', (_) => const LiveMapScreen()),
+                  _tab('disputes', (_) => const DisputesScreen()),
+                  _tab('audit', (_) => const AuditScreen()),
+                  _tab('broadcast', (_) => const BroadcastScreen()),
+                  _tab('zones', (_) => const ZonesScreen()),
+                ],
+              ),
               _tab('chat/:id', (s) => ChatScreen(collectionId: s.pathParameters['id']!)),
               _tab(
                 'collections',

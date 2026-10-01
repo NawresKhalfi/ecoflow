@@ -41,12 +41,13 @@ final onlineCollectorsProvider = StreamProvider.autoDispose<List<OnlineCollector
 );
 
 /// Données brutes des indicateurs (rechargées à l'ouverture).
-final statsDataProvider = FutureProvider.autoDispose<({List<CollectionStat> collections, List<UserStat> users})>(
-  (ref) async {
-    final repo = ref.watch(adminRepositoryProvider);
-    return (collections: await repo.allCollections(_catalog(ref)), users: await repo.userStats());
-  },
-);
+final statsDataProvider =
+    FutureProvider.autoDispose<({List<CollectionStat> collections, List<UserStat> users})>((
+      ref,
+    ) async {
+      final repo = ref.watch(adminRepositoryProvider);
+      return (collections: await repo.allCollections(_catalog(ref)), users: await repo.userStats());
+    });
 
 class StatsPeriodNotifier extends Notifier<ReportPeriod> {
   @override
@@ -55,7 +56,9 @@ class StatsPeriodNotifier extends Notifier<ReportPeriod> {
   void set(ReportPeriod p) => state = p;
 }
 
-final statsPeriodProvider = NotifierProvider<StatsPeriodNotifier, ReportPeriod>(StatsPeriodNotifier.new);
+final statsPeriodProvider = NotifierProvider<StatsPeriodNotifier, ReportPeriod>(
+  StatsPeriodNotifier.new,
+);
 
 final platformStatsProvider = Provider.autoDispose<PlatformStats?>((ref) {
   final data = ref.watch(statsDataProvider).value;
@@ -109,26 +112,32 @@ class AdminController extends ActionController {
   Future<bool> setBlocked(AdminUserView u, {required bool blocked, String reason = ''}) =>
       run(() => _repo.setBlocked(_actor, u, blocked: blocked, reason: reason));
 
-  Future<bool> setAdmin(AdminUserView u, {required bool admin, Set<String>? permissions}) => run(() async {
-    if (u.uid == _actor.uid) throw StateError('self');
-    await _repo.setAdmin(_actor, u, admin: admin, permissions: permissions);
-  });
+  Future<bool> setAdmin(AdminUserView u, {required bool admin, Set<String>? permissions}) =>
+      run(() async {
+        if (u.uid == _actor.uid) throw StateError('self');
+        await _repo.setAdmin(_actor, u, admin: admin, permissions: permissions);
+      });
 
-  Future<bool> review(PendingReview r, {required bool approve, String reason = ''}) => run(() async {
-    if (!approve && reason.trim().isEmpty) throw ArgumentError('reason');
-    await _repo.review(_actor, r, approve: approve, reason: reason);
-    ref.invalidate(pendingReviewsProvider);
-  });
+  Future<bool> review(PendingReview r, {required bool approve, String reason = ''}) =>
+      run(() async {
+        if (!approve && reason.trim().isEmpty) throw ArgumentError('reason');
+        await _repo.review(_actor, r, approve: approve, reason: reason);
+        ref.invalidate(pendingReviewsProvider);
+      });
 
-  Future<bool> resolve(Dispute d, {required bool upheld, required String resolution}) => run(() async {
-    if (resolution.trim().isEmpty) throw ArgumentError('resolution');
-    await _repo.resolveDispute(_actor, d, upheld: upheld, resolution: resolution);
-  });
+  Future<bool> resolve(Dispute d, {required bool upheld, required String resolution}) =>
+      run(() async {
+        if (resolution.trim().isEmpty) throw ArgumentError('resolution');
+        await _repo.resolveDispute(_actor, d, upheld: upheld, resolution: resolution);
+      });
 
   Future<bool> announce(String title, String body, Segment s) => run(() async {
     final t = title.trim();
     final b = body.trim();
-    if (t.isEmpty || b.isEmpty || t.length > maxAnnouncementTitle || b.length > maxAnnouncementBody) {
+    if (t.isEmpty ||
+        b.isEmpty ||
+        t.length > maxAnnouncementTitle ||
+        b.length > maxAnnouncementBody) {
       throw ArgumentError('announcement');
     }
     await _repo.announce(_actor, t, b, s);
@@ -137,18 +146,28 @@ class AdminController extends ActionController {
   Future<bool> saveZones(List<ServiceZone> zones) => run(() => _repo.saveZones(_actor, zones));
 
   /// Rapport global PDF ou Excel pour les partenaires (US-115).
-  Future<bool> export(PlatformStats s, PlatformReportLabels l, {required bool pdf}) => run(() async {
+  Future<bool> export(
+    PlatformStats s,
+    PlatformReportLabels l, {
+    required bool pdf,
+  }) => run(() async {
     final now = ref.read(clockProvider)();
     final Uint8List bytes = pdf
-        ? await buildPlatformPdf(s, l, font: await rootBundle.load('assets/fonts/BricolageGrotesque.ttf'))
+        ? await buildPlatformPdf(
+            s,
+            l,
+            font: await rootBundle.load('assets/fonts/BricolageGrotesque.ttf'),
+          )
         : buildPlatformXlsx(s, l);
     final dir = await ref.read(exportDirectoryProvider)();
-    final name = 'ecoflow_rapport_plateforme_${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}.${pdf ? 'pdf' : 'xlsx'}';
+    final name =
+        'ecoflow_rapport_plateforme_${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}.${pdf ? 'pdf' : 'xlsx'}';
     final file = File('${dir.path}/$name');
     await file.writeAsBytes(bytes);
     await ref.read(fileSharerProvider)(file.path);
   });
 }
 
-final adminControllerProvider =
-    NotifierProvider.autoDispose<AdminController, AsyncValue<void>>(AdminController.new);
+final adminControllerProvider = NotifierProvider.autoDispose<AdminController, AsyncValue<void>>(
+  AdminController.new,
+);

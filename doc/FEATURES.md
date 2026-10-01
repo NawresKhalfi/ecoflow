@@ -19,7 +19,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E09 | Espace recycleur – dashboard & stocks | V1 | 9/9 | ✅ |
 | E10 | Prédiction IA des volumes | V2 | 5/6 | 🟨 |
 | E11 | Marketplace circulaire B2B | V2 | 11/12 | 🟨 |
-| E12 | Administration & supervision | MVP | 0/12 | ⬜ |
+| E12 | Administration & supervision | MVP | 12/12 | ✅ |
 | E13 | Statistiques & impact citoyen | V1 | 0/5 | ⬜ |
 | E14 | Exigences transverses & qualité | MVP | 0/10 | ⬜ |
 
@@ -211,18 +211,18 @@ _Gestion des utilisateurs, validations, carte des collectes, statistiques, CO₂
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-106 | Administrateur | En tant que administrateur, je veux gérer les comptes utilisateurs (recherche, blocage, réactivation) afin de assurer la sécurité de la plateforme. | Must | MVP | ⬜ |  |
-| US-107 | Administrateur | En tant que administrateur, je veux valider ou refuser les dossiers des collecteurs et recycleurs afin de garantir la fiabilité des professionnels. | Must | MVP | ⬜ |  |
-| US-108 | Administrateur | En tant que administrateur, je veux voir sur une carte toutes les collectes en cours et planifiées afin de superviser l'activité en temps réel. | Must | MVP | ⬜ |  |
-| US-109 | Administrateur | En tant que administrateur, je veux consulter les statistiques globales (tonnes recyclées par matière, collectes, utilisateurs actifs) afin de mesurer la performance. | Must | MVP | ⬜ |  |
-| US-110 | Administrateur | En tant que administrateur, je veux voir le CO₂ estimé évité afin de mesurer l'impact environnemental. | Should | V1 | ⬜ |  |
-| US-111 | Administrateur | En tant que administrateur, je veux suivre les performances du système (taux de matching, délai moyen, précision IA, taux d'annulation) afin de piloter la qualité du service. | Should | V1 | ⬜ |  |
-| US-112 | Administrateur | En tant que administrateur, je veux traiter les litiges et signalements afin de résoudre les conflits équitablement. | Should | V1 | ⬜ |  |
-| US-113 | Administrateur | En tant que administrateur, je veux gérer les rôles et permissions des administrateurs afin de limiter l'accès aux fonctions sensibles. | Should | V1 | ⬜ |  |
-| US-114 | Administrateur | En tant que administrateur, je veux consulter le journal d'audit des actions sensibles afin de assurer la traçabilité. | Should | V1 | ⬜ |  |
-| US-115 | Administrateur | En tant que administrateur, je veux exporter des rapports (PDF/Excel) pour les partenaires et institutions afin de communiquer sur les résultats. | Could | V2 | ⬜ |  |
-| US-116 | Administrateur | En tant que administrateur, je veux envoyer des annonces et notifications à un segment d'utilisateurs afin de informer la communauté. | Could | V2 | ⬜ |  |
-| US-117 | Administrateur | En tant que administrateur, je veux définir les zones géographiques desservies afin de limiter les demandes aux zones opérationnelles. | Should | MVP | ⬜ |  |
+| US-106 | Administrateur | En tant que administrateur, je veux gérer les comptes utilisateurs (recherche, blocage, réactivation) afin de assurer la sécurité de la plateforme. | Must | MVP | ✅ | Écran Comptes : recherche (nom, e-mail, téléphone, uid), filtres rôle / bloqués, blocage avec motif et réactivation. Un compte bloqué voit l’écran « Compte suspendu » avec le motif ; les règles lui interdisent toute nouvelle demande, annonce ou message. Vérifié sur appareil. |
+| US-107 | Administrateur | En tant que administrateur, je veux valider ou refuser les dossiers des collecteurs et recycleurs afin de garantir la fiabilité des professionnels. | Must | MVP | ✅ | File des dossiers en attente (collecteurs + entreprises) avec pièces justificatives ; validation ou refus motivé (motif obligatoire), statut des documents mis à jour, notification au demandeur. Vérifié sur appareil. |
+| US-108 | Administrateur | En tant que administrateur, je veux voir sur une carte toutes les collectes en cours et planifiées afin de superviser l'activité en temps réel. | Must | MVP | ✅ | Carte de supervision : collectes en cours / planifiées par statut et collecteurs en ligne (position en direct). Vérifié sur appareil. |
+| US-109 | Administrateur | En tant que administrateur, je veux consulter les statistiques globales (tonnes recyclées par matière, collectes, utilisateurs actifs) afin de mesurer la performance. | Must | MVP | ✅ | Tableau de bord : tonnes recyclées par matière, collectes, utilisateurs actifs et nouveaux par rôle, sur 7 / 30 / 90 jours ou depuis le début. Vérifié sur appareil. |
+| US-110 | Administrateur | En tant que administrateur, je veux voir le CO₂ estimé évité afin de mesurer l'impact environnemental. | Should | V1 | ✅ | CO₂e évité estimé à partir des poids réels pesés et des facteurs par matière. |
+| US-111 | Administrateur | En tant que administrateur, je veux suivre les performances du système (taux de matching, délai moyen, précision IA, taux d'annulation) afin de piloter la qualité du service. | Should | V1 | ✅ | Taux de matching et d’annulation, délai moyen d’acceptation et de réalisation, précision de l’estimation IA (estimé vs pesé). |
+| US-112 | Administrateur | En tant que administrateur, je veux traiter les litiges et signalements afin de résoudre les conflits équitablement. | Should | V1 | ✅ | Litiges : ancienneté, résumé de la collecte, photos, décision fondée / non fondée avec texte envoyé au signalant (notification). Vérifié sur appareil. |
+| US-113 | Administrateur | En tant que administrateur, je veux gérer les rôles et permissions des administrateurs afin de limiter l'accès aux fonctions sensibles. | Should | V1 | ✅ | Super administrateur : promotion / rétrogradation, permissions déléguées (comptes, dossiers, litiges, annonces, zones, audit, marketplace). Outils et règles Firestore filtrés par permission ; un administrateur ne peut pas modifier son propre rôle. |
+| US-114 | Administrateur | En tant que administrateur, je veux consulter le journal d'audit des actions sensibles afin de assurer la traçabilité. | Should | V1 | ✅ | Journal d’audit immuable (acteur, action, cible, motif, horodatage serveur), écrit à chaque action sensible ; lecture réservée à la permission audit. Vérifié sur appareil. |
+| US-115 | Administrateur | En tant que administrateur, je veux exporter des rapports (PDF/Excel) pour les partenaires et institutions afin de communiquer sur les résultats. | Could | V2 | ✅ | Export du rapport de période en PDF et Excel (.xlsx) : indicateurs, tonnages par matière, performance. |
+| US-116 | Administrateur | En tant que administrateur, je veux envoyer des annonces et notifications à un segment d'utilisateurs afin de informer la communauté. | Could | V2 | ✅ | Annonces ciblées par rôle et / ou zone ; affichées dans la boîte de réception des utilisateurs concernés. Vérifié sur appareil. |
+| US-117 | Administrateur | En tant que administrateur, je veux définir les zones géographiques desservies afin de limiter les demandes aux zones opérationnelles. | Should | MVP | ✅ | Zones desservies : ajout, rayon, activation, suppression, aperçu carte ; publiées dans la configuration utilisée par le formulaire de demande. Vérifié sur appareil. |
 
 ## E13 — Statistiques & impact citoyen
 
@@ -260,5 +260,5 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 - US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
 - US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
 - US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
-- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 34 écritures réelles (citoyen / collecteur / recycleur) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
+- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 147 scénarios réels (citoyen / collecteur / recycleur / administrateurs) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
 - Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.
