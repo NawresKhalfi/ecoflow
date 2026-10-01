@@ -298,6 +298,15 @@ class AdminRepository {
         (uid: d.id, role: r, createdAt: _date(d.data()['createdAt'])),
   ];
 
+  /// Temps d'analyse des derniers scans (US-124).
+  Future<List<ScanTiming>> scanTimings() async => [
+    for (final d
+        in (await _db.collection('scans').orderBy('createdAt', descending: true).limit(1000).get())
+            .docs)
+      if (d.data()['inferenceMs'] case final num ms)
+        (at: _date(d.data()['createdAt']), ms: ms.toInt()),
+  ];
+
   // --- Litiges (US-112) ----------------------------------------------------
 
   Dispute _dispute(String id, Map<String, dynamic> m) => Dispute(

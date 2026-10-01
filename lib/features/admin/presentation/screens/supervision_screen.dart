@@ -29,6 +29,7 @@ class SupervisionScreen extends ConsumerWidget {
     final me = ref.watch(sessionProvider).profile;
     final period = ref.watch(statsPeriodProvider);
     final stats = ref.watch(platformStatsProvider);
+    final scan = ref.watch(scanLatencyProvider);
     final loading = ref.watch(statsDataProvider).isLoading;
     final pending = ref.watch(pendingReviewsProvider).value?.length ?? 0;
     final disputes = (ref.watch(disputesProvider).value ?? const <Dispute>[])
@@ -130,8 +131,24 @@ class SupervisionScreen extends ConsumerWidget {
                     leading: EcoAvatar(text: ['🤝', '⏱️', '✅', '🧠', '❌', '👤'][i % 6]),
                     title: v,
                     subtitle: k,
-                    showDivider: i < 5,
                   ),
+                EcoListTile(
+                  leading: const EcoAvatar(text: '📸'),
+                  title: scan?.p90Ms == null
+                      ? '—'
+                      : l.perfScanValue(
+                          (scan!.p90Ms! / 1000).toStringAsFixed(1),
+                          (scan.withinTarget! * 100).round(),
+                        ),
+                  subtitle: l.perfScan(scan?.count ?? 0),
+                  trailing: scan?.p90Ms == null
+                      ? null
+                      : EcoChip(
+                          label: scan!.p90Ms! < scanTargetMs ? '✅ < 5 s' : '⚠️ > 5 s',
+                          tone: scan.p90Ms! < scanTargetMs ? ChipTone.green : ChipTone.coral,
+                        ),
+                  showDivider: false,
+                ),
               ],
             ),
           ),

@@ -42,12 +42,26 @@ final onlineCollectorsProvider = StreamProvider.autoDispose<List<OnlineCollector
 
 /// Données brutes des indicateurs (rechargées à l'ouverture).
 final statsDataProvider =
-    FutureProvider.autoDispose<({List<CollectionStat> collections, List<UserStat> users})>((
-      ref,
-    ) async {
+    FutureProvider.autoDispose<
+      ({List<CollectionStat> collections, List<UserStat> users, List<ScanTiming> scans})
+    >((ref) async {
       final repo = ref.watch(adminRepositoryProvider);
-      return (collections: await repo.allCollections(_catalog(ref)), users: await repo.userStats());
+      return (
+        collections: await repo.allCollections(_catalog(ref)),
+        users: await repo.userStats(),
+        scans: await repo.scanTimings().catchError((_) => const <ScanTiming>[]),
+      );
     });
+
+final scanLatencyProvider = Provider.autoDispose<({int? p90Ms, double? withinTarget, int count})?>((
+  ref,
+) {
+  final data = ref.watch(statsDataProvider).value;
+  if (data == null) return null;
+  final now = ref.watch(clockProvider)();
+  final p = ref.watch(statsPeriodProvider);
+  return scanLatency(data.scans, now.subtract(Duration(days: p.days)), now);
+});
 
 class StatsPeriodNotifier extends Notifier<ReportPeriod> {
   @override

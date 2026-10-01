@@ -121,8 +121,10 @@ service cloud.firestore {
         && request.resource.data.photoCount is int
         && request.resource.data.photoCount <= 5;
       // L'utilisateur corrige son résultat, sans toucher à la proposition de l'IA.
-      allow update: if ownsScan()
-        && !changed().hasAny(['uid', 'createdAt', 'expiresAt', 'originalDetections', 'modelVersionId']);
+      allow update: if (ownsScan()
+        && !changed().hasAny(['uid', 'createdAt', 'expiresAt', 'originalDetections', 'modelVersionId']))
+        // Purge nocturne des photos expirées (US-021).
+        || (isAdmin() && changed().hasOnly(['photosPurged']));
       allow delete: if ownsScan() || isAdmin();
 
       match /photos/{index} {
@@ -196,7 +198,9 @@ service cloud.firestore {
         && resource.data.status == 'estimated'
         && request.resource.data.status == 'weighed'
         && request.resource.data.collectorUid == request.auth.uid
-        && changed().hasOnly(['status', 'actualKg', 'actualTotalKg', 'finalDt', 'collectorUid', 'weighedAt']));
+        && changed().hasOnly(['status', 'actualKg', 'actualTotalKg', 'finalDt', 'collectorUid', 'weighedAt'])
+        // Date de pesée = heure du serveur (statistiques mensuelles, US-118).
+        && request.resource.data.weighedAt == request.time);
       allow delete: if isAdmin();
     }
 
@@ -571,7 +575,10 @@ service cloud.firestore {
       }
       allow get: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isAdmin());
       allow list: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if signedIn() && (ownEntry() || isAdmin());
+      // Date = heure du serveur : un gain antidaté ou postdaté fausserait
+      // l'expiration des points (US-078) et l'historique mensuel (US-118).
+      allow create: if signedIn()
+        && ((ownEntry() && request.resource.data.createdAt == request.time) || isAdmin());
       allow update, delete: if isAdmin();
     }
 
@@ -669,6 +676,7 @@ service cloud.firestore {
 
     match /referralCodes/{code} {
       allow get: if signedIn();
+      allow list: if isAdmin();  // sauvegarde (US-132)
       allow create: if signedIn() && code.size() == 6
         && request.resource.data.keys().hasOnly(['uid'])
         && request.resource.data.uid == request.auth.uid

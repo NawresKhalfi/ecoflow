@@ -1208,6 +1208,10 @@
   "challengeDuration": "المدة",
   "challengePublish": "إطلاق التحدي",
   "challengeInvalid": "تحقّق من الاسم والهدف (كغ) والنقاط (من 0 إلى 1000).",
+  "syncOffline": "دون اتصال: تُحفظ إجراءاتك على الهاتف وتُرسَل عند عودة الشبكة.",
+  "syncConflict": "رُفض إجراء تمّ دون اتصال: تغيّرت المهمة في الأثناء. تعرض الشاشة حالتها الفعلية.",
+  "dataExportMenu": "تنزيل بياناتي",
+  "dataExportFailed": "يتعذّر التصدير حاليًا. أعد المحاولة مع اتصال.",
   "attemptsLeft": "{count, plural, =1{محاولة واحدة متبقية قبل القفل} other{{count} محاولات متبقية قبل القفل}}",
   "failLockedOut": "محاولات فاشلة كثيرة: الدخول مقفل حتى {time}.",
   "otpSubtitle": "أدخل الرمز المرسل إلى {phone}.",
@@ -1360,5 +1364,9 @@
   "challengeRank": "المرتبة {rank} من {total}",
   "challengeClaim": "احصل على {points} نقطة EcoPoints",
   "challengeClaimed": "أُضيفت {points} نقطة EcoPoints إلى محفظتك",
-  "challengeDays": "{days} يومًا"
+  "challengeDays": "{days} يومًا",
+  "syncOfflinePending": "دون اتصال: {count} إجراءات في الانتظار، تُرسَل عند عودة الشبكة.",
+  "syncSending": "مزامنة {count} إجراءات…",
+  "perfScan": "مدة تحليل المسح في 90 % من الحالات ({count} عمليات مسح)",
+  "perfScanValue": "{seconds} ث · {pct} % أقل من 5 ث"
 }

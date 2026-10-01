@@ -15,6 +15,7 @@ import '../../../auth/domain/user_role.dart';
 import '../../../auth/domain/validators.dart';
 import '../../../auth/presentation/widgets/auth_messages.dart';
 import '../../../auth/presentation/widgets/role_picker.dart';
+import '../../application/data_export_controller.dart';
 import '../../application/settings_controller.dart';
 import '../widgets/menu_tile.dart';
 import '../widgets/verification_widgets.dart';
@@ -25,6 +26,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(dataExportControllerProvider);
     final l = context.l10n;
     final profile = ref.watch(sessionProvider).profile;
     if (profile == null) return const SizedBox.shrink();
@@ -151,6 +153,15 @@ class ProfileScreen extends ConsumerWidget {
                 label: l.privacyMenu,
                 gradient: EcoGradients.violet,
                 onTap: () => context.push(Routes.privacy),
+              ),
+              MenuTile(
+                emoji: '📦',
+                label: l.dataExportMenu,
+                gradient: EcoGradients.sky,
+                onTap: () async {
+                  final ok = await ref.read(dataExportControllerProvider.notifier).export();
+                  if (context.mounted && !ok) showEcoToast(context, l.dataExportFailed);
+                },
               ),
               MenuTile(
                 emoji: '🗑️',

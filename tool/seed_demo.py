@@ -9,8 +9,8 @@ l'app : aucun accès administrateur n'est utilisé.
                                        # role = "admin" sur admin@ dans la console :
                                        # valide Karim et GreenPlast, crée le
                                        # catalogue de récompenses de démo (E08)
-  python3 tool/seed_demo.py history    # étape 3 : trois collectes pesées de Leila
-                                       # (août, septembre, octobre), créditées
+  python3 tool/seed_demo.py history    # étape 3 : trois collectes pesées de Leila,
+                                       # créditées (pesée datée par le serveur)
   python3 tool/seed_demo.py pickup     # une collecte pesée de plus, aujourd'hui
   python3 tool/seed_demo.py resume     # crédite une collecte confirmée restée sans points
 
@@ -228,8 +228,9 @@ def collect(leila, luid, karim, kuid, kg, estimated_kg, day):
                    write(f'collections/{cid}', {'hasProof': True, 'updatedAt': day})], 'preuve')
     total = sum(kg.values())
     final_dt = round(sum(kg[c] * PRICES[c] for c in kg), 3)
+    # Date de pesée posée par le serveur (exigé par les règles).
     commit(karim, [write(f'estimates/{code}', {'status': 'weighed', 'actualKg': kg, 'actualTotalKg': total,
-                                               'finalDt': final_dt, 'collectorUid': kuid, 'weighedAt': day}),
+                                               'finalDt': final_dt, 'collectorUid': kuid}, stamp=['weighedAt']),
                    write(f'collections/{cid}', {'status': 'handedOver', 'collectorUid': kuid,
                                                 'handedOverAt': day, 'updatedAt': day})], 'pesée')
     commit(leila, [write(f'collections/{cid}', {'status': 'completed', 'completedAt': day, 'updatedAt': day})],
@@ -260,7 +261,8 @@ def credit(leila, luid, karim, kuid, cid, kg, est_total, final_dt, day):
             wallet[k] = (w.get(k) or {}).get('stringValue')
     commit(leila, [write(f'pointEntries/c_{cid}', {
         'uid': luid, 'type': 'earn', 'points': points, 'status': 'held' if held else 'credited', 'collectionId': cid,
-        'redemptionId': None, 'kg': total, 'byCategory': kg, 'flags': [], 'label': None, 'createdAt': day}, exists=False),
+        'redemptionId': None, 'kg': total, 'byCategory': kg, 'flags': [], 'label': None}, exists=False,
+        stamp=['createdAt']),
         write(f'wallets/{luid}', wallet, stamp=['lastEarnAt'])], 'EcoPoints')
     b = get_doc(f'collectorBalances/{kuid}', karim)
     commit(karim, [write(f'earnings/{cid}', {'collectorUid': kuid, 'amountDt': final_dt, 'kg': total, 'createdAt': day},

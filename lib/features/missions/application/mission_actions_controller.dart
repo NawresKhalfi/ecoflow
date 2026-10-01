@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/offline_write.dart';
 import '../../auth/application/action_controller.dart';
 import '../../auth/application/auth_providers.dart';
 import '../../collection/domain/collection_request.dart';
@@ -35,6 +36,7 @@ class WeightsIncomplete implements Exception {
 class MissionActionsController extends ActionController {
   String get _uid => ref.read(currentUidProvider)!;
   MissionRepository get _repo => ref.read(missionRepositoryProvider);
+  SyncTracker get _sync => ref.read(syncTrackerProvider.notifier);
 
   Future<bool> accept(CollectionRequest r) => run(() async {
     await _repo.accept(r.id, _uid);
@@ -47,14 +49,16 @@ class MissionActionsController extends ActionController {
   Future<bool> advance(CollectionRequest r) => run(() async {
     final next = nextStep(r.status);
     if (next == null) return;
-    await _repo.advance(r.id, next);
+    // Hors ligne (US-126) : l'étape est enregistrée localement et envoyée
+    // au retour du réseau ; la notification suit la même file.
+    await _sync.write(_repo.advance(r.id, next));
     final type = statusNotification(next.name);
-    if (type != null) await notify(ref, toUid: r.citizenUid, type: type, r: r);
+    if (type != null) await _sync.write(notify(ref, toUid: r.citizenUid, type: type, r: r));
   });
 
   Future<bool> takeProof(CollectionRequest r, PickSource source) => run(() async {
     final f = await ref.read(documentPickerProvider).pick(source);
-    if (f != null) await _repo.saveProof(r.id, _uid, f.bytes);
+    if (f != null) await _sync.write(_repo.saveProof(r.id, _uid, f.bytes));
   });
 
   /// Clôture : le citoyen valide en donnant son code de remise ; la pesée
@@ -72,13 +76,15 @@ class MissionActionsController extends ActionController {
     if (estimate == null) throw const WrongHandoverCode();
     if (!isWeighingComplete(estimate.lines, actualKg)) throw const WeightsIncomplete();
     final actual = {for (final l in estimate.lines) l.categoryId: actualKg[l.categoryId]!};
-    await estimates.submitWeighing(
-      r.estimateCode,
-      actual,
-      compareWeighing(estimate.lines, actual),
-      _uid,
+    await _sync.write(
+      estimates.submitWeighing(
+        r.estimateCode,
+        actual,
+        compareWeighing(estimate.lines, actual),
+        _uid,
+      ),
     );
-    await notify(ref, toUid: r.citizenUid, type: NotificationType.handedOver, r: r);
+    await _sync.write(notify(ref, toUid: r.citizenUid, type: NotificationType.handedOver, r: r));
   });
 
   Future<bool> reportNoShow(

@@ -1208,6 +1208,10 @@
   "challengeDuration": "Durée",
   "challengePublish": "Lancer le défi",
   "challengeInvalid": "Vérifie le nom, l’objectif (kg) et les points (0 à 1 000).",
+  "syncOffline": "Hors ligne : tes actions sont enregistrées sur le téléphone et seront envoyées au retour du réseau.",
+  "syncConflict": "Une action faite hors ligne a été refusée : la mission a changé entre-temps. L’écran affiche son état réel.",
+  "dataExportMenu": "Télécharger mes données",
+  "dataExportFailed": "Export impossible pour le moment. Réessaie avec une connexion.",
   "attemptsLeft": "{count, plural, =1{Encore 1 essai avant verrouillage} other{Encore {count} essais avant verrouillage}}",
   "@attemptsLeft": {
     "placeholders": {
@@ -2506,6 +2510,41 @@
   "@challengeDays": {
     "placeholders": {
       "days": {
+        "type": "int"
+      }
+    }
+  },
+  "syncOfflinePending": "{count, plural, =1{Hors ligne : 1 action en attente, envoyée au retour du réseau.} other{Hors ligne : {count} actions en attente, envoyées au retour du réseau.}}",
+  "@syncOfflinePending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncSending": "{count, plural, =1{Synchronisation de 1 action…} other{Synchronisation de {count} actions…}}",
+  "@syncSending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "perfScan": "{count, plural, =0{Temps d’analyse d’un scan (aucun scan sur la période)} =1{Temps d’analyse d’un scan, 90 % des cas (1 scan)} other{Temps d’analyse d’un scan, 90 % des cas ({count} scans)}}",
+  "@perfScan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "perfScanValue": "{seconds} s · {pct} % sous 5 s",
+  "@perfScanValue": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      },
+      "pct": {
         "type": "int"
       }
     }

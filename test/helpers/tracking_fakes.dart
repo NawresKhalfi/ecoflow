@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ecoflow/core/firebase/crash_reporting.dart';
 import 'package:ecoflow/features/tracking/application/tracking_providers.dart';
 import 'package:ecoflow/features/tracking/data/device_services.dart';
 import 'package:ecoflow/features/tracking/domain/eta.dart';
@@ -39,4 +40,5 @@ List<Override> deviceFakes({FakeNotifier? notifier, FakePositions? positions}) =
   localNotifierProvider.overrideWithValue(notifier ?? FakeNotifier()),
   pushTokenSourceProvider.overrideWithValue(FakeTokenSource()),
   positionStreamProvider.overrideWithValue(positions ?? FakePositions()),
+  crashlyticsProvider.overrideWithValue(null),
 ];

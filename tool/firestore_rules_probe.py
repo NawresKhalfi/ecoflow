@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-12) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4 à 14) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -9,10 +9,14 @@ Usage :
   firebase emulators:start --only auth,firestore   # JDK 21 requis
   python3 tool/firestore_rules_probe.py
 
+En CI : firebase emulators:exec --project demo-ecoflow avec FIREBASE_PROJECT=demo-ecoflow.
+
 N'agit que sur 127.0.0.1 (émulateurs), jamais sur le projet réel.
 """
+import copy
+import os
 import json, urllib.request, datetime, random, string
-P='meteo-ba45f'; ROOT=f'projects/{P}/databases/(default)/documents'; B='http://127.0.0.1:8080/v1/'+ROOT
+P=os.environ.get('FIREBASE_PROJECT', 'meteo-ba45f'); ROOT=f'projects/{P}/databases/(default)/documents'; B='http://127.0.0.1:8080/v1/'+ROOT
 AUTH='http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/'
 def http(url, body=None, token=None, method=None):
     r=urllib.request.Request(url, data=None if body is None else json.dumps(body).encode(), method=method or ('POST' if body is not None else 'GET'))
@@ -45,7 +49,19 @@ def upd(path, d, exists=True):
 def create(path, d): return {'update':{'name':f'{ROOT}/{path}','fields':fields(d)},'currentDocument':{'exists':False}}
 def stamp(w, *paths):
     w['updateTransforms']=[{'fieldPath':p,'setToServerValue':'REQUEST_TIME'} for p in paths]; return w
-def commit(token, writes): return http(B+':commit', {'writes':writes}, token)[0]
+# Dates serveur exigées par les règles (pesée, mouvements de points) : comme
+# l'app (FieldValue.serverTimestamp), la sonde les fait poser par le serveur.
+SERVER_TIMES={'/estimates/':'weighedAt','/pointEntries/':'createdAt'}
+def server_times(w):
+    if w.pop('raw', False): return w
+    name=w.get('update',{}).get('name','')
+    for frag,field in SERVER_TIMES.items():
+        if frag in name and field in w['update']['fields']:
+            del w['update']['fields'][field]
+            if 'updateMask' in w: w['updateMask']['fieldPaths']=[f for f in w['updateMask']['fieldPaths'] if f!=field]
+            w.setdefault('updateTransforms',[]).append({'fieldPath':field,'setToServerValue':'REQUEST_TIME'})
+    return w
+def commit(token, writes): return http(B+':commit', {'writes':[server_times(copy.deepcopy(w)) for w in writes]}, token)[0]
 results=[]
 def check(label, token, writes, expect):
     s=commit(token, writes); ok=(s==200)==expect
@@ -80,6 +96,8 @@ weigh=[upd(f'estimates/{code}', {'status':'weighed','actualKg':{'can':2.5},'actu
        upd(f'collections/{cid}', {'status':'handedOver','collectorUid':kuid,'handedOverAt':now,'updatedAt':now})]
 check('handover WITHOUT proof photo is refused', karim, weigh, False)
 check('collector saves proof photo', karim, [create(f'collections/{cid}/attachments/proof', {'uid':kuid,'data':'AQID','takenAt':now}), upd(f'collections/{cid}', {'hasProof':True,'updatedAt':now})], True)
+old=now-datetime.timedelta(days=40)
+check('backdated weighing refused', karim, [dict(weigh[0], raw=True, updateTransforms=[], update={'name':weigh[0]['update']['name'],'fields':fields({'status':'weighed','actualKg':{'can':2.5},'actualTotalKg':2.5,'finalDt':10.0,'collectorUid':kuid,'weighedAt':old})}), weigh[1]], False)
 check('weighing + handover in one batch', karim, weigh, True)
 check('citizen confirms (completed)', leila, [upd(f'collections/{cid}', {'status':'completed','completedAt':now,'updatedAt':now})], True)
 check('earning with WRONG amount refused', karim, [create(f'earnings/{cid}', {'collectorUid':kuid,'amountDt':99.0,'kg':2.5,'createdAt':now}), upd(f'collectorBalances/{kuid}', {'earnedDt':99.0,'withdrawnDt':0.0,'lastEarningId':cid,'lastPayoutId':None}, exists=False)], False)
@@ -154,6 +172,7 @@ check('EcoPoints inflated (500) refused', leila, [earn(luid, cid, 500, 2.5), sta
 check('points entry without wallet update refused', leila, [earn(luid, cid, 100, 2.5)], False)
 check('wallet tampering alone refused', leila, [wallet(luid, earned=9999)], False)
 check('points marked credited when not weighed refused', leila, [create(f'pointEntries/c_{cid3}', {'uid':luid,'type':'earn','points':50,'status':'credited','collectionId':cid3,'redemptionId':None,'kg':2.0,'byCategory':{'can':2.0},'flags':[],'label':None,'createdAt':now}), stamp(wallet(luid, earned=50, collections=1, kg=2.0, dayCount=1, lastEntryId=f'c_{cid3}'), 'lastEarnAt')], False)
+check('postdated EcoPoints (escape expiry) refused', leila, [dict(earn(luid, cid, 100, 2.5), raw=True, update={'name':f'{ROOT}/pointEntries/c_{cid}','fields':fields({'uid':luid,'type':'earn','points':100,'status':'credited','collectionId':cid,'redemptionId':None,'kg':2.5,'byCategory':{'can':2.5},'flags':[],'label':None,'createdAt':now+datetime.timedelta(days=400)})}), first], False)
 check('EcoPoints = weighing formula (+wallet)', leila, [earn(luid, cid, 100, 2.5), first], True)
 check('same collection credited twice refused', leila, [earn(luid, cid, 100, 2.5), stamp(wallet(luid, earned=200, collections=2, kg=5.0, dayCount=2, lastEntryId=f'c_{cid}'), 'lastEarnAt')], False)
 check('collector cannot credit citizen points', karim, [upd(f'wallets/{luid}', {'earned':1000})], False)
@@ -361,6 +380,13 @@ check('citizen cannot launch a challenge', cha, launch(cha, chuid, f'chx{code}')
 check('admin reward above the cap', sup, launch(sup, suid, f'chy{code}', reward=5000), False)
 check('admin launches a challenge', sup, launch(sup, suid, f'chz{code}'), True)
 check('delegated admin without broadcast cannot delete it', dlg, [{'delete':f'{ROOT}/challenges/chz{code}'}], False)
+
+# --- Epic 14 : aucun accès sans authentification (US-123) -------------------
+for col in ['users','estimates','collections','wallets','pointEntries','scans','config','rewards',
+            'listings','deals','orders','lots','forecasts','auditLog','announcements','challenges','notifications']:
+    s_,_=http(f'{B}/{col}')
+    results.append(s_ in (401,403)); print('PASS' if s_ in (401,403) else 'FAIL', f'anonymous list {col} →', s_)
+check('anonymous write refused', None, [create(f'collections/anon{code}', {'citizenUid':'x','status':'searching'})], False)
 
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',

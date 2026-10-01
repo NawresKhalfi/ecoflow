@@ -9,19 +9,19 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | Epic | Nom | Release | Stories | Statut |
 |---|---|---|---|---|
 | E01 | Authentification & profils | MVP | 9/10 | 🟨 |
-| E02 | Vision IA – scan des déchets | MVP | 10/12 | 🟨 |
+| E02 | Vision IA – scan des déchets | MVP | 11/12 | 🟨 |
 | E03 | Estimation intelligente quantité & valeur | MVP | 8/8 | ✅ |
 | E04 | Demande de collecte | MVP | 10/11 | 🟨 |
 | E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
 | E06 | Optimisation IA des itinéraires | V1 | 7/7 | ✅ |
 | E07 | Suivi temps réel & notifications | MVP | 2/6 | 🟨 |
-| E08 | Recycle Wallet & EcoPoints | V1 | 9/10 | 🟨 |
+| E08 | Recycle Wallet & EcoPoints | V1 | 10/10 | ✅ |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 9/9 | ✅ |
 | E10 | Prédiction IA des volumes | V2 | 5/6 | 🟨 |
 | E11 | Marketplace circulaire B2B | V2 | 11/12 | 🟨 |
 | E12 | Administration & supervision | MVP | 12/12 | ✅ |
 | E13 | Statistiques & impact citoyen | V1 | 5/5 | ✅ |
-| E14 | Exigences transverses & qualité | MVP | 0/10 | ⬜ |
+| E14 | Exigences transverses & qualité | MVP | 9/10 | 🟨 |
 
 ## E01 — Authentification & profils
 
@@ -56,7 +56,7 @@ _Détection et classification des déchets par photo avec YOLOv8/YOLO11 : compta
 | US-018 | Citoyen | En tant que citoyen, je veux analyser mes déchets sans connexion stable (modèle embarqué TFLite) afin de scanner même avec un réseau faible. | Could | V2 | ✅ | Modèle embarqué : Core ML int8 (iOS, 23 Mo) et TFLite fp16 (Android, 49 Mo) ; résultats synchronisés par le cache hors ligne Firestore. Android non testé sur appareil. |
 | US-019 | Administrateur | En tant que administrateur, je veux gérer les versions du modèle YOLO déployé et consulter ses métriques (précision, rappel, mAP) afin de piloter la qualité de l'IA. | Should | V2 | 🟨 | Versions, métriques (seul le rappel 73,5 % est publié pour le modèle embarqué), activation, retour arrière. ⚠️ Chargement d'une 2e version par URL non testé (aucun modèle hébergé). |
 | US-020 | Administrateur | En tant que administrateur, je veux exporter les corrections des utilisateurs sous forme de jeu de données annoté afin de réentraîner et améliorer le modèle. | Should | V2 | ✅ | Export ZIP au format YOLO (images anonymisées, noms séquentiels) des seuls scans corrigés avec consentement. |
-| US-021 | Système | En tant que système, je dois anonymiser et stocker les photos envoyées de façon sécurisée afin de respecter la vie privée des utilisateurs. | Should | V1 | 🟨 | EXIF/GPS supprimés (ré-encodage), chiffrement au repos Firestore, conservation 90 j. ⚠️ Purge côté app (TTL Firestore impossible sans facturation Blaze). |
+| US-021 | Système | En tant que système, je dois anonymiser et stocker les photos envoyées de façon sécurisée afin de respecter la vie privée des utilisateurs. | Should | V1 | ✅ | EXIF/GPS supprimés (ré-encodage), chiffrement au repos Firestore, conservation 90 j ; purge chaque nuit par la CI (tool/maintenance.py, sans offre Blaze), en plus de la purge côté app. |
 | US-022 | Administrateur | En tant que administrateur, je veux définir le catalogue des classes de déchets (PET, HDPE, PP, canette alu, carton, verre…) afin de aligner la détection avec les matières recyclables. | Must | MVP | ✅ | CRUD du catalogue, lien classes du modèle → catégories et catégorie → matière du barème (epic 3). |
 
 ## E03 — Estimation intelligente quantité & valeur
@@ -155,7 +155,7 @@ _Portefeuille de points, règles d'attribution, catalogue de récompenses parten
 | US-075 | Système | En tant que système, je dois détecter les comportements frauduleux (collectes fictives, doublons) afin de protéger l'intégrité des points. | Should | V2 | ✅ | Mise en attente automatique imposée par les règles : poids > maximum, pesée > estimation × ratio, trop de collectes le même jour. Doublons impossibles (un gain par collecte, code de remise à usage unique). File de contrôle admin : créditer, refuser, geler le wallet. 31 scénarios de fraude rejoués sur l’émulateur. |
 | US-076 | Citoyen | En tant que citoyen, je veux gagner des badges et des niveaux selon mon activité afin de rester motivé. | Could | V2 | ✅ | 5 niveaux (Graine → Forêt) avec progression, 10 badges (collectes, kg, matières, parrainage, 1re récompense). |
 | US-077 | Citoyen | En tant que citoyen, je veux parrainer un proche et gagner des points bonus afin de faire grandir la communauté. | Could | V2 | ✅ | Code personnel, saisie du code d’un parrain avant la 1re collecte ; bonus au parrain à la 1re collecte du filleul, dans la même transaction. Auto-parrainage refusé. |
-| US-078 | Citoyen | En tant que citoyen, je veux faire expirer/geler mes points selon des règles claires afin de comprendre la politique de points. | Could | V2 | 🟨 | Politique affichée (validité, attente, gel), points expirant sous 30 jours et prochaine échéance ; expiration FIFO appliquée à l’ouverture du wallet ; gel par l’administration. Sans tâche planifiée (Blaze), l’expiration n’est pas appliquée tant que le citoyen n’ouvre pas son wallet. |
+| US-078 | Citoyen | En tant que citoyen, je veux faire expirer/geler mes points selon des règles claires afin de comprendre la politique de points. | Could | V2 | ✅ | Politique affichée (validité, attente, gel), points expirant sous 30 jours et prochaine échéance ; expiration FIFO appliquée chaque nuit pour tous les wallets (tool/maintenance.py) et à l’ouverture du wallet ; gel par l’administration. |
 
 ## E09 — Espace recycleur – dashboard & stocks
 
@@ -242,23 +242,18 @@ _Sécurité, performance, disponibilité, hors-ligne, conformité données, acce
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-123 | Système | En tant que système, je dois chiffrer toutes les communications (TLS) et protéger les API par JWT et contrôle d'accès par rôle afin de sécuriser les données. | Must | MVP | ⬜ |  |
-| US-124 | Système | En tant que système, je dois répondre aux scans en moins de 5 s (inférence + réseau) dans 90 % des cas afin de offrir une expérience fluide. | Must | MVP | ⬜ |  |
-| US-125 | Système | En tant que système, je dois garantir une disponibilité d'au moins 99 % afin de fiabiliser le service. | Should | V1 | ⬜ |  |
-| US-126 | Collecteur | En tant que collecteur, je veux conserver mes missions et enregistrer mes actions en mode hors ligne partiel afin de travailler en zone de faible couverture. | Should | V1 | ⬜ |  |
-| US-127 | Système | En tant que système, je dois se conformer à la loi organique tunisienne sur la protection des données personnelles afin de respecter le cadre légal. | Must | MVP | ⬜ |  |
-| US-128 | Système | En tant que système, je dois fonctionner sur Android et iOS avec une base de code Flutter unique afin de toucher tous les utilisateurs. | Must | MVP | ⬜ |  |
-| US-129 | Système | En tant que système, je dois appliquer un design system Flutter cohérent et accessible (contrastes, tailles, lecteur d'écran) afin de garantir une bonne ergonomie. | Should | V1 | ⬜ |  |
-| US-130 | Système | En tant que système, je dois disposer d'une chaîne CI/CD avec tests automatisés (unitaires, widgets, intégration) afin de livrer de façon fiable. | Should | MVP | ⬜ |  |
-| US-131 | Système | En tant que système, je dois centraliser logs, métriques et rapports de plantage afin de détecter et corriger rapidement les incidents. | Should | V1 | ⬜ |  |
-| US-132 | Système | En tant que système, je dois sauvegarder automatiquement les bases de données et fichiers afin de éviter toute perte de données. | Must | MVP | ⬜ |  |
+| US-123 | Système | En tant que système, je dois chiffrer toutes les communications (TLS) et protéger les API par JWT et contrôle d'accès par rôle afin de sécuriser les données. | Must | MVP | ✅ | TLS imposé par Firebase ; jetons JWT Firebase Auth sur chaque requête ; contrôle d’accès par rôle et par permission dans les règles Firestore, aucun accès sans authentification (vérifié par la sonde sur 17 collections). Dates sensibles (pesée, mouvements de points) imposées à l’heure du serveur. Sonde de 188 scénarios d’abus (élévation de rôle, falsification de points, antidatage…) exécutée en CI. |
+| US-124 | Système | En tant que système, je dois répondre aux scans en moins de 5 s (inférence + réseau) dans 90 % des cas afin de offrir une expérience fluide. | Must | MVP | ✅ | Inférence YOLO sur l’appareil (sans réseau) ; temps enregistré à chaque scan ; Supervision affiche le 90ᵉ centile et la part des scans sous 5 s. Test de charge serveur sans objet : aucune API applicative. |
+| US-125 | Système | En tant que système, je dois garantir une disponibilité d'au moins 99 % afin de fiabiliser le service. | Should | V1 | ✅ | Disponibilité portée par les SLA Firebase (Firestore 99,99 %+, Auth 99,95 %) ; supervision, alertes et plan de reprise documentés dans doc/OPERATIONS.md. |
+| US-126 | Collecteur | En tant que collecteur, je veux conserver mes missions et enregistrer mes actions en mode hors ligne partiel afin de travailler en zone de faible couverture. | Should | V1 | ✅ | Cache Firestore local ; étapes, photo preuve et pesée du collecteur mises en file hors ligne et envoyées au retour du réseau ; bandeau « Hors ligne / synchronisation » ; conflit (mission modifiée entre-temps) signalé et état réel réaffiché. Acceptation de mission en ligne uniquement (verrou transactionnel). |
+| US-127 | Système | En tant que système, je dois se conformer à la loi organique tunisienne sur la protection des données personnelles afin de respecter le cadre légal. | Must | MVP | ✅ | Consentement versionné tracé, politique de confidentialité, suppression du compte (E01) ; droit d’accès : « Télécharger mes données » exporte un fichier JSON complet (profil, adresses, scans, estimations, collectes, wallet, notifications…) partagé par la feuille native. |
+| US-128 | Système | En tant que système, je dois fonctionner sur Android et iOS avec une base de code Flutter unique afin de toucher tous les utilisateurs. | Must | MVP | ✅ | Base Flutter unique ; build iOS (simulateur et appareil, sans signature) et APK Android debug validés ; correctifs Android : désucrage des bibliothèques Java, Kotlin 2.3. Builds exécutés en CI. |
+| US-129 | Système | En tant que système, je dois appliquer un design system Flutter cohérent et accessible (contrastes, tailles, lecteur d'écran) afin de garantir une bonne ergonomie. | Should | V1 | ✅ | Design system réutilisable (lib/core/widgets) ; audit automatisé (contraste WCAG, cibles 48 dp / 44 pt, libellés) sur 5 écrans ; dégradés et texte secondaire assombris pour un texte lisible (AA). |
+| US-130 | Système | En tant que système, je dois disposer d'une chaîne CI/CD avec tests automatisés (unitaires, widgets, intégration) afin de livrer de façon fiable. | Should | MVP | ✅ | GitHub Actions à chaque push / PR : format, analyse, tests unitaires et widgets, couverture ≥ 75 % (actuelle 80 %), sonde des règles sur l’émulateur, builds Android et iOS. |
+| US-131 | Système | En tant que système, je dois centraliser logs, métriques et rapports de plantage afin de détecter et corriger rapidement les incidents. | Should | V1 | 🟨 | Firebase Crashlytics intégré (erreurs Flutter, asynchrones et natives ; contexte uid + rôle). Reste à activer Crashlytics et ses alertes dans la console Firebase (doc/OPERATIONS.md). |
+| US-132 | Système | En tant que système, je dois sauvegarder automatiquement les bases de données et fichiers afin de éviter toute perte de données. | Must | MVP | ✅ | Sauvegarde quotidienne par la CI (tool/backup.py, sans offre Blaze) : export complet, restauration testée à chaque exécution sur l’émulateur (45/45 documents identiques au premier test), archive chiffrée conservée 30 jours. Secrets GitHub à créer. |
 
-## Transverse (E14) déjà amorcé
+## Exploitation
 
-- US-127 (conformité données) : consentement explicite et versionné enregistré à l'inscription, politique de confidentialité, suppression de compte — reste : traçabilité complète et droit d'accès.
-- US-128 (Android + iOS, base Flutter unique) : build iOS simulateur validé ; Android configuré (minSdk 23), non buildé.
-- US-129 (design system) : composants réutilisables dans `lib/core/widgets/`, sémantique d'accessibilité, respect de « réduire les animations ».
-- US-123 (sécurité) : règles Firestore par rôle déployées (`firestore.rules`), y compris scans privés et catalogue/modèles en écriture admin.
-- US-124 (scan < 5 s) : inférence sur l'appareil mesurée à 1,4–2,8 s (simulateur) et affichée à l'utilisateur.
-- Qualité : les règles Firestore ne sont pas couvertes par `flutter test` (fake sans règles). `tool/firestore_rules_probe.py` rejoue 167 scénarios réels (citoyen / collecteur / recycleur / administrateurs) contre l'émulateur ; il a révélé une faille (retrait supérieur au solde), corrigée. À brancher dans la CI (US-130).
-- Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true`.
+Supervision, alertes, sauvegardes et plan de reprise : voir `doc/OPERATIONS.md`.
+Développement local : Emulator Suite (`firebase emulators:start --only auth,firestore`, JDK 21) + `flutter run --dart-define=USE_FIREBASE_EMULATORS=true` (cache local désactivé dans ce mode, pour ne pas mélanger émulateur et projet réel).

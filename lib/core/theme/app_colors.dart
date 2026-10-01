@@ -12,35 +12,38 @@ abstract final class EcoColors {
   static const skyDeep = Color(0xFF3B82F6);
   static const violet = Color(0xFF7B61FF);
   static const violetDeep = Color(0xFF6C4DF0);
-  static const onSun = Color(0xFF3A2B00);
+
+  /// Texte sur le dégradé « soleil » (ambre profond).
+  static const onSun = Color(0xFFFFFFFF);
 }
 
 /// Dégradés expressifs utilisés pour différencier les fonctionnalités.
+/// Teintes assez profondes pour un texte blanc lisible (WCAG AA, US-129).
 abstract final class EcoGradients {
   static const green = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [EcoColors.primary, EcoColors.primaryBright],
+    colors: [Color(0xFF075C38), EcoColors.primary],
   );
   static const coral = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [EcoColors.coral, EcoColors.pink],
+    colors: [Color(0xFFB8381F), Color(0xFFB52D52)],
   );
   static const sky = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [EcoColors.skyDeep, Color(0xFF4CC3FF)],
+    colors: [Color(0xFF1C4FC0), Color(0xFF1F63D8)],
   );
   static const violet = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [EcoColors.violetDeep, Color(0xFFA18BFF)],
+    colors: [Color(0xFF4A31C0), Color(0xFF5B3FD9)],
   );
   static const sun = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [EcoColors.sunDeep, Color(0xFFFFD45C)],
+    colors: [Color(0xFF8A4600), Color(0xFFA35400)],
   );
 }
 
@@ -77,7 +80,7 @@ class EcoPalette extends ThemeExtension<EcoPalette> {
   static const light = EcoPalette(
     background: Color(0xFFF4EFE4),
     ink: Color(0xFF12261D),
-    muted: Color(0xFF6B7A70),
+    muted: Color(0xFF56645B),
     card: Colors.white,
     line: Color(0x1412261D),
     shadow: Color(0xFF12261D),

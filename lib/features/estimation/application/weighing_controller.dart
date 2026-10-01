@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/offline_write.dart';
+
 import '../../auth/application/auth_providers.dart';
 import '../../auth/domain/user_role.dart';
 import '../../auth/domain/verification_status.dart';
@@ -100,8 +102,12 @@ class WeighingController extends Notifier<WeighingState> {
     final actual = {for (final l in record.lines) l.categoryId: state.actual[l.categoryId]!};
     try {
       await ref
-          .read(estimateRepositoryProvider)
-          .submitWeighing(record.code, actual, compareWeighing(record.lines, actual), uid);
+          .read(syncTrackerProvider.notifier)
+          .write(
+            ref
+                .read(estimateRepositoryProvider)
+                .submitWeighing(record.code, actual, compareWeighing(record.lines, actual), uid),
+          );
       if (ref.mounted) state = state.copyWith(busy: false, done: true);
       return true;
     } catch (_) {

@@ -78,6 +78,22 @@ void main() {
     expect(s.newUsers, {UserRole.citizen: 1});
   });
 
+  test('scan time: 90th percentile against the 5 s target (US-124)', () {
+    final at = t0.add(const Duration(days: 2));
+    final scans = [
+      for (final ms in [900, 1200, 1500, 1800, 2000, 2200, 2500, 2800, 3100, 6400])
+        (at: at, ms: ms),
+    ];
+    final r = scanLatency(
+      [...scans, (at: DateTime(2020), ms: 9000)],
+      t0,
+      t0.add(const Duration(days: 30)),
+    );
+    expect((r.p90Ms, r.count), (3100, 10), reason: '9th of 10 values; old scan excluded');
+    expect(r.withinTarget, .9);
+    expect(scanLatency(const [], t0, t0).p90Ms, isNull);
+  });
+
   test('blocked account: dedicated session state and route (US-106)', () {
     const user = AuthUser(uid: 'u', phoneNumber: '+216', providerIds: ['phone']);
     const blocked = AppUser(

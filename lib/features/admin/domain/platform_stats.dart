@@ -158,3 +158,27 @@ PlatformStats platformStats(
     aiAccuracy: err == null ? null : (1 - err).clamp(0, 1).toDouble(),
   );
 }
+
+/// Objectif de réponse d'un scan (US-124) : inférence sur l'appareil.
+const scanTargetMs = 5000;
+
+typedef ScanTiming = ({DateTime? at, int ms});
+
+/// 90ᵉ centile du temps d'analyse et part des scans sous l'objectif.
+({int? p90Ms, double? withinTarget, int count}) scanLatency(
+  List<ScanTiming> scans,
+  DateTime from,
+  DateTime to,
+) {
+  final ms = [
+    for (final s in scans)
+      if (s.at == null || (!s.at!.isBefore(from) && !s.at!.isAfter(to))) s.ms,
+  ]..sort();
+  if (ms.isEmpty) return (p90Ms: null, withinTarget: null, count: 0);
+  final rank = (ms.length * .9).ceil() - 1;
+  return (
+    p90Ms: ms[rank.clamp(0, ms.length - 1)],
+    withinTarget: ms.where((m) => m < scanTargetMs).length / ms.length,
+    count: ms.length,
+  );
+}

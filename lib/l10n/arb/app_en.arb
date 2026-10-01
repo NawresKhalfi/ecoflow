@@ -1208,6 +1208,10 @@
   "challengeDuration": "Duration",
   "challengePublish": "Launch the challenge",
   "challengeInvalid": "Check the name, the goal (kg) and the points (0 to 1,000).",
+  "syncOffline": "Offline: your actions are saved on the phone and will be sent when the network is back.",
+  "syncConflict": "An action made offline was refused: the mission changed in the meantime. The screen shows its real state.",
+  "dataExportMenu": "Download my data",
+  "dataExportFailed": "Export not possible right now. Try again with a connection.",
   "attemptsLeft": "{count, plural, =1{1 attempt left before lock} other{{count} attempts left before lock}}",
   "failLockedOut": "Too many failures: sign-in locked until {time}.",
   "otpSubtitle": "Enter the code sent to {phone}.",
@@ -1360,5 +1364,9 @@
   "challengeRank": "Rank {rank} of {total}",
   "challengeClaim": "Collect {points} EcoPoints",
   "challengeClaimed": "{points} EcoPoints added to your wallet",
-  "challengeDays": "{days} days"
+  "challengeDays": "{days} days",
+  "syncOfflinePending": "{count, plural, =1{Offline: 1 action pending, sent when the network is back.} other{Offline: {count} actions pending, sent when the network is back.}}",
+  "syncSending": "{count, plural, =1{Syncing 1 action…} other{Syncing {count} actions…}}",
+  "perfScan": "{count, plural, =0{Scan analysis time (no scan in the period)} =1{Scan analysis time, 90% of cases (1 scan)} other{Scan analysis time, 90% of cases ({count} scans)}}",
+  "perfScanValue": "{seconds} s · {pct}% under 5 s"
 }

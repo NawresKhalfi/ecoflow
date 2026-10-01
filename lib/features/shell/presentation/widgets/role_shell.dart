@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/firebase/crash_reporting.dart';
 import '../../../../core/localization/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/eco_widgets.dart';
+import '../../../../core/widgets/sync_banner.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../auth/domain/user_role.dart';
 import '../../../collection/application/proposal_watcher.dart';
@@ -38,6 +40,7 @@ class RoleShell extends ConsumerWidget {
     final wide = MediaQuery.sizeOf(context).width >= breakpoint;
     if (role == UserRole.citizen) _notifyWeighed(context, ref);
     listenNotifications(context, ref);
+    ref.watch(crashContextProvider);
     ref.watch(pushRegistrationProvider);
     if (role == UserRole.citizen) ref.watch(proposalWatcherProvider);
     if (role == UserRole.citizen) ref.watch(challengeSyncProvider);
@@ -55,7 +58,7 @@ class RoleShell extends ConsumerWidget {
           child: Row(
             children: [
               _SideNav(items: items, active: active, onSelect: go),
-              Expanded(child: child),
+              Expanded(child: _WithBanner(child: child)),
             ],
           ),
         ),
@@ -63,10 +66,23 @@ class RoleShell extends ConsumerWidget {
     }
     return Scaffold(
       extendBody: true,
-      body: EcoBackground(child: child),
+      body: EcoBackground(child: _WithBanner(child: child)),
       bottomNavigationBar: _BottomNav(items: items, active: active, onSelect: go),
     );
   }
+}
+
+class _WithBanner extends StatelessWidget {
+  const _WithBanner({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned.fill(child: child),
+      const Positioned(top: 0, left: 0, right: 0, child: SyncBanner()),
+    ],
+  );
 }
 
 /// Notification du montant final quand une pesée est validée (US-029).
