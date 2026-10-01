@@ -19,6 +19,11 @@ String maskPhoneNumbers(String text) => text.replaceAllMapped(_phone, (m) {
   return digits.length >= 8 ? '•••• ••••' : m[0]!;
 });
 
+final _email = RegExp(r'[\w.+-]+@[\w-]+(\.[\w-]+)+');
+
+/// Adresses e-mail masquées (messagerie de la marketplace, US-098).
+String maskEmails(String text) => text.replaceAll(_email, '•••@•••');
+
 String? validateMessage(String text) {
   final t = text.trim();
   if (t.isEmpty) return 'empty';

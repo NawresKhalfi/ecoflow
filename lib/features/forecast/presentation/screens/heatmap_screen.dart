@@ -84,7 +84,8 @@ class HeatmapScreen extends ConsumerWidget {
                     for (final c in cells)
                       CircleMarker(
                         point: LatLng(c.center.lat, c.center.lng),
-                        radius: 250 + 450 * sqrt(c.kg / max(maxKg, 1)),
+                        // Au plus un demi-secteur : les cercles voisins ne se recouvrent pas.
+                        radius: 150 + 330 * sqrt(c.kg / max(maxKg, 1)),
                         useRadiusInMeter: true,
                         color: heatColor(c.kg / max(maxKg, 1)).withValues(alpha: .6),
                         borderColor: Colors.white,

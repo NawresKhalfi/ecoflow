@@ -14,7 +14,13 @@ enum NotificationType {
 
   /// Lot déposé par un collecteur, en route vers le recycleur (US-086) ;
   /// `collectionId` porte alors l'identifiant du dépôt.
-  depositIncoming;
+  depositIncoming,
+
+  /// Marketplace (US-098 à US-100) : `collectionId` porte l'identifiant du
+  /// fil de négociation ou de la commande.
+  marketMessage,
+  marketProposal,
+  orderUpdate;
 
   static NotificationType? fromName(String? n) => values.where((v) => v.name == n).firstOrNull;
 

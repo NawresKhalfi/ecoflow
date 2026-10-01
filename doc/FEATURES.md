@@ -17,7 +17,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E07 | Suivi temps réel & notifications | MVP | 2/6 | 🟨 |
 | E08 | Recycle Wallet & EcoPoints | V1 | 9/10 | 🟨 |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 9/9 | ✅ |
-| E10 | Prédiction IA des volumes | V2 | 0/6 | ⬜ |
+| E10 | Prédiction IA des volumes | V2 | 5/6 | 🟨 |
 | E11 | Marketplace circulaire B2B | V2 | 0/12 | ⬜ |
 | E12 | Administration & supervision | MVP | 0/12 | ⬜ |
 | E13 | Statistiques & impact citoyen | V1 | 0/5 | ⬜ |
@@ -179,12 +179,12 @@ _Prévision des volumes de plastique par zone, cartes de chaleur, alertes et sui
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-088 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux voir la prévision des volumes de plastique par zone (7 et 30 jours) afin de planifier mon approvisionnement. | Should | V2 | ⬜ |  |
-| US-089 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux intégrer les prévisions dans mon dashboard afin de décider avec des données. | Should | V2 | ⬜ |  |
-| US-090 | Administrateur | En tant que administrateur, je veux visualiser une carte de chaleur des zones à fort potentiel de déchets afin de déployer les collecteurs au bon endroit. | Could | V2 | ⬜ |  |
-| US-091 | Administrateur | En tant que administrateur, je veux recevoir des alertes de sous-collecte ou de surcharge prévue afin de anticiper les déséquilibres. | Could | V2 | ⬜ |  |
-| US-092 | Administrateur | En tant que administrateur, je veux suivre la précision du modèle de prévision (MAPE) afin de juger de sa fiabilité. | Could | V2 | ⬜ |  |
-| US-093 | Système | En tant que système, je dois réentraîner automatiquement le modèle de prévision avec les nouvelles données afin de conserver sa pertinence. | Could | V2 | ⬜ |  |
+| US-088 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux voir la prévision des volumes de plastique par zone (7 et 30 jours) afin de planifier mon approvisionnement. | Should | V2 | ✅ | Prévision par zone et par famille (plastique = PET + PEHD + PP, carton, métal, verre, autres) à 7 et 30 jours, fourchette à 95 %, évolution vs 7 derniers jours, courbe jour par jour sur 14 jours. Modèle de Holt-Winters additif (saisonnalité hebdomadaire) entraîné sur les collectes pesées ; moyenne mobile sous 3 semaines d’historique. Vérifié sur appareil (pic du samedi appris). |
+| US-089 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux intégrer les prévisions dans mon dashboard afin de décider avec des données. | Should | V2 | ✅ | Carte « Plastique attendu » dans le dashboard recycleur, filtrée par la zone du dashboard, lien vers les prévisions détaillées. |
+| US-090 | Administrateur | En tant que administrateur, je veux visualiser une carte de chaleur des zones à fort potentiel de déchets afin de déployer les collecteurs au bon endroit. | Could | V2 | ✅ | Carte de chaleur admin (OpenStreetMap) : collectes des 90 derniers jours agrégées par secteur d’~1 km, rampe séquentielle, légende, zones classées par volume prévu à 30 jours. |
+| US-091 | Administrateur | En tant que administrateur, je veux recevoir des alertes de sous-collecte ou de surcharge prévue afin de anticiper les déséquilibres. | Could | V2 | ✅ | Alertes à chaque entraînement : surcharge (volume prévu à 7 j > 90 % de la capacité des collecteurs actifs de la zone) et sous-collecte (> 20 % de demandes sans collecteur, ou volume attendu sans collecteur actif) ; notification locale après un réentraînement automatique. |
+| US-092 | Administrateur | En tant que administrateur, je veux suivre la précision du modèle de prévision (MAPE) afin de juger de sa fiabilité. | Could | V2 | ✅ | Backtest à chaque entraînement : MAPE et WAPE par zone sur les 7 derniers jours (modèle entraîné sans eux), qualité fiable / moyenne / faible, historique des entraînements. |
+| US-093 | Système | En tant que système, je dois réentraîner automatiquement le modèle de prévision avec les nouvelles données afin de conserver sa pertinence. | Could | V2 | 🟨 | Réentraînement complet (recherche des paramètres) à la demande et automatiquement à l’ouverture de l’espace administrateur si le dernier date de plus de 24 h. Sans serveur (plan Blaze), pas de tâche planifiée si aucun administrateur ne se connecte. |
 
 ## E11 — Marketplace circulaire B2B
 

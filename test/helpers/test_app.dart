@@ -115,7 +115,7 @@ Future<void> pumpRoutedScreen(
         builder: (_, _) => Scaffold(body: screen),
       ),
       // Routes à paramètres (détails) : bouchon générique.
-      for (final path in ['/app/:a/:b', '/app/:a/:b/:c'])
+      for (final path in ['/app/:a', '/app/:a/:b', '/app/:a/:b/:c'])
         GoRoute(
           path: path,
           builder: (_, s) => Scaffold(body: Text('route:${s.uri}')),

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-10) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4-11) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -236,6 +236,50 @@ s_,_=http(f'{B}/forecasts/probe{code}', token=leila); results.append(s_==403); p
 check('recycler cannot publish forecasts', rec, [upd(f'forecasts/probe{code}', {'samples':1})], False)
 check('collector cannot write training runs', karim, [create(f'forecastRuns/r{code}', {'records':1})], False)
 
+# --- Epic 11 : marketplace B2B -------------------------------------------
+rec2, r2uid = login('probe-recycler2@ecoflow.test')
+owner_set(f'users/{r2uid}', {'displayName':'BuyerCo','role':'recycler','status':'active','verificationStatus':'approved'})
+owner_set(f'companies/{r2uid}', {'legalName':'BuyerCo','city':'Sfax','status':'approved','ownerUid':r2uid})
+lid=f'li{code}'; deal=f'{lid}_{r2uid}'; pid=f'pr{code}'
+later=now+datetime.timedelta(days=20)
+listing={'type':'sell','ownerUid':ruid,'ownerName':'GreenPlast','material':'pet','form':'flakes','grade':'a','quantityKg':500.0,'priceDtPerKg':1.2,'city':'Sousse','deadline':later,'description':'Paillettes PET','status':'open','lotIds':[],'createdAt':now}
+check('citizen cannot publish a listing', leila, [create(f'listings/x{code}', {**listing, 'ownerUid':luid})], False)
+check('sell listing without price refused', rec, [create(f'listings/x{code}', {**listing, 'priceDtPerKg':None})], False)
+check('recycler publishes a sell listing', rec, [create(f'listings/{lid}', listing)], True)
+dealdoc={'listingId':lid,'ownerUid':ruid,'counterpartUid':r2uid,'members':[ruid,r2uid],'ownerName':'GreenPlast','counterpartName':'BuyerCo','listingTitle':'PET','updatedAt':now}
+check('owner cannot open a deal with itself', rec, [create(f'deals/{lid}_{ruid}', {**dealdoc,'counterpartUid':ruid,'members':[ruid,ruid]})], False)
+check('buyer opens a negotiation', rec2, [create(f'deals/{deal}', dealdoc)], True)
+s_,_=http(f'{B}/deals/{deal}', token=karim); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'outsider cannot read negotiation →', s_)
+prop={'fromUid':r2uid,'kind':'proposal','text':'Livraison Sfax','priceDtPerKg':1.1,'quantityKg':500.0,'deliveryDays':5,'status':'pending','at':now}
+check('message over 1000 chars refused', rec2, [create(f'deals/{deal}/messages/t{code}', {'fromUid':r2uid,'kind':'text','text':'x'*1001,'at':now})], False)
+check('buyer sends a proposal', rec2, [create(f'deals/{deal}/messages/{pid}', prop), upd(f'deals/{deal}', {'lastMessage':'1.1','updatedAt':now})], True)
+order={'listingId':lid,'dealId':deal,'sellerUid':ruid,'buyerUid':r2uid,'sellerName':'GreenPlast','buyerName':'BuyerCo','parties':[ruid,r2uid],'material':'pet','form':'flakes','grade':'a','quantityKg':500.0,'priceDtPerKg':1.1,'deliveryDays':5,'lotIds':[],'number':'CMD','status':'confirmed','payment':'pending','history':{},'createdAt':now}
+accept=lambda o: [upd(f'deals/{deal}/messages/{pid}', {'status':'accepted'}), create(f'orders/{pid}', o), upd(f'listings/{lid}', {'status':'closed'})]
+check('proposer cannot accept own proposal', rec2, accept(order), False)
+check('order with tampered price refused', rec, accept({**order,'priceDtPerKg':0.5}), False)
+check('order with swapped roles refused', rec, accept({**order,'sellerUid':r2uid,'buyerUid':ruid}), False)
+check('seller accepts: order + listing closed', rec, accept(order), True)
+st=lambda s: upd(f'orders/{pid}', {'status':s})
+check('buyer cannot mark as shipped', rec2, [st('preparing')], False)
+check('seller: preparing', rec, [st('preparing')], True)
+check('seller cannot skip to delivered', rec, [st('delivered')], False)
+check('buyer declares payment', rec2, [upd(f'orders/{pid}', {'payment':'declared'})], True)
+check('buyer cannot confirm own payment', rec2, [upd(f'orders/{pid}', {'payment':'received'})], False)
+check('seller confirms payment received', rec, [upd(f'orders/{pid}', {'payment':'received'})], True)
+check('seller: shipped (+origin)', rec, [upd(f'orders/{pid}', {'status':'shipped','origin':{'zones':['sousse'],'pickups':3}})], True)
+check('seller: delivered', rec, [st('delivered')], True)
+check('rating before completion refused', rec2, [upd(f'orders/{pid}', {'sellerRating':5})], False)
+check('buyer completes the order', rec2, [st('completed')], True)
+check('buyer rates seller (+stats)', rec2, [upd(f'orders/{pid}', {'sellerRating':5}), upd(f'companyStats/{ruid}', {'ratingCount':1,'ratingAvg':5.0}, exists=False)], True)
+check('second rating refused', rec2, [upd(f'orders/{pid}', {'sellerRating':1})], False)
+check('order update notification to the partner', rec2, [create(f'notifications/o{code}', {'toUid':ruid,'fromUid':r2uid,'type':'orderUpdate','collectionId':pid,'address':'','preview':'completed','read':False,'createdAt':now})], True)
+check('order notification to an outsider refused', rec2, [create(f'notifications/o2{code}', {'toUid':luid,'fromUid':r2uid,'type':'orderUpdate','collectionId':pid,'address':'','preview':'','read':False,'createdAt':now})], False)
+check('buyer reports a listing', rec2, [create(f'listingReports/rp{code}', {'listingId':lid,'reporterUid':r2uid,'reason':'misleading','text':'','resolved':False,'at':now})], True)
+s_,_=http(f'{B}/listingReports/rp{code}', token=rec); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'recycler cannot read reports →', s_)
+check('owner reopens a closed listing', rec, [upd(f'listings/{lid}', {'status':'open'})], True)
+owner_set(f'listings/{lid}', {**listing, 'status':'suspended'})
+check('owner cannot reopen a suspended listing (moderated)', rec, [upd(f'listings/{lid}', {'status':'open'})], False)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
@@ -249,7 +293,9 @@ for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'
              f'estimates/{code4}', f'collections/{cid4}', f'collections/{cid4}/attachments/proof',
              f'deposits/d2{code}', f'notifications/dep{code}', f'lots/l1{code}', f'lots/l2{code}',
              f'stockMoves/m1{code}', f'stockMoves/m2{code}', f'productions/p{code}',
-             f'forecasts/probe{code}']:
+             f'forecasts/probe{code}', f'listings/li{code}', f'deals/li{code}_{r2uid}',
+             f'deals/li{code}_{r2uid}/messages/pr{code}', f'orders/pr{code}', f'companyStats/{ruid}',
+             f'listingReports/rp{code}', f'notifications/o{code}', f'companies/{r2uid}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

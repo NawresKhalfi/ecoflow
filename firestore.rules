@@ -403,12 +403,24 @@ service cloud.firestore {
         let d = get(/databases/$(database)/documents/deposits/$(request.resource.data.collectionId)).data;
         return d.collectorUid == request.auth.uid && d.recyclerUid == request.resource.data.toUid;
       }
+      // Marketplace (US-098 à US-100) : entre membres du fil ou parties de la commande.
+      function marketNotice() {
+        let cid = request.resource.data.collectionId;
+        let to = request.resource.data.toUid;
+        let deal = /databases/$(database)/documents/deals/$(cid);
+        let order = /databases/$(database)/documents/orders/$(cid);
+        return (request.resource.data.type in ['marketMessage', 'marketProposal'] && exists(deal)
+            && request.auth.uid in get(deal).data.members && to in get(deal).data.members)
+          || (request.resource.data.type == 'orderUpdate' && exists(order)
+            && request.auth.uid in get(order).data.parties && to in get(order).data.parties);
+      }
       allow create: if signedIn()
         && request.resource.data.fromUid == request.auth.uid
         && request.resource.data.read == false
         && request.resource.data.toUid != request.auth.uid
         && ((request.resource.data.type == 'depositIncoming' && depositNotice())
-          || (request.resource.data.type != 'depositIncoming'
+          || (request.resource.data.type in ['marketMessage', 'marketProposal', 'orderUpdate'] && marketNotice())
+          || (!(request.resource.data.type in ['depositIncoming', 'marketMessage', 'marketProposal', 'orderUpdate'])
             && request.auth.uid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)
             && request.resource.data.toUid in parties(get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data)));
       allow update: if signedIn() && resource.data.toUid == request.auth.uid && changed().hasOnly(['read']);
@@ -721,6 +733,147 @@ service cloud.firestore {
     match /forecastRuns/{id} {
       allow read, create: if isAdmin();
       allow update, delete: if false;
+    }
+
+    // --- Epic 11 : marketplace B2B -------------------------------------------
+    match /listings/{id} {
+      function n() { return request.resource.data; }
+      function valid() {
+        return n().type in ['buy', 'sell']
+          && n().material in ['pet', 'hdpe', 'pp', 'cardboard', 'aluminium', 'glass', 'other']
+          && n().form in ['raw', 'bales', 'flakes', 'granules']
+          && n().quantityKg is number && n().quantityKg > 0
+          && (n().priceDtPerKg == null || (n().priceDtPerKg is number && n().priceDtPerKg > 0))
+          && (n().type == 'buy' || n().priceDtPerKg != null)
+          && n().deadline is timestamp
+          && n().city is string && n().city.size() > 0 && n().city.size() <= 80
+          && n().description is string && n().description.size() <= 1000
+          && n().lotIds is list && n().lotIds.size() <= 20;
+      }
+      allow read: if isAdmin()
+        || (isApprovedRecycler() && (resource.data.status == 'open' || resource.data.ownerUid == request.auth.uid));
+      allow create: if isApprovedRecycler() && n().ownerUid == request.auth.uid && n().status == 'open' && valid();
+      // Auteur : modification, clôture, réouverture (jamais d'une annonce
+      // suspendue ou retirée). Administration : modération (US-103).
+      allow update: if isAdmin()
+        || (isApprovedRecycler() && resource.data.ownerUid == request.auth.uid
+            && n().ownerUid == resource.data.ownerUid && n().type == resource.data.type
+            && resource.data.status in ['open', 'closed'] && n().status in ['open', 'closed'] && valid())
+        // Clôture par l'acceptation d'une proposition, côté contrepartie.
+        || (isApprovedRecycler() && changed().hasOnly(['status']) && n().status == 'closed'
+            && exists(/databases/$(database)/documents/deals/$(id + '_' + request.auth.uid)));
+      allow delete: if false;
+    }
+
+    match /listingReports/{id} {
+      allow create: if isApprovedRecycler()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.resolved == false
+        && request.resource.data.text.size() <= 500;
+      allow read, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Fil de négociation entre l'auteur d'une annonce et une entreprise.
+    match /deals/{dealId} {
+      function d() { return request.resource.data; }
+      function listingOf(lid) { return get(/databases/$(database)/documents/listings/$(lid)).data; }
+      allow read: if signedIn() && (request.auth.uid in resource.data.members || isAdmin());
+      allow create: if isApprovedRecycler()
+        && d().counterpartUid == request.auth.uid
+        && dealId == d().listingId + '_' + request.auth.uid
+        && d().ownerUid == listingOf(d().listingId).ownerUid
+        && d().ownerUid != request.auth.uid
+        && listingOf(d().listingId).status == 'open'
+        && d().members == [d().ownerUid, request.auth.uid];
+      allow update: if signedIn() && request.auth.uid in resource.data.members
+        && !changed().hasAny(['listingId', 'ownerUid', 'counterpartUid', 'members']);
+      allow delete: if false;
+
+      match /messages/{m} {
+        function members() { return get(/databases/$(database)/documents/deals/$(dealId)).data.members; }
+        function msg() { return request.resource.data; }
+        allow read: if signedIn() && (request.auth.uid in members() || isAdmin());
+        allow create: if signedIn() && request.auth.uid in members()
+          && msg().fromUid == request.auth.uid
+          && msg().text is string && msg().text.size() <= 1000
+          && ((msg().kind == 'text' && msg().text.size() > 0)
+            || (msg().kind == 'proposal' && msg().priceDtPerKg is number && msg().priceDtPerKg > 0
+              && msg().quantityKg is number && msg().quantityKg > 0
+              && msg().deliveryDays is int && msg().deliveryDays >= 0 && msg().status == 'pending'));
+        // Le destinataire accepte (commande du même batch) ou refuse ; l'auteur retire.
+        allow update: if signedIn() && request.auth.uid in members()
+          && resource.data.kind == 'proposal' && resource.data.status == 'pending'
+          && changed().hasOnly(['status'])
+          && ((resource.data.fromUid != request.auth.uid && msg().status == 'declined')
+            || (resource.data.fromUid != request.auth.uid && msg().status == 'accepted'
+              && existsAfter(/databases/$(database)/documents/orders/$(m)))
+            || (resource.data.fromUid == request.auth.uid && msg().status == 'withdrawn'));
+        allow delete: if false;
+      }
+    }
+
+    // Commande (US-099, US-100) : née d'une proposition acceptée, aux
+    // conditions exactes de la proposition.
+    match /orders/{oid} {
+      function o() { return request.resource.data; }
+      function fromProposal() {
+        let path = /databases/$(database)/documents/deals/$(o().dealId)/messages/$(oid);
+        let p = getAfter(path).data;
+        let deal = get(/databases/$(database)/documents/deals/$(o().dealId)).data;
+        let l = get(/databases/$(database)/documents/listings/$(o().listingId)).data;
+        return request.auth.uid in deal.members && p.fromUid != request.auth.uid
+          && get(path).data.status == 'pending' && p.status == 'accepted'
+          && deal.listingId == o().listingId
+          && o().quantityKg == p.quantityKg && o().priceDtPerKg == p.priceDtPerKg
+          && o().deliveryDays == p.deliveryDays
+          && o().material == l.material && o().parties == deal.members
+          && ((l.type == 'sell' && o().sellerUid == deal.ownerUid && o().buyerUid == deal.counterpartUid
+               && o().lotIds == l.lotIds)
+            || (l.type == 'buy' && o().buyerUid == deal.ownerUid && o().sellerUid == deal.counterpartUid
+               && o().lotIds.size() == 0))
+          && o().status == 'confirmed' && o().payment == 'pending'
+          && o().get('sellerRating', null) == null && o().get('buyerRating', null) == null;
+      }
+      function r() { return resource.data; }
+      function seller() { return request.auth.uid == r().sellerUid; }
+      function buyer() { return request.auth.uid == r().buyerUid; }
+      function step(a, b) { return r().status == a && o().status == b; }
+      function sellerStep() {
+        return seller() && changed().hasOnly(['status', 'history', 'origin'])
+          && (step('confirmed', 'preparing') || step('preparing', 'shipped') || step('shipped', 'delivered'));
+      }
+      function buyerStep() {
+        return buyer() && changed().hasOnly(['status', 'history']) && step('delivered', 'completed');
+      }
+      function cancelStep() {
+        return changed().hasOnly(['status', 'history'])
+          && r().status in ['confirmed', 'preparing'] && o().status == 'cancelled';
+      }
+      function paymentStep() {
+        return changed().hasOnly(['payment'])
+          && ((buyer() && r().payment == 'pending' && o().payment == 'declared')
+            || (seller() && r().payment in ['pending', 'declared'] && o().payment == 'received'));
+      }
+      // Note (US-101) : une fois, après la commande terminée.
+      function rateStep() {
+        return r().status == 'completed'
+          && ((buyer() && changed().hasOnly(['sellerRating']) && r().get('sellerRating', null) == null
+               && o().sellerRating in [1, 2, 3, 4, 5])
+            || (seller() && changed().hasOnly(['buyerRating']) && r().get('buyerRating', null) == null
+               && o().buyerRating in [1, 2, 3, 4, 5]));
+      }
+      allow read: if signedIn() && (request.auth.uid in resource.data.parties || isAdmin());
+      allow create: if isApprovedRecycler() && fromProposal();
+      allow update: if signedIn() && request.auth.uid in resource.data.parties
+        && (sellerStep() || buyerStep() || cancelStep() || paymentStep() || rateStep());
+      allow delete: if false;
+    }
+
+    match /companyStats/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid != uid
+        && request.resource.data.ratingCount == (resource == null ? 0 : resource.data.ratingCount) + 1;
     }
   }
 }

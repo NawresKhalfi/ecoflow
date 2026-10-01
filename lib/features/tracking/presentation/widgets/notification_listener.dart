@@ -22,12 +22,17 @@ String notificationTitle(AppLocalizations l, NotificationType t) => switch (t) {
   NotificationType.newMission => l.ntNewMission,
   NotificationType.message => l.ntMessage,
   NotificationType.depositIncoming => l.ntDepositIncoming,
+  NotificationType.marketMessage => l.ntMarketMessage,
+  NotificationType.marketProposal => l.ntMarketProposal,
+  NotificationType.orderUpdate => l.ntOrderUpdate,
 };
 
 /// Écran ouvert par une notification (ouverture directe, US-066).
 String routeFor(AppNotification n, UserRole role) => switch (n.type) {
   NotificationType.message => Routes.chat(n.collectionId),
   NotificationType.depositIncoming => Routes.receptions,
+  NotificationType.marketMessage || NotificationType.marketProposal => Routes.deal(n.collectionId),
+  NotificationType.orderUpdate => Routes.order(n.collectionId),
   _ =>
     role == UserRole.collector
         ? Routes.missionDetail(n.collectionId)

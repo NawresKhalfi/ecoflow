@@ -53,6 +53,12 @@ abstract final class Routes {
   static const forecast = '/app/forecast';
   static const forecastAdmin = '/app/forecast-admin';
   static const heatmap = '/app/heatmap';
+  static const market = '/app/market';
+  static String listing(String id) => '/app/market/listing/$id';
+  static String deal(String id) => '/app/market/deal/$id';
+  static const orders = '/app/market/orders';
+  static String order(String id) => '/app/market/orders/$id';
+  static const moderation = '/app/moderation';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};

@@ -129,7 +129,8 @@ class PlasticForecastCard extends StatelessWidget {
             Text(
               [
                 l.forecastRange(fmtKg(context, low), fmtKg(context, high)),
-                if (last7 > 0) l.forecastVsLast(pct((n7 - last7) / last7)),
+                if (last7 > 0)
+                  l.forecastVsLast('${n7 >= last7 ? '+' : ''}${pct((n7 - last7) / last7)}'),
               ].join(' · '),
               style: AppTheme.weighted(13, 500, color: white),
             ),

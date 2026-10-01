@@ -3,17 +3,17 @@ const TITLES = {
   fr: {
     assigned: 'Collecteur trouvé 🚚', onTheWay: 'Le collecteur est en route', arrived: 'Le collecteur est arrivé 📍',
     handedOver: 'Pesée enregistrée : confirme la remise', completed: 'Collecte confirmée par le citoyen ✅',
-    cancelled: 'Collecte annulée', newMission: 'Nouvelle mission près de toi 🔔', message: 'Nouveau message 💬', depositIncoming: 'Un lot arrive 📦',
+    cancelled: 'Collecte annulée', newMission: 'Nouvelle mission près de toi 🔔', message: 'Nouveau message 💬', depositIncoming: 'Un lot arrive 📦', marketMessage: 'Nouveau message marketplace 💬', marketProposal: 'Nouvelle proposition 💼', orderUpdate: 'Commande mise à jour 📦',
   },
   en: {
     assigned: 'Collector found 🚚', onTheWay: 'The collector is on the way', arrived: 'The collector has arrived 📍',
     handedOver: 'Weighing saved: confirm the handover', completed: 'Pickup confirmed by the citizen ✅',
-    cancelled: 'Pickup cancelled', newMission: 'New mission near you 🔔', message: 'New message 💬', depositIncoming: 'A batch is on its way 📦',
+    cancelled: 'Pickup cancelled', newMission: 'New mission near you 🔔', message: 'New message 💬', depositIncoming: 'A batch is on its way 📦', marketMessage: 'New marketplace message 💬', marketProposal: 'New proposal 💼', orderUpdate: 'Order updated 📦',
   },
   ar: {
     assigned: 'تم إيجاد جامع 🚚', onTheWay: 'الجامع في الطريق', arrived: 'وصل الجامع 📍',
     handedOver: 'تم الوزن: أكّد التسليم', completed: 'أكّد المواطن عملية الجمع ✅',
-    cancelled: 'أُلغيت عملية الجمع', newMission: 'مهمة جديدة بالقرب منك 🔔', message: 'رسالة جديدة 💬', depositIncoming: 'دفعة في الطريق 📦',
+    cancelled: 'أُلغيت عملية الجمع', newMission: 'مهمة جديدة بالقرب منك 🔔', message: 'رسالة جديدة 💬', depositIncoming: 'دفعة في الطريق 📦', marketMessage: 'رسالة جديدة في السوق 💬', marketProposal: 'عرض جديد 💼', orderUpdate: 'تحديث الطلب 📦',
   },
 };
 
@@ -32,6 +32,8 @@ function allowed(type, prefs) {
 function route(type, collectionId, role) {
   if (type === 'message') return `/app/chat/${collectionId}`;
   if (type === 'depositIncoming') return '/app/receptions';
+  if (type === 'marketMessage' || type === 'marketProposal') return `/app/market/deal/${collectionId}`;
+  if (type === 'orderUpdate') return `/app/market/orders/${collectionId}`;
   return role === 'collector' ? `/app/missions/${collectionId}` : `/app/collections/${collectionId}`;
 }
 
