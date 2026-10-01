@@ -18,7 +18,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | E08 | Recycle Wallet & EcoPoints | V1 | 9/10 | 🟨 |
 | E09 | Espace recycleur – dashboard & stocks | V1 | 9/9 | ✅ |
 | E10 | Prédiction IA des volumes | V2 | 5/6 | 🟨 |
-| E11 | Marketplace circulaire B2B | V2 | 0/12 | ⬜ |
+| E11 | Marketplace circulaire B2B | V2 | 11/12 | 🟨 |
 | E12 | Administration & supervision | MVP | 0/12 | ⬜ |
 | E13 | Statistiques & impact citoyen | V1 | 0/5 | ⬜ |
 | E14 | Exigences transverses & qualité | MVP | 0/10 | ⬜ |
@@ -192,18 +192,18 @@ _Demandes d'achat et offres de vente de matières recyclées, recherche, négoci
 
 | ID | Acteur | Story | Prio | Release | Statut | Notes |
 |---|---|---|---|---|---|---|
-| US-094 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux publier une demande d'achat (matière, quantité, lieu, date limite) afin de trouver des recycleurs disposant de la matière. | Should | V2 | ⬜ |  |
-| US-095 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux publier une offre de vente de matières recyclées afin de trouver des acheteurs. | Should | V2 | ⬜ |  |
-| US-096 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux rechercher et filtrer les annonces (matière, région, quantité, date) afin de repérer les opportunités. | Should | V2 | ⬜ |  |
-| US-097 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux répondre à une demande avec une offre (prix, quantité, délai) afin de conclure des affaires. | Should | V2 | ⬜ |  |
-| US-098 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux négocier via une messagerie sécurisée afin de convenir des conditions. | Could | V2 | ⬜ |  |
-| US-099 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux accepter une offre et générer une commande afin de formaliser l'accord. | Should | V2 | ⬜ |  |
-| US-100 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux suivre le statut de ma commande jusqu'à la livraison afin de garder la visibilité. | Could | V2 | ⬜ |  |
-| US-101 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux noter et évaluer mes partenaires commerciaux afin de bâtir la confiance. | Could | V2 | ⬜ |  |
-| US-102 | Système | En tant que système, je dois suggérer les annonces correspondant à mon stock ou à mes besoins afin de gagner du temps. | Could | V2 | ⬜ |  |
-| US-103 | Administrateur | En tant que administrateur, je veux modérer les annonces et signalements afin de maintenir la qualité de la marketplace. | Should | V2 | ⬜ |  |
-| US-104 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux payer et facturer via la plateforme afin de sécuriser les transactions. | Could | V2 | ⬜ |  |
-| US-105 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux télécharger un certificat de recyclage pour mes lots afin de justifier ma démarche RSE. | Could | V2 | ⬜ |  |
+| US-094 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux publier une demande d'achat (matière, quantité, lieu, date limite) afin de trouver des recycleurs disposant de la matière. | Should | V2 | ✅ | Demande d’achat : matière, forme, qualité, quantité, prix maximal facultatif, ville, échéance (7 à 60 j), description ; réservée aux recycleurs validés. Vérifié sur appareil (« 500 kg PET, Sousse »). |
+| US-095 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux publier une offre de vente de matières recyclées afin de trouver des acheteurs. | Should | V2 | ✅ | Offre de vente avec prix demandé, publiable depuis un lot du stock (traçabilité, sortie de stock automatique à l’expédition). |
+| US-096 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux rechercher et filtrer les annonces (matière, région, quantité, date) afin de repérer les opportunités. | Should | V2 | ✅ | Recherche : type, matière, ville (sans accents), quantité minimale, échéance, mot-clé ; annonces expirées et propres annonces masquées. |
+| US-097 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux répondre à une demande avec une offre (prix, quantité, délai) afin de conclure des affaires. | Should | V2 | ✅ | Proposition chiffrée (prix, quantité, délai) dans un fil par annonce et par entreprise ; seul le destinataire peut accepter ou refuser, l’auteur peut retirer. |
+| US-098 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux négocier via une messagerie sécurisée afin de convenir des conditions. | Could | V2 | ✅ | Messagerie privée aux deux entreprises (règles), numéros et e-mails masqués, notifications in-app. |
+| US-099 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux accepter une offre et générer une commande afin de formaliser l'accord. | Should | V2 | ✅ | Acceptation → commande générée dans le même batch aux conditions exactes de la proposition (vérifiées par les règles), numéro CMD-AAAA-…, annonce clôturée si la quantité est couverte. |
+| US-100 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux suivre le statut de ma commande jusqu'à la livraison afin de garder la visibilité. | Could | V2 | ✅ | Suivi : confirmée → en préparation → expédiée → livrée (vendeur) → terminée (acheteur), annulation avant expédition, notifications à chaque étape. Vérifié sur appareil. |
+| US-101 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux noter et évaluer mes partenaires commerciaux afin de bâtir la confiance. | Could | V2 | ✅ | Note 1–5 de chaque partenaire, une fois la commande terminée ; moyenne affichée sur les annonces. |
+| US-102 | Système | En tant que système, je dois suggérer les annonces correspondant à mon stock ou à mes besoins afin de gagner du temps. | Could | V2 | ✅ | Onglet « Pour moi » : demandes que mon stock peut servir (quantité couverte), offres des matières que j’achète ou recherche, priorité aux échéances proches. |
+| US-103 | Administrateur | En tant que administrateur, je veux modérer les annonces et signalements afin de maintenir la qualité de la marketplace. | Should | V2 | ✅ | Signalement d’annonce (motif + texte) ; écran admin : signalements, suspension / retrait / rétablissement, résolution. Une annonce modérée ne peut pas être rouverte par son auteur. |
+| US-104 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux payer et facturer via la plateforme afin de sécuriser les transactions. | Could | V2 | 🟨 | Facture PDF (HT, TVA 19 %, TTC) et suivi du paiement par virement (déclaré par l’acheteur, confirmé par le vendeur). Le paiement sécurisé via la plateforme nécessite un prestataire de paiement (non configuré). |
+| US-105 | Recycleur / Entreprise | En tant que recycleur / entreprise, je veux télécharger un certificat de recyclage pour mes lots afin de justifier ma démarche RSE. | Could | V2 | ✅ | Certificat de recyclage PDF par lot (fiche lot) ou par commande (acheteur) : quantité, émissions de CO₂ évitées estimées, collectes et zones d’origine. |
 
 ## E12 — Administration & supervision
 

@@ -44,6 +44,9 @@ class FirestoreUserProfileRepository implements UserProfileRepository {
       consentAcceptedAt: _date((m['consent'] as Map?)?['acceptedAt']),
       createdAt: _date(m['createdAt']),
       aiTrainingConsent: m['aiTrainingConsent'] as bool? ?? false,
+      blocked: m['status'] == 'blocked',
+      blockedReason: m['blockedReason'] as String?,
+      adminPermissions: (m['adminPermissions'] as List?)?.cast<String>().toSet(),
     );
   }
 

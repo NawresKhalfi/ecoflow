@@ -31,6 +31,7 @@ const _roleOnly = {
   Routes.heatmap: UserRole.admin,
   Routes.market: UserRole.recycler,
   Routes.moderation: UserRole.admin,
+  Routes.supervision: UserRole.admin,
 };
 
 /// Redirection de navigation, fonction pure testée unitairement.
@@ -45,6 +46,8 @@ String? resolveRedirect(SessionState s, String location) {
       return Routes.public.contains(location) ? null : Routes.welcome;
     case SessionStatus.needsEmailVerification:
       return location == Routes.verifyEmail ? null : Routes.verifyEmail;
+    case SessionStatus.blocked:
+      return location == Routes.blocked ? null : Routes.blocked;
     case SessionStatus.needsProfile:
       // Le numéro vient d'être vérifié : l'écran téléphone laisse la place.
       return location == Routes.completeProfile ? null : Routes.completeProfile;

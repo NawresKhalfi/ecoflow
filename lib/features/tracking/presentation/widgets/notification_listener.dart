@@ -25,6 +25,8 @@ String notificationTitle(AppLocalizations l, NotificationType t) => switch (t) {
   NotificationType.marketMessage => l.ntMarketMessage,
   NotificationType.marketProposal => l.ntMarketProposal,
   NotificationType.orderUpdate => l.ntOrderUpdate,
+  NotificationType.accountReview => l.ntAccountReview,
+  NotificationType.disputeUpdate => l.ntDisputeUpdate,
 };
 
 /// Écran ouvert par une notification (ouverture directe, US-066).
@@ -33,6 +35,7 @@ String routeFor(AppNotification n, UserRole role) => switch (n.type) {
   NotificationType.depositIncoming => Routes.receptions,
   NotificationType.marketMessage || NotificationType.marketProposal => Routes.deal(n.collectionId),
   NotificationType.orderUpdate => Routes.order(n.collectionId),
+  NotificationType.accountReview => Routes.home,
   _ =>
     role == UserRole.collector
         ? Routes.missionDetail(n.collectionId)

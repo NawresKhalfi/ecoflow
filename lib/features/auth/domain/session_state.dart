@@ -2,7 +2,8 @@ import 'app_user.dart';
 import 'auth_user.dart';
 import 'user_role.dart';
 
-enum SessionStatus { loading, signedOut, needsEmailVerification, needsProfile, ready }
+/// `blocked` : compte bloqué par l'administration (US-106).
+enum SessionStatus { loading, signedOut, needsEmailVerification, needsProfile, blocked, ready }
 
 /// État de session consolidé (auth + profil) qui pilote la navigation.
 class SessionState {
@@ -33,5 +34,8 @@ SessionState computeSession({
   }
   if (!profileLoaded) return SessionState(SessionStatus.loading, authUser: authUser);
   if (profile == null) return SessionState(SessionStatus.needsProfile, authUser: authUser);
+  if (profile.blocked) {
+    return SessionState(SessionStatus.blocked, authUser: authUser, profile: profile);
+  }
   return SessionState(SessionStatus.ready, authUser: authUser, profile: profile);
 }

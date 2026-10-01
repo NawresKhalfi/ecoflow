@@ -20,7 +20,11 @@ enum NotificationType {
   /// fil de négociation ou de la commande.
   marketMessage,
   marketProposal,
-  orderUpdate;
+  orderUpdate,
+
+  /// Administration (US-107, US-112) : dossier examiné, litige traité.
+  accountReview,
+  disputeUpdate;
 
   static NotificationType? fromName(String? n) => values.where((v) => v.name == n).firstOrNull;
 

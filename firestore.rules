@@ -15,6 +15,11 @@ service cloud.firestore {
         && userDoc().role == 'admin';
     }
     function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    // Administrateur sans liste de permissions : super-administrateur (US-113).
+    function isSuperAdmin() { return isAdmin() && userDoc().get('adminPermissions', null) == null; }
+    function can(p) { return isSuperAdmin() || (isAdmin() && p in userDoc().adminPermissions); }
+    // Compte bloqué par l'administration (US-106) : plus de nouvelles écritures.
+    function notBlocked() { return userDoc().get('status', 'active') != 'blocked'; }
 
     // Transition de statut autorisée à l'utilisateur : (re)soumettre son dossier.
     function submitsForReview() {
@@ -23,6 +28,16 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
+      // Administration (US-106, US-107, US-113) : rôle et permissions par un
+      // super-administrateur seulement, jamais sur son propre compte ; blocage
+      // et validations selon les permissions.
+      function adminUserUpdate() {
+        return isAdmin()
+          && (!changed().hasAny(['role', 'adminPermissions']) || (isSuperAdmin() && uid != request.auth.uid))
+          && (!changed().hasAny(['status', 'blockedReason']) || (can('users') && uid != request.auth.uid))
+          && (!changed().hasAny(['verificationStatus', 'rejectionReason', 'reviewedBy', 'reviewedAt']) || can('verifications'))
+          && (!changed().hasAny(['role']) || request.resource.data.role in ['admin', 'citizen', resource.data.role]);
+      }
       allow read: if isSelf(uid) || isAdmin();
 
       // Un administrateur ne peut jamais être auto-attribué (US-003) et le
@@ -34,9 +49,10 @@ service cloud.firestore {
         && request.resource.data.consent.version is string
         && request.resource.data.status == 'active';
 
-      allow update: if isAdmin()
+      allow update: if adminUserUpdate()
         || (isSelf(uid)
-            && !changed().hasAny(['role', 'createdAt', 'consent', 'rejectionReason', 'reviewedBy', 'reviewedAt'])
+            && !changed().hasAny(['role', 'createdAt', 'consent', 'rejectionReason', 'reviewedBy', 'reviewedAt',
+                                  'blockedReason', 'adminPermissions'])
             && (!changed().hasAny(['verificationStatus']) || submitsForReview())
             && (!changed().hasAny(['status']) || request.resource.data.status == 'deleted'));
 
@@ -133,7 +149,8 @@ service cloud.firestore {
     }
     match /config/{id} {
       allow read: if signedIn();
-      allow write: if isAdmin();
+      // Zones desservies (US-117) : permission « zones ».
+      allow write: if isAdmin() && (id != 'collection' || can('zones'));
 
       // Historique des paramètres (optimisation, US-062).
       match /history/{h} {
@@ -147,7 +164,8 @@ service cloud.firestore {
       return signedIn()
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         && userDoc().role == 'collector'
-        && userDoc().verificationStatus == 'approved';
+        && userDoc().verificationStatus == 'approved'
+        && notBlocked();
     }
 
     // Historique immuable : on publie un nouveau barème, on n'en modifie aucun.
@@ -166,7 +184,7 @@ service cloud.firestore {
         || isAdmin());
       // Pas de liste pour les collecteurs : uniquement ses propres estimations.
       allow list: if signedIn() && (resource.data.citizenUid == request.auth.uid || isAdmin());
-      allow create: if signedIn()
+      allow create: if signedIn() && notBlocked()
         && request.resource.data.citizenUid == request.auth.uid
         && request.resource.data.status == 'estimated'
         && request.resource.data.lines is list;
@@ -192,7 +210,7 @@ service cloud.firestore {
         && (resource.data.status in ['searching', 'noCollector']
             || resource.data.proposedCollectorUid == request.auth.uid
             || resource.data.collectorUid == request.auth.uid));
-      allow create: if signedIn()
+      allow create: if signedIn() && notBlocked()
         && request.resource.data.citizenUid == request.auth.uid
         && request.resource.data.status == 'searching'
         && request.resource.data.instructions.size() <= 300
@@ -253,7 +271,7 @@ service cloud.firestore {
           return signedIn() && (c.citizenUid == request.auth.uid || c.get('collectorUid', '') == request.auth.uid);
         }
         allow read: if party() || isAdmin();
-        allow create: if party()
+        allow create: if party() && notBlocked()
           && get(/databases/$(database)/documents/collections/$(id)).data.get('collectorUid', null) != null
           && request.resource.data.fromUid == request.auth.uid
           && request.resource.data.text is string
@@ -320,7 +338,7 @@ service cloud.firestore {
         && request.resource.data.status == 'open'
         && (get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.citizenUid == request.auth.uid
             || get(/databases/$(database)/documents/collections/$(request.resource.data.collectionId)).data.collectorUid == request.auth.uid);
-      allow update: if isAdmin();
+      allow update: if can('disputes');
 
       match /photos/{i} {
         allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
@@ -414,7 +432,9 @@ service cloud.firestore {
           || (request.resource.data.type == 'orderUpdate' && exists(order)
             && request.auth.uid in get(order).data.parties && to in get(order).data.parties);
       }
-      allow create: if signedIn()
+      allow create: if (isAdmin() && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.type in ['accountReview', 'disputeUpdate']
+          && request.resource.data.read == false) || signedIn()
         && request.resource.data.fromUid == request.auth.uid
         && request.resource.data.read == false
         && request.resource.data.toUid != request.auth.uid
@@ -752,7 +772,7 @@ service cloud.firestore {
       }
       allow read: if isAdmin()
         || (isApprovedRecycler() && (resource.data.status == 'open' || resource.data.ownerUid == request.auth.uid));
-      allow create: if isApprovedRecycler() && n().ownerUid == request.auth.uid && n().status == 'open' && valid();
+      allow create: if isApprovedRecycler() && notBlocked() && n().ownerUid == request.auth.uid && n().status == 'open' && valid();
       // Auteur : modification, clôture, réouverture (jamais d'une annonce
       // suspendue ou retirée). Administration : modération (US-103).
       allow update: if isAdmin()
@@ -794,7 +814,7 @@ service cloud.firestore {
         function members() { return get(/databases/$(database)/documents/deals/$(dealId)).data.members; }
         function msg() { return request.resource.data; }
         allow read: if signedIn() && (request.auth.uid in members() || isAdmin());
-        allow create: if signedIn() && request.auth.uid in members()
+        allow create: if signedIn() && notBlocked() && request.auth.uid in members()
           && msg().fromUid == request.auth.uid
           && msg().text is string && msg().text.size() <= 1000
           && ((msg().kind == 'text' && msg().text.size() > 0)
@@ -874,6 +894,29 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if signedIn() && request.auth.uid != uid
         && request.resource.data.ratingCount == (resource == null ? 0 : resource.data.ratingCount) + 1;
+    }
+
+    // --- Epic 12 : administration et supervision -----------------------------
+    // Journal d'audit (US-114) : ajout seul, lu avec la permission « audit ».
+    match /auditLog/{id} {
+      allow read: if can('audit');
+      allow create: if isAdmin()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.at == request.time
+        && request.resource.data.action is string;
+      allow update, delete: if false;
+    }
+    // Annonces à un segment d'utilisateurs (US-116).
+    match /announcements/{id} {
+      allow read: if signedIn();
+      allow create: if can('broadcast')
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.title is string && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 80
+        && request.resource.data.body is string && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 500
+        && (request.resource.data.role == null || request.resource.data.role in ['citizen', 'collector', 'recycler', 'admin']);
+      allow update, delete: if can('broadcast');
     }
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sonde des règles Firestore d'EcoFlow (epics 4-11) contre l'ÉMULATEUR local.
+"""Sonde des règles Firestore d'EcoFlow (epics 4-12) contre l'ÉMULATEUR local.
 
 `flutter test` utilise un faux Firestore qui n'applique pas les règles : ce
 script rejoue les écritures réelles de l'application (citoyen, collecteur,
@@ -280,6 +280,31 @@ check('owner reopens a closed listing', rec, [upd(f'listings/{lid}', {'status':'
 owner_set(f'listings/{lid}', {**listing, 'status':'suspended'})
 check('owner cannot reopen a suspended listing (moderated)', rec, [upd(f'listings/{lid}', {'status':'open'})], False)
 
+# --- Epic 12 : administration --------------------------------------------
+sup, suid = login('probe-superadmin@ecoflow.test')
+dlg, duid = login('probe-delegated@ecoflow.test')
+victim, vuid = login('probe-victim@ecoflow.test')
+owner_set(f'users/{suid}', {'displayName':'Super','role':'admin','status':'active','verificationStatus':'notRequired'})
+owner_set(f'users/{duid}', {'displayName':'Delegated','role':'admin','status':'active','verificationStatus':'notRequired','adminPermissions':['disputes']})
+owner_set(f'users/{vuid}', {'displayName':'Victim','role':'citizen','status':'active','verificationStatus':'notRequired'})
+audit=lambda tok, uid, act: stamp(create(f'auditLog/a{act}{code}', {'actorUid':uid,'actorName':'x','action':act,'targetType':'user','targetId':vuid,'details':''}), 'at')
+check('delegated admin cannot block users', dlg, [upd(f'users/{vuid}', {'status':'blocked','blockedReason':'x'})], False)
+check('super admin blocks a user (+audit)', sup, [upd(f'users/{vuid}', {'status':'blocked','blockedReason':'Fraude'}), audit(sup, suid, 'block')], True)
+check('blocked user cannot create an estimate', victim, [create(f'estimates/V{code}', {'citizenUid':vuid,'lines':[line],'totalKg':2.0,'totalDt':8.0,'confidence':.8,'priceScaleId':'default','status':'estimated','createdAt':now})], False)
+check('blocked user cannot unblock itself', victim, [upd(f'users/{vuid}', {'status':'active','blockedReason':None})], False)
+check('audit entry cannot be edited', sup, [upd(f'auditLog/ablock{code}', {'details':'oops'})], False)
+check('audit entry with another actor refused', dlg, [audit(dlg, suid, 'fake')], False)
+s_,_=http(f'{B}/auditLog/ablock{code}', token=dlg); results.append(s_==403); print('PASS' if s_==403 else 'FAIL', 'delegated admin without audit right cannot read audit →', s_)
+check('delegated admin cannot change roles', dlg, [upd(f'users/{vuid}', {'role':'admin','adminPermissions':['users']})], False)
+check('super admin cannot demote itself', sup, [upd(f'users/{suid}', {'role':'citizen'})], False)
+check('admin role cannot jump to collector', sup, [upd(f'users/{vuid}', {'role':'collector'})], False)
+check('super admin promotes with permissions (+audit)', sup, [upd(f'users/{vuid}', {'role':'admin','adminPermissions':['broadcast']}), audit(sup, suid, 'promote')], True)
+check('delegated admin cannot edit service zones', dlg, [upd('config/collection', {'slotCapacity':99}, exists=False)], False)
+check('citizen cannot broadcast', leila, [create(f'announcements/n{code}', {'title':'Hi','body':'x','role':None,'zoneId':None,'by':luid,'createdAt':now})], False)
+check('admin broadcasts to collectors', sup, [create(f'announcements/n{code}', {'title':'Nouvelle zone','body':'Monastir est ouverte','role':'collector','zoneId':None,'by':suid,'createdAt':now})], True)
+check('admin notifies a reviewed applicant', sup, [create(f'notifications/rv{code}', {'toUid':kuid,'fromUid':suid,'type':'accountReview','collectionId':kuid,'address':'','preview':'approved','read':False,'createdAt':now})], True)
+check('delegated admin resolves a dispute', dlg, [upd(f'tickets/t{code2}', {'status':'resolved','resolution':'OK','resolvedBy':duid})], True)
+
 # Nettoyage : l'émulateur reste utilisable pour la démonstration.
 for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'collections/{cid2}',
              f'collections/{cid}/attachments/proof', f'earnings/{cid}', f'payouts/p{code}b',
@@ -295,7 +320,9 @@ for path in [f'estimates/{code}', f'estimates/{code2}', f'collections/{cid}', f'
              f'stockMoves/m1{code}', f'stockMoves/m2{code}', f'productions/p{code}',
              f'forecasts/probe{code}', f'listings/li{code}', f'deals/li{code}_{r2uid}',
              f'deals/li{code}_{r2uid}/messages/pr{code}', f'orders/pr{code}', f'companyStats/{ruid}',
-             f'listingReports/rp{code}', f'notifications/o{code}', f'companies/{r2uid}']:
+             f'listingReports/rp{code}', f'notifications/o{code}', f'companies/{r2uid}',
+             f'auditLog/ablock{code}', f'auditLog/apromote{code}', f'announcements/n{code}',
+             f'notifications/rv{code}', f'users/{vuid}']:
     http(f'{B}/{path}', token='owner', method='DELETE')
 
 print(f'\n{sum(results)}/{len(results)} checks as expected')

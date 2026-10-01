@@ -195,29 +195,9 @@ String _sheet(List<List<String>> rows, {Set<int> numeric = const {}}) {
   return b.toString();
 }
 
-/// Classeur Excel (.xlsx) à deux feuilles : synthèse et lots (US-083).
-Uint8List buildSupplyXlsx(SupplyReport r, ReportLabels l) {
-  final summary = [
-    [l.title, ''],
-    [l.company, l.period],
-    [l.total, _kg(r.totalKg)],
-    [l.deposits, '${r.deposits}'],
-    [l.quality, _pct(r.quality)],
-    ['', ''],
-    [l.material, l.kg, l.share],
-    ..._materialRows(r, l),
-    ['', ''],
-    [l.collector, l.kg],
-    ..._collectorRows(r),
-  ];
-  final lots = [
-    [l.reference, l.date, l.material, l.grade, l.kg, l.collector, l.zones],
-    ..._lotRows(r, l),
-  ];
-  final sheets = [
-    (l.byMaterial, _sheet(summary, numeric: {1})),
-    (l.lots, _sheet(lots, numeric: {4})),
-  ];
+/// Classeur Excel (.xlsx) : une feuille par entrée (nom, lignes, colonnes
+/// numériques). Construit à la main (SpreadsheetML) : pas de dépendance.
+Uint8List buildXlsx(List<(String, List<List<String>>, Set<int>)> sheets) {
   final archive = Archive();
   void add(String path, String content) {
     final bytes = utf8.encode(content);
@@ -257,9 +237,31 @@ Uint8List buildSupplyXlsx(SupplyReport r, ReportLabels l) {
         '</Relationships>',
   );
   for (final (i, s) in sheets.indexed) {
-    add('xl/worksheets/sheet${i + 1}.xml', s.$2);
+    add('xl/worksheets/sheet${i + 1}.xml', _sheet(s.$2, numeric: s.$3));
   }
   return Uint8List.fromList(ZipEncoder().encode(archive));
+}
+
+/// Classeur Excel (.xlsx) à deux feuilles : synthèse et lots (US-083).
+Uint8List buildSupplyXlsx(SupplyReport r, ReportLabels l) {
+  final summary = [
+    [l.title, ''],
+    [l.company, l.period],
+    [l.total, _kg(r.totalKg)],
+    [l.deposits, '${r.deposits}'],
+    [l.quality, _pct(r.quality)],
+    ['', ''],
+    [l.material, l.kg, l.share],
+    ..._materialRows(r, l),
+    ['', ''],
+    [l.collector, l.kg],
+    ..._collectorRows(r),
+  ];
+  final lots = [
+    [l.reference, l.date, l.material, l.grade, l.kg, l.collector, l.zones],
+    ..._lotRows(r, l),
+  ];
+  return buildXlsx([(l.byMaterial, summary, {1}), (l.lots, lots, {4})]);
 }
 
 /// Nom de fichier du rapport, sans caractère problématique.

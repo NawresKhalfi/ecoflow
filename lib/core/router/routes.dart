@@ -9,6 +9,7 @@ abstract final class Routes {
   static const verifyEmail = '/verify-email';
   static const completeProfile = '/complete-profile';
   static const privacy = '/privacy';
+  static const blocked = '/blocked';
   static const language = '/language';
 
   static const home = '/app';
@@ -59,6 +60,15 @@ abstract final class Routes {
   static const orders = '/app/market/orders';
   static String order(String id) => '/app/market/orders/$id';
   static const moderation = '/app/moderation';
+  static const supervision = '/app/admin';
+  static const adminUsers = '/app/admin/users';
+  static const verifications = '/app/admin/verifications';
+  static const liveMap = '/app/admin/map';
+  static const disputes = '/app/admin/disputes';
+  static const admins = '/app/admin/admins';
+  static const audit = '/app/admin/audit';
+  static const broadcast = '/app/admin/broadcast';
+  static const zones = '/app/admin/zones';
 
   /// Accessibles sans être connecté.
   static const public = {welcome, signIn, signUp, phone, forgotPassword};
