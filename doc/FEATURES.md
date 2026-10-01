@@ -9,7 +9,7 @@ Légende : ⬜ non démarré · 🟨 en cours / partiel · ✅ implémenté
 | Epic | Nom | Release | Stories | Statut |
 |---|---|---|---|---|
 | E01 | Authentification & profils | MVP | 9/10 | 🟨 |
-| E02 | Vision IA – scan des déchets | MVP | 11/12 | 🟨 |
+| E02 | Vision IA – scan des déchets | MVP | 12/12 | ✅ |
 | E03 | Estimation intelligente quantité & valeur | MVP | 8/8 | ✅ |
 | E04 | Demande de collecte | MVP | 10/11 | 🟨 |
 | E05 | Espace collecteur & missions | MVP | 13/14 | 🟨 |
@@ -54,7 +54,7 @@ _Détection et classification des déchets par photo avec YOLOv8/YOLO11 : compta
 | US-016 | Citoyen | En tant que citoyen, je veux corriger manuellement le résultat de l'IA (ajouter, supprimer, changer une catégorie) afin de obtenir un résultat fiable. | Must | MVP | ✅ | Changer de catégorie, supprimer, ajouter ; proposition IA d'origine conservée + résumé des corrections. |
 | US-017 | Citoyen | En tant que citoyen, je veux être alerté si ma photo est floue, sombre ou mal cadrée afin de améliorer la qualité de la détection. | Should | V1 | ✅ | Luminosité, netteté (variance du laplacien), cadrage (aucun objet / objets minuscules) ; conseil + « Reprendre la photo ». |
 | US-018 | Citoyen | En tant que citoyen, je veux analyser mes déchets sans connexion stable (modèle embarqué TFLite) afin de scanner même avec un réseau faible. | Could | V2 | ✅ | Modèle embarqué : Core ML int8 (iOS, 23 Mo) et TFLite fp16 (Android, 49 Mo) ; résultats synchronisés par le cache hors ligne Firestore. Android non testé sur appareil. |
-| US-019 | Administrateur | En tant que administrateur, je veux gérer les versions du modèle YOLO déployé et consulter ses métriques (précision, rappel, mAP) afin de piloter la qualité de l'IA. | Should | V2 | 🟨 | Versions, métriques (seul le rappel 73,5 % est publié pour le modèle embarqué), activation, retour arrière. ⚠️ Chargement d'une 2e version par URL non testé (aucun modèle hébergé). |
+| US-019 | Administrateur | En tant que administrateur, je veux gérer les versions du modèle YOLO déployé et consulter ses métriques (précision, rappel, mAP) afin de piloter la qualité de l'IA. | Should | V2 | ✅ | Versions, métriques (précision, rappel, mAP@50 saisis à la déclaration ; seul le rappel 73,5 % est publié pour le modèle embarqué), activation, retour arrière. Chargement par URL vérifié sur appareil : version v1.1 publiée sur Firebase Hosting, téléchargée et compilée au premier scan (6,5 s), puis en cache (0,2 s) ; retour au modèle embarqué en un geste. |
 | US-020 | Administrateur | En tant que administrateur, je veux exporter les corrections des utilisateurs sous forme de jeu de données annoté afin de réentraîner et améliorer le modèle. | Should | V2 | ✅ | Export ZIP au format YOLO (images anonymisées, noms séquentiels) des seuls scans corrigés avec consentement. |
 | US-021 | Système | En tant que système, je dois anonymiser et stocker les photos envoyées de façon sécurisée afin de respecter la vie privée des utilisateurs. | Should | V1 | ✅ | EXIF/GPS supprimés (ré-encodage), chiffrement au repos Firestore, conservation 90 j ; purge chaque nuit par la CI (tool/maintenance.py, sans offre Blaze), en plus de la purge côté app. |
 | US-022 | Administrateur | En tant que administrateur, je veux définir le catalogue des classes de déchets (PET, HDPE, PP, canette alu, carton, verre…) afin de aligner la détection avec les matières recyclables. | Must | MVP | ✅ | CRUD du catalogue, lien classes du modèle → catégories et catégorie → matière du barème (epic 3). |

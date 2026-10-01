@@ -50,3 +50,8 @@ app.*.map.json
 
 # Sauvegardes locales (données personnelles)
 /backups/
+
+# Modèles publiés sur Firebase Hosting (copies des assets, trop lourds pour git)
+/hosting/models/**/*.zip
+/hosting/models/**/*.tflite
+/.firebase/

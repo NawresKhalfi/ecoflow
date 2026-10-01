@@ -26,6 +26,16 @@ Résilience côté application :
 - **Dégradation** : une notification qui échoue ne bloque jamais l'action
   métier ; les tuiles de carte sont facultatives.
 
+### Distribution des modèles de vision (US-019)
+
+Les nouvelles versions du modèle YOLO sont publiées sur Firebase Hosting
+(`hosting/models/<version>/`, `firebase deploy --only hosting`), puis déclarées
+dans Supervision → IA avec leurs URL. L'app les télécharge au premier scan et
+les garde en cache. Quota gratuit de Hosting : 360 Mo/jour de transfert, soit
+une quinzaine de téléchargements iOS (24 Mo) ou 6 Android (52 Mo) par jour :
+au-delà, passer à Blaze ou héberger les fichiers ailleurs (CDN). Le modèle
+embarqué reste la version de repli (« Revenir à la version précédente »).
+
 ## 2. Supervision et alertes
 
 | Signal | Outil | Alerte |
