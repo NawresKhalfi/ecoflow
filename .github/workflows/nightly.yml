@@ -16,11 +16,32 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Sans les secrets, la tâche est ignorée (avertissement) au lieu d'échouer.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.secrets.outputs.ready }}
+    steps:
+      - id: secrets
+        env:
+          EMAIL: ${{ secrets.ECOFLOW_BACKUP_EMAIL }}
+          PASSWORD: ${{ secrets.ECOFLOW_BACKUP_PASSWORD }}
+          PASSPHRASE: ${{ secrets.ECOFLOW_BACKUP_PASSPHRASE }}
+        run: |
+          if [ -n "$EMAIL" ] && [ -n "$PASSWORD" ] && [ -n "$PASSPHRASE" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Tâche de nuit ignorée : créer les secrets ECOFLOW_BACKUP_EMAIL, ECOFLOW_BACKUP_PASSWORD et ECOFLOW_BACKUP_PASSPHRASE (Settings → Secrets and variables → Actions)."
+          fi
+
   backup:
+    needs: check
+    if: needs.check.outputs.ready == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
