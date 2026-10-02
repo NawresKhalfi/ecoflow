@@ -1,6 +1,8 @@
 import 'dart:io' show Platform;
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:ultralytics_yolo/ultralytics_yolo.dart';
 
 import '../../vision_admin/domain/model_version.dart';
@@ -26,6 +28,8 @@ class YoloWasteDetector implements WasteDetector {
   String _pathFor(ModelVersion m) => Platform.isIOS ? m.iosModel : m.androidModel;
 
   Future<YOLO> _ensure(ModelVersion model) async {
+    // Détection embarquée (Core ML / LiteRT) : indisponible dans un navigateur.
+    if (kIsWeb) throw const DetectorUnavailable('web');
     final path = _pathFor(model);
     if (_yolo != null && _loadedPath == path) return _yolo!;
     try {

@@ -84,6 +84,8 @@ abstract interface class PushTokenSource {
 class FirebasePushTokenSource implements PushTokenSource {
   @override
   Future<String?> token() async {
+    // Pas de push web configuré (service worker FCM) : rien à demander.
+    if (kIsWeb) return null;
     try {
       final m = FirebaseMessaging.instance;
       await m.requestPermission();

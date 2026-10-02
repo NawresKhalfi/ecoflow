@@ -26,6 +26,15 @@ Résilience côté application :
 - **Dégradation** : une notification qui échoue ne bloque jamais l'action
   métier ; les tuiles de carte sont facultatives.
 
+### Site web (https://meteo-ba45f.web.app)
+
+Version web de l'app Flutter, publiée sur Firebase Hosting avec
+`sh tool/deploy_web.sh` (build web + dossier `models/` + déploiement).
+Les URL profondes (`/app/...`) renvoient vers l'app. Limites du web :
+pas de scan IA (le modèle YOLO ne tourne que sur iOS / Android), pas de
+notifications push ni de rapports Crashlytics ; le reste (connexion,
+collectes, wallet, impact, marketplace, administration) fonctionne.
+
 ### Distribution des modèles de vision (US-019)
 
 Les nouvelles versions du modèle YOLO sont publiées sur Firebase Hosting

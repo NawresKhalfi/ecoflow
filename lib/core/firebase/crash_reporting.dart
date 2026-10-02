@@ -13,6 +13,8 @@ const _inDebug = bool.fromEnvironment('CRASHLYTICS_IN_DEBUG');
 /// asynchrones non interceptées et plantages natifs remontent à Crashlytics,
 /// qui alerte sur les nouvelles erreurs et les pics (console Firebase).
 Future<void> setupCrashReporting() async {
+  // Crashlytics n'existe pas pour le web : erreurs visibles dans la console.
+  if (kIsWeb) return;
   final crashlytics = FirebaseCrashlytics.instance;
   await crashlytics.setCrashlyticsCollectionEnabled(kReleaseMode || _inDebug);
   final previous = FlutterError.onError;
@@ -38,7 +40,7 @@ final crashContextProvider = Provider<void>((ref) {
 
 /// `null` sans Firebase initialisé (tests de widgets).
 final crashlyticsProvider = Provider<FirebaseCrashlytics?>(
-  (_) => Firebase.apps.isEmpty ? null : FirebaseCrashlytics.instance,
+  (_) => kIsWeb || Firebase.apps.isEmpty ? null : FirebaseCrashlytics.instance,
 );
 
 /// Outil de vérification de la chaîne de rapports, visible seulement si
