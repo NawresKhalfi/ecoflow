@@ -67,8 +67,10 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   adaptive_icon_background: "#EEF7DD"
   adaptive_icon_foreground: assets/icon/ecoflow_icon_foreground.png
+  # Icônes web déjà générées ; favicons (SVG, ICO, 32/48 px) faits à la main
+  # depuis assets/icon/ecoflow_icon.svg : ne pas les écraser.
   web:
-    generate: true
+    generate: false
     image_path: assets/icon/ecoflow_icon.png
     background_color: "#EEF7DD"
     theme_color: "#0B7A4B"
