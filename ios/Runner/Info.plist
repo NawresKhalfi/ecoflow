@@ -2,16 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ecoflow</string>
+	<string>EcoFlow</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>fr</string>
+		<string>ar</string>
+		<string>en</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>ecoflow</string>
 	<key>CFBundlePackageType</key>
@@ -23,6 +31,16 @@
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>EcoFlow se connecte à ta balance Bluetooth pour enregistrer le poids réel des collectes.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EcoFlow utilise l’appareil photo pour photographier tes déchets et tes justificatifs.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>EcoFlow utilise ta position pour enregistrer l’adresse de collecte.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>EcoFlow accède à ta galerie pour importer des photos de déchets ou de documents.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -40,24 +58,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>EcoFlow se connecte à ta balance Bluetooth pour enregistrer le poids réel des collectes.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>EcoFlow utilise l’appareil photo pour photographier tes déchets et tes justificatifs.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>EcoFlow accède à ta galerie pour importer des photos de déchets ou de documents.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>EcoFlow utilise ta position pour enregistrer l’adresse de collecte.</string>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>fr</string>
-		<string>ar</string>
-		<string>en</string>
 	</array>
 </dict>
 </plist>

@@ -45,6 +45,7 @@ dev_dependencies:
   firebase_auth_mocks: ^0.15.2
   mocktail: ^1.0.5
   fake_async: ^1.3.3
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -57,3 +58,17 @@ flutter:
       fonts:
         - asset: assets/fonts/BricolageGrotesque.ttf
 
+
+# Icône de l'application (sac « eco ») : `dart run flutter_launcher_icons`.
+flutter_launcher_icons:
+  image_path: assets/icon/ecoflow_icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#EEF7DD"
+  adaptive_icon_foreground: assets/icon/ecoflow_icon_foreground.png
+  web:
+    generate: true
+    image_path: assets/icon/ecoflow_icon.png
+    background_color: "#EEF7DD"
+    theme_color: "#0B7A4B"
